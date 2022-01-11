@@ -1,0 +1,98 @@
+﻿<Window x:Class="DiskoAIO.MVVM.View.CheckWinnersView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
+        mc:Ignorable="d"
+        WindowStyle="None" WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" Background="Transparent"
+        Title="Winner checker" Height="530" Width="820"
+        AllowsTransparency="True" MouseDown="Window_MouseDown">
+    <Border Background="#151520" CornerRadius="25" MouseDown="Window_MouseDown">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Image Source="/Images/Logo.ico" Width="50" HorizontalAlignment="Left" 
+                   Margin="30, 0"/>
+            <Label Content="Giveaway checker" FontFamily="/Fonts/#Montserrat"
+                   Foreground="White" FontSize="30" VerticalAlignment="Center"
+                   Margin="100, 5, 100, 0" FontWeight="Black"/>
+            <Button Content="X" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="12" FontStretch="Expanded" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center" Margin="10, 10" FontWeight="Black"
+                    Padding="1,1,0,0" Background="Transparent" Foreground="White"
+                    x:Name="ExitButton" Style="{StaticResource ExitButtonTheme}" Click="ExitButton_Click"/>
+            <Button Content="__" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="9" FontStretch="Expanded" VerticalContentAlignment="Top"
+                    HorizontalContentAlignment="Center" FontWeight="Black" Foreground="White"
+                    Padding="1,-1,0,0" Background="Transparent" Margin="40, 10"
+                    x:Name="MinimizeButton" Style="{StaticResource MinimizeButtonTheme}" Click="MinimizeButton_Click" Grid.RowSpan="2"/>
+            <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
+                <TextBlock Text="SERVER INFO:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 20, 20, 30"/>
+                <WrapPanel VerticalAlignment="Center">
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Server ID" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Channel ID" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="ChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Message ID" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="MessageID" PreviewTextInput="textBox_PreviewTextInput"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
+            <StackPanel Margin="40, 0, 0, 0" Grid.Row="2">
+                <TextBlock Text="SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 20, 20, 30"/>
+                <WrapPanel>
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Tokens to skip" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
+            <StackPanel Margin="40, 0, 0, 0" Grid.Row="3">
+                <WrapPanel>
+                    <Label Content="Accounts:" Foreground="White" FontSize="17" FontWeight="Black"
+                           Margin="320, 0, 0, 0"/>
+                    <ComboBox Name="TokenGroup"/>
+                    <Button Style="{StaticResource DiskoButton}" Content="Start task" Margin="20, 0, 0, 0"
+                        Width="100" Height="40" Click="Start_Task"/>
+                </WrapPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

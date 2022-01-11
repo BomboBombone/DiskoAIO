@@ -1,0 +1,220 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="{x:Type RadioButton}" x:Key="MenuButtonThemeJoin">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Border CornerRadius="10" Background="{TemplateBinding Background}" Margin="20, 0, 20, 0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{TemplateBinding Property=Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Grid.Column="1"
+                                               FontFamily="/Fonts/#Montserrat"/>
+
+                                    <Image Source="/Images/share_outline.png" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Stretch="Fill" Height="30" Width="30" Grid.Column="0"  x:Name="joinerIcon"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="#212131"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="#A2A7BC"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="{x:Type RadioButton}" x:Key="MenuButtonThemeGiveaways">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Border CornerRadius="10" Background="{TemplateBinding Background}" Margin="20, 0, 20, 0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{TemplateBinding Property=Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Grid.Column="1"
+                                               FontFamily="/Fonts/#Montserrat"/>
+
+                                    <Image Source="/Images/message_plus_alt.png" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Stretch="Fill" Height="30" Width="30" Grid.Column="0"  x:Name="giveawaysIcon"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="#212131"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="#A2A7BC"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="{x:Type RadioButton}" x:Key="MenuButtonThemeProxies">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Border CornerRadius="10" Background="{TemplateBinding Background}" Margin="20, 0, 20, 0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{TemplateBinding Property=Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Grid.Column="1"
+                                               FontFamily="/Fonts/#Montserrat"/>
+
+                                    <Image Source="/Images/cloud_outline.png" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Stretch="Fill" Height="30" Width="30" Grid.Column="0" x:Name="proxiesIcon"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="#212131"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="#A2A7BC"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="{x:Type RadioButton}" x:Key="MenuButtonThemeAccounts">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Border CornerRadius="10" Background="{TemplateBinding Background}" Margin="20, 0, 20, 0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{TemplateBinding Property=Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Grid.Column="1"
+                                               FontFamily="/Fonts/#Montserrat"/>
+
+                                    <Image Source="/Images/user.png" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Stretch="Fill" Height="30" Width="30" Grid.Column="0"  x:Name="accountsIcon"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="#212131"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="#A2A7BC"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="{x:Type RadioButton}" x:Key="MenuButtonThemeSettings">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Border CornerRadius="10" Background="{TemplateBinding Background}" Margin="20, 0, 20, 0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{TemplateBinding Property=Content}" Foreground="{TemplateBinding Property=Foreground}" VerticalAlignment="Center" Grid.Column="1"
+                                               FontFamily="/Fonts/#Montserrat"/>
+
+                                    <Image Source="/Images/coolicon.png" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Stretch="Fill" Height="30" Width="30" Grid.Column="0"  x:Name="settingsIcon"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="#212131"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="{x:Null}">
+                <Setter Property="Foreground" Value="#A2A7BC"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="{x:Type RadioButton}" x:Key="MenuButtonThemeTasks">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Border CornerRadius="10" Background="{TemplateBinding Background}" Margin="20, 0, 20, 0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{TemplateBinding Property=Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Grid.Column="1"
+                                               FontFamily="/Fonts/#Montserrat"/>
+
+                                    <Image Source="/Images/task_purple.png" Margin="3, 0, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Stretch="UniformToFill" Height="25" Width="27" Grid.Column="0" x:Name="tasksIcon">
+                                    </Image>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="#212131"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="#A2A7BC"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

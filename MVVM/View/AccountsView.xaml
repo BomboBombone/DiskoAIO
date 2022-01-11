@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="DiskoAIO.MVVM.View.AccountsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="670" d:DesignWidth="1000">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <WrapPanel VerticalAlignment="Center">
+            <Label Content="GROUP:" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="80, 5 , 20, 0" FontWeight="Black"/>
+            <ComboBox Name="GroupComboBox"/>
+            <Button Width="30" Height="30" Style="{StaticResource DeleteButton}" Margin="20, 0"
+                    Click="Delete_Click"/>
+            <Button Width="30" Height="30" Style="{StaticResource AddButton}"  Margin="0, 0, 20, 0" 
+                    Click="Add_Group_Click"/>
+            <TextBox x:Name="SearchBox" Style="{StaticResource SearchBox}" Margin="150, 0, 0, 0"/>
+            <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="50, 0, 0, 0" 
+                    Click="Load_Tokens_Click"/>
+        </WrapPanel>
+        <ListBox x:Name="ListTokens" HorizontalContentAlignment="Center" Grid.Row="1"
+            SourceUpdated="ListTokens_SourceUpdated"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0"
+            Background="Transparent" Margin="60, 10, 10, 10" SelectionMode="Single">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{Binding UserId}"/>
+                        <Label Content="{Binding Note}" Grid.Column="1"/>
+                        <WrapPanel Grid.Column="2">
+                            <Button Style="{StaticResource PhoneButton}" x:Name="PhoneButton"/>
+                            <Button Style="{StaticResource MailButton}" x:Name="MailButton"/>
+                            <Button Style="{StaticResource CrossButton}" x:Name="CrossButton"/>
+                        </WrapPanel>
+                        <WrapPanel Grid.Column="3">
+                            <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton"/>
+                            <Button Style="{StaticResource BrowserButton}" x:Name="BrowserButton"/>
+                            <Button Style="{StaticResource PencilButton}" x:Name="PencilButton"/>
+                        </WrapPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Label Content="Accounts: 0" x:Name="TokenCounter" Grid.Row="2" FontWeight="Black"
+               FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+               Margin="80 ,0, 0, 12"/>
+    </Grid>
+</UserControl>

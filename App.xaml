@@ -1,0 +1,41 @@
+﻿<Application x:Class="DiskoAIO.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DiskoAIO"
+             xmlns:view="clr-namespace:DiskoAIO.MVVM.View"
+             xmlns:viewModel="clr-namespace:DiskoAIO.MVVM.ViewModel"
+             Startup="Application_Startup">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Theme\MenuButtonTheme.xaml"/>
+                <ResourceDictionary Source="Theme\ExitButtonTheme.xaml"/>
+                <ResourceDictionary Source="Theme\TextBoxTheme.xaml"/>
+                <ResourceDictionary Source="Theme\ButtonTheme.xaml"/>
+                <ResourceDictionary Source="Theme\SearchBoxTheme.xaml"/>
+                <ResourceDictionary Source="Theme\ListBoxTheme.xaml"/>
+                <ResourceDictionary Source="Theme\ComboBoxTheme.xaml"/>
+                <ResourceDictionary Source="Theme\TextBlockTheme.xaml"/>
+                <ResourceDictionary Source="Theme\ToggleButtonTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate DataType="{x:Type viewModel:AccountsVM}">
+                <view:AccountsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:GiveawaysVM}">
+                <view:GiveawayView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:ProxiesVM}">
+                <view:ProxiesView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:JoinerVM}">
+                <view:JoinerView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:SettingsVM}">
+                <view:SettingsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:TasksVM}">
+                <view:TasksView/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
