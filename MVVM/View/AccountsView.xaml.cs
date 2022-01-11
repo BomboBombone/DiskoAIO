@@ -214,25 +214,80 @@ namespace DiskoAIO.MVVM.View
         {
             if (_currentGroup == null)
                 return;
-            while (true)
+            Task.Run(() =>
             {
-                try
+                while (true)
                 {
-                    using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
+                    try
                     {
-                        foreach (var token in _currentGroup._accounts)
+                        using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
                         {
-                            writer.WriteLine(token.ToString());
+                            foreach (var proxy in _currentGroup._accounts)
+                            {
+                                writer.WriteLine(proxy.ToString());
+                            }
                         }
+                        break;
                     }
-                    break;
+                    catch (Exception ex)
+                    {
+                        App.mainWindow.ShowNotification("Resource busy... waiting to save", 1000);
+
+                        Thread.Sleep(1000);
+                    }
                 }
-                catch (Exception ex)
+                Dispatcher.Invoke(() =>
                 {
-                    Thread.Sleep(1000);
-                }
+                    App.mainWindow.ShowNotification("Successfully saved your current accounts");
+                });
+            });
+        }
+
+        private void Note_Double_Click(object sender, MouseButtonEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            var input = new InputPopupView("Add your note here", 64, false, _currentGroup._accounts[index].Note);
+            input.ShowDialog();
+            if (input.answer == null)
+            {
+                App.mainWindow.ShowNotification("Invalid note, please try again", 1000);
+                return;
             }
-            App.mainWindow.ShowNotification("Successfully save your current accounts");
+            if (input.answer == "")
+                input.answer = "Double tap to add note...";
+
+            _currentGroup._accounts[index].Note = input.answer;
+            App.mainWindow.ShowNotification("Successfully saved note");
+            ListTokens.Items.Refresh();
+        }
+
+        private void Note_Click(object sender, RoutedEventArgs e)
+        {
+            var input = new InputPopupView("Add your note here", 64);
+            input.ShowDialog();
+            if(input.answer == null)
+            {
+                App.mainWindow.ShowNotification("Invalid note, please try again", 1000);
+                return;
+            }
+            if (input.answer == "")
+                input.answer = "Double tap to add note...";
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+
+            _currentGroup._accounts[index].Note = input.answer;
+            App.mainWindow.ShowNotification("Successfully saved note");
+            ListTokens.Items.Refresh();
+        }
+        private void DeleteToken_Click(object sender, RoutedEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            _currentGroup._accounts.RemoveAt(index);
+            ListTokens.ItemsSource = _currentGroup._accounts;
+            ListTokens.Items.Refresh();
+            UpdateAccountCount();
         }
     }
 }

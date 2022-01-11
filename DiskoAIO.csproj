@@ -510,6 +510,9 @@
     <Compile Include="MVVM\View\CheckWinnersView.xaml.cs">
       <DependentUpon>CheckWinnersView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\DiscordBrowserWindow.xaml.cs">
+      <DependentUpon>DiscordBrowserWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ProxyGroup.cs" />
     <Compile Include="DiskoTask.cs" />
     <Page Include="MainWindow.xaml">
@@ -534,6 +537,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\CheckWinnersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\DiscordBrowserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -713,6 +720,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Anarchy\WebSockets\Media\Codecs\Opus\H264Encoder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\phone_white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\browser_white.ico" />
+    <Resource Include="Images\pencil_white.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

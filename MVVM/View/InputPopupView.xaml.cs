@@ -21,17 +21,22 @@ namespace DiskoAIO.MVVM.View
     public partial class InputPopupView : Window
     {
         public bool hasConfirmed { get; set; } = false;
-        public string answer { get; set; } = "";
+        public string answer { get; set; } = null;
         public int current_chars { get; set; } = 0;
-        public int limit { get; set; } 
+        public int limit { get; set; }
+        private bool canUserNumbers { get; set; } = false;
 
-        public InputPopupView(string prompt, int char_limit = 32)
+        public InputPopupView(string prompt, int char_limit = 32, bool useNumbers = false, string preview_text = "")
         {
             InitializeComponent();
             PromptText.Text = prompt;
             limit = char_limit;
             LimitText.Text = "0/" + char_limit.ToString();
-
+            canUserNumbers = useNumbers;
+            if (preview_text == "Double tap to add note...")
+                preview_text = "";
+            InputText.Text = preview_text;
+            InputText.TextChanged += InputText_TextChanged;
             InputText.Focus();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -79,7 +84,7 @@ namespace DiskoAIO.MVVM.View
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             ulong result;
-            if (!ulong.TryParse(e.Text, out result))
+            if (!ulong.TryParse(e.Text, out result) || canUserNumbers)
             {
                 var replaced = Regex.Replace(e.Text, "[^A-Za-z0-9]", "");
                 if (current_chars >= limit || replaced != e.Text)

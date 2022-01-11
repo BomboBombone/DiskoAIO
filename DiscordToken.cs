@@ -35,10 +35,7 @@ namespace DiskoAIO
             get {
                 if (_note == null)
                     _note = "Double tap to add note...";
-                if (_note.Length > 20)
-                    return _note.Substring(0, 17) + "...";
-                else
-                    return _note;
+                return _note;
                 }
             set { _note = value; }
         }

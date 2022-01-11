@@ -31,8 +31,8 @@
                     <TextBlock x:Name="PromptText" FontSize="14" FontWeight="Bold" Foreground="White"
                            FontFamily="/Fonts/#Montserrat" Margin="20, 10"/>
                     <TextBox Style="{StaticResource ModernTextBox}" Height="60" Grid.Row="1" Width="360"
-                     TextWrapping="WrapWithOverflow" AcceptsReturn="False" VerticalScrollBarVisibility="Hidden"
-                         Name="InputText" TextChanged="InputText_TextChanged" PreviewTextInput="textBox_PreviewTextInput"/>
+                     TextWrapping="WrapWithOverflow" VerticalScrollBarVisibility="Hidden"
+                         Name="InputText" PreviewTextInput="textBox_PreviewTextInput"/>
                     <TextBlock Text="0/32" x:Name="LimitText" FontSize="14" FontWeight="Bold" Foreground="Gray"
                            FontFamily="/Fonts/#Montserrat" Margin="20, 10" HorizontalAlignment="Right"/>
                 </StackPanel>
@@ -40,8 +40,7 @@
             <StackPanel Orientation="Horizontal" Grid.Row="2">
                 <Button Content="Cancel" x:Name="CancelButton"
                         Margin="250,0,0,0" Click="ExitButton_Click" Style="{StaticResource CancelButton}"/>
-                <Button Content="Confirm" Click="Confirm_Click" Style="{StaticResource DiskoButton}"
-                        IsDefault="True"/>
+                <Button Content="Confirm" Click="Confirm_Click" Style="{StaticResource DiskoButton}"/>
             </StackPanel>
         </Grid>
     </Border>

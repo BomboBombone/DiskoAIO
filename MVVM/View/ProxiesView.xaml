@@ -26,35 +26,51 @@
             <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="0, 0, 0, 0" 
                     Click="Load_Proxies_Click"/>
         </WrapPanel>
-        <ListBox x:Name="ListProxies" Grid.Row="1"
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <WrapPanel Grid.Row="0">
+                <Label Content="HOST" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="80, 0 , 20, 0" FontWeight="Black"/>
+                <Label Content="PORT" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="80, 0 , 20, 0" FontWeight="Black"/>
+                <Label Content="USERNAME" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="77, 0 , 20, 0" FontWeight="Black"/>
+                <Label Content="PASSWORD" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="225, 0 , 20, 0" FontWeight="Black"/>
+            </WrapPanel>
+            <ListBox x:Name="ListProxies" Grid.Row="1"
             SourceUpdated="ListProxies_SourceUpdated"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0"
             Background="Transparent" Margin="0, 10, 10, 0" SelectionMode="Single">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="25"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="{Binding Host}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="25"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding Host}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="150" Margin="75, 0, 0, 0"/>
-                        <Label Content="{Binding Port}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                            <Label Content="{Binding Port}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="150"/>
-                        <Label Content="{Binding Username}"  Grid.Column="2" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                            <Label Content="{Binding Username}"  Grid.Column="2" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="340"/>
-                        <Label Content="{Binding Password}" Grid.Column="3" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                            <Label Content="{Binding Password}" Grid.Column="3" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="150"/>
-                        <WrapPanel Grid.Column="4">
-                            <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton" Click="DeleteProxy_Click"/>
-                        </WrapPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                            <WrapPanel Grid.Column="4">
+                                <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton" Click="DeleteProxy_Click"/>
+                            </WrapPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
         <Label Content="Proxies: 0" x:Name="ProxyCounter" Grid.Row="2" FontWeight="Black"
                FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
                Margin="80 ,0, 0, 12"/>

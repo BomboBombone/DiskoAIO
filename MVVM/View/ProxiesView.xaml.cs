@@ -107,12 +107,6 @@ namespace DiskoAIO.MVVM.View
                                     }
                                     line = reader.ReadLine();
                                     proxies.Add(proxy);
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        ListProxies.ItemsSource = proxies;
-                                        ListProxies.Items.Refresh();
-                                        UpdateProxyCount();
-                                    });
                                 }
                                 catch (Exception ex)
                                 {
@@ -206,24 +200,12 @@ namespace DiskoAIO.MVVM.View
 
         private void DeleteProxy_Click(object sender, RoutedEventArgs e)
         {
-            var lbItem = FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
             var index = ListProxies.ItemContainerGenerator.IndexFromContainer(lbItem);
             _currentGroup._proxies.RemoveAt(index);
             ListProxies.ItemsSource = _currentGroup._proxies;
             ListProxies.Items.Refresh();
             UpdateProxyCount();
-        }
-        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
-        {
-            //get parent item
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);    //we’ve reached the end of the tree
-            if (parentObject == null) return null;
-            //check if the parent matches the type we’re looking for
-            T parent = parentObject as T;
-            if (parent != null)
-                return parent;
-            else
-                return FindParent<T>(parentObject);
         }
 
         private void GroupComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -263,6 +245,8 @@ namespace DiskoAIO.MVVM.View
                     }
                     catch (Exception ex)
                     {
+                        App.mainWindow.ShowNotification("Resource busy... waiting to save", 1000);
+
                         Thread.Sleep(1000);
                     }
                 }
