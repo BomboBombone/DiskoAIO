@@ -31,6 +31,8 @@ namespace DiskoAIO.MVVM.View
             PromptText.Text = prompt;
             limit = char_limit;
             LimitText.Text = "0/" + char_limit.ToString();
+
+            InputText.Focus();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

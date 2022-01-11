@@ -39,5 +39,12 @@ namespace DiskoAIO
             _username = username;
             _password = password;
         }
+        public override string ToString()
+        {
+            if (Username != null)
+                return $"{Host}:{Port}:{Username}:{Password}";
+            else
+                return $"{Host}:{Port}";
+        }
     }
 }

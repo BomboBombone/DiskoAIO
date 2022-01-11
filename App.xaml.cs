@@ -38,8 +38,27 @@ namespace DiskoAIO
             foreach(var file in Directory.GetFiles(strWorkPath + "/groups"))
             {
                 var name = file.Split('\\').Last().Split('.')[0];
-
-                var group = new AccountGroup(null, name, false);
+                var tokens = new List<DiscordToken>();
+                using (var reader = new StreamReader(file))
+                {
+                    var line = reader.ReadLine();
+                    while (line != null && line != "")
+                    {
+                        try
+                        {
+                            line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                            var token_array = line.Split(':');
+                            var token = DiscordToken.Load(token_array);
+                            line = reader.ReadLine();
+                            tokens.Add(token);
+                        }
+                        catch (FormatException ex)
+                        {
+                            ;
+                        }
+                    }
+                }
+                var group = new AccountGroup(tokens, name, false);
                 if (group != null && group._name != "")
                     accountsGroups.Add(group);
             }
@@ -51,7 +70,38 @@ namespace DiskoAIO
             foreach (var file in Directory.GetFiles(strWorkPath + "/proxies"))
             {
                 var name = file.Split('\\').Last().Split('.')[0];
-                var group = new ProxyGroup(null, name, false);
+                var proxies = new List<DiscordProxy>();
+                using (var reader = new StreamReader(file))
+                {
+                    var line = reader.ReadLine();
+                    while (line != null && line != "")
+                    {
+                        try
+                        {
+                            line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                            var proxy_array = line.Split(':');
+                            DiscordProxy proxy = null;
+                            if (proxy_array.Length > 2)
+                            {
+                                if (int.TryParse(proxy_array[1], out var port))
+                                    proxy = new DiscordProxy(proxy_array[0], port, proxy_array[2], proxy_array[3]);
+                                else
+                                    proxy = new DiscordProxy(proxy_array[2], int.Parse(proxy_array[3]), proxy_array[1], proxy_array[2]);
+                            }
+                            else
+                            {
+                                proxy = new DiscordProxy(proxy_array[0], int.Parse(proxy_array[1]));
+                            }
+                            line = reader.ReadLine();
+                            proxies.Add(proxy);
+                        }
+                        catch (FormatException ex)
+                        {
+                            ;
+                        }
+                    }
+                }
+                var group = new ProxyGroup(proxies, name, false);
                 if(group != null && group._name != "")
                     proxyGroups.Add(group);
             }

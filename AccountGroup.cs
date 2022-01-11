@@ -55,7 +55,7 @@ namespace DiskoAIO
                 }
             }
         }
-        public void Delete()
+        public int Delete()
         {
             while (true)
             {
@@ -67,9 +67,15 @@ namespace DiskoAIO
                 }
                 catch(Exception ex)
                 {
-                    Thread.Sleep(1000);
+                    App.mainWindow.ShowNotification("Cannot delete group, try again in a couple seconds");
+                    return 1;
                 }
             }
+            return 0;
+        }
+        public void Append(List<DiscordToken> to_append)
+        {
+            this._accounts.AddRange(to_append);
         }
     }
 }

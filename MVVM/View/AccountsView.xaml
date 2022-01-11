@@ -20,8 +20,10 @@
                     Click="Delete_Click"/>
             <Button Width="30" Height="30" Style="{StaticResource AddButton}"  Margin="0, 0, 20, 0" 
                     Click="Add_Group_Click"/>
-            <TextBox x:Name="SearchBox" Style="{StaticResource SearchBox}" Margin="150, 0, 0, 0"/>
-            <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="50, 0, 0, 0" 
+            <TextBox x:Name="SearchBox" Style="{StaticResource SearchBox}" Margin="100, 0, 0, 0"/>
+            <Button Width="30" Height="30" Style="{StaticResource SaveButton}" Margin="50, 0, 20, 0"
+                    Click="Save_Click"/>
+            <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="0, 0, 0, 0" 
                     Click="Load_Tokens_Click"/>
         </WrapPanel>
         <ListBox x:Name="ListTokens" HorizontalContentAlignment="Center" Grid.Row="1"
@@ -32,22 +34,24 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <Label Content="{Binding UserId}"/>
-                        <Label Content="{Binding Note}" Grid.Column="1"/>
-                        <WrapPanel Grid.Column="2">
-                            <Button Style="{StaticResource PhoneButton}" x:Name="PhoneButton"/>
-                            <Button Style="{StaticResource MailButton}" x:Name="MailButton"/>
-                            <Button Style="{StaticResource CrossButton}" x:Name="CrossButton"/>
+                        <Label Content="{Binding UserId}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                               VerticalAlignment="Center" Width="150" Margin="75, 0, 0, 0"/>
+                        <Label Content="{Binding Note}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                               VerticalAlignment="Center" Width="150" Margin="75, 0, 0, 0"/>
+                        <WrapPanel Grid.Column="2"  Width="150" Margin="75, 0, 0, 0">
+                            <Button Style="{StaticResource PhoneButton}" x:Name="PhoneButton" Width="30"/>
+                            <Button Style="{StaticResource MailButton}" x:Name="MailButton" Width="30"/>
+                            <Button Style="{StaticResource CrossButton}" x:Name="CrossButton" Width="30"/>
                         </WrapPanel>
-                        <WrapPanel Grid.Column="3">
-                            <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton"/>
-                            <Button Style="{StaticResource BrowserButton}" x:Name="BrowserButton"/>
-                            <Button Style="{StaticResource PencilButton}" x:Name="PencilButton"/>
+                        <WrapPanel Grid.Column="3"  Width="150" Margin="75, 0, 0, 0">
+                            <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton" Width="30"/>
+                            <Button Style="{StaticResource BrowserButton}" x:Name="BrowserButton" Width="30"/>
+                            <Button Style="{StaticResource PencilButton}" x:Name="PencilButton" Width="30"/>
                         </WrapPanel>
                     </Grid>
                 </DataTemplate>

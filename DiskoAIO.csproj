@@ -73,10 +73,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CheckerTask.cs" />
+    <Compile Include="GiveawayTask.cs" />
+    <Compile Include="JoinTask.cs" />
+    <Compile Include="LeaveTask.cs" />
     <Compile Include="MVVM\View\CheckWinnersView.xaml.cs">
       <DependentUpon>CheckWinnersView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProxyGroup.cs" />
+    <Compile Include="DiskoTask.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -258,16 +263,22 @@
     <Resource Include="Images\browser_grey.ico" />
     <Resource Include="Images\cross_red.ico" />
     <Resource Include="Images\down_arrow_grey.ico" />
-    <Resource Include="Images\mail.ico" />
     <Resource Include="Images\pencil_grey.ico" />
-    <Resource Include="Images\phone.ico" />
-    <Resource Include="Images\trashbin_grey.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\plus_grey.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\add_from_file.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\trashbin_gray.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\email_white.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\save_white.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

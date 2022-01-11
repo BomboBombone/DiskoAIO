@@ -10,7 +10,7 @@
         Title="Winner checker" Height="530" Width="820"
         AllowsTransparency="True" MouseDown="Window_MouseDown">
     <Border Background="#151520" CornerRadius="25" MouseDown="Window_MouseDown">
-        <Grid>
+        <Grid PreviewKeyDown="StackPanel_PreviewKeyDown">
             <Grid.RowDefinitions>
                 <RowDefinition Height="90"/>
                 <RowDefinition Height="3*"/>
@@ -41,7 +41,8 @@
                             <Label Content="Server ID" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                             <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"/>
+                                 Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"
+                                     TabIndex="0"/>
                         </StackPanel>
                     </Border>
                     <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
@@ -49,7 +50,8 @@
                             <Label Content="Channel ID" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                             <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="ChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
+                                 Name="ChannelID" PreviewTextInput="textBox_PreviewTextInput"
+                                     TabIndex="1"/>
                         </StackPanel>
                     </Border>
                     <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
@@ -57,7 +59,8 @@
                             <Label Content="Message ID" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                             <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="MessageID" PreviewTextInput="textBox_PreviewTextInput"/>
+                                 Name="MessageID" PreviewTextInput="textBox_PreviewTextInput"
+                                     TabIndex="2"/>
                         </StackPanel>
                     </Border>
                 </WrapPanel>
@@ -71,7 +74,8 @@
                             <Label Content="Tokens to skip" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                             <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"/>
+                                 Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"
+                                     TabIndex="3"/>
                         </StackPanel>
                     </Border>
                     <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
@@ -79,18 +83,19 @@
                             <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                             <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
+                                 Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"
+                                     TabIndex="4"/>
                         </StackPanel>
                     </Border>
                 </WrapPanel>
             </StackPanel>
             <StackPanel Margin="40, 0, 0, 0" Grid.Row="3">
                 <WrapPanel>
-                    <Label Content="Accounts:" Foreground="White" FontSize="17" FontWeight="Black"
-                           Margin="320, 0, 0, 0"/>
+                    <Label Content="Accounts:" Foreground="White" FontSize="14" FontWeight="Bold"
+                           Margin="320, 5, 0, 0" TabIndex="5" VerticalAlignment="Center"/>
                     <ComboBox Name="TokenGroup"/>
                     <Button Style="{StaticResource DiskoButton}" Content="Start task" Margin="20, 0, 0, 0"
-                        Width="100" Height="40" Click="Start_Task"/>
+                        Width="100" Height="40" Click="Start_Task" IsDefault="True"/>
                 </WrapPanel>
             </StackPanel>
         </Grid>

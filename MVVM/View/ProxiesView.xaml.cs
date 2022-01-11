@@ -36,14 +36,21 @@ namespace DiskoAIO.MVVM.View
             if(_currentGroup != null)
                 GroupComboBox.SelectedItem = _currentGroup._name;
             else
-                 if (App.accountsGroups.Count > 0)
+                 if (App.proxyGroups.Count > 0)
                     _currentGroup = App.proxyGroups.First();
+            
+            if(_currentGroup != null)
+            {
+                GroupComboBox.SelectedItem = _currentGroup._name;
+
+                ListProxies.ItemsSource = _currentGroup._proxies;
+            }
         }
         private void ListProxies_SourceUpdated(object sender, DataTransferEventArgs e)
         {
-            if (currentProxies > ListTokens.Items.Count)
-                currentProxies = ListTokens.Items.Count;
-            foreach (object item in ListTokens.Items)
+            if (currentProxies > ListProxies.Items.Count)
+                currentProxies = ListProxies.Items.Count;
+            foreach (object item in ListProxies.Items)
             {
                 currentProxies += 1;
             }
@@ -53,41 +60,89 @@ namespace DiskoAIO.MVVM.View
         private void Load_Proxies_Click(object sender, RoutedEventArgs e)
         {
             if (_currentGroup == null)
-                return;
-
-            var dialog = new CommonOpenFileDialog();
-            dialog.Title = "Select proxies file";
-            dialog.DefaultExtension = ".txt";
-            dialog.AddToMostRecentlyUsedList = true;
-            dialog.EnsureFileExists = true;
-            dialog.EnsurePathExists = true;
-            string path = "";
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                path = dialog.FileName;
-                if (path.EndsWith(".txt"))
-                {
-                    using (var reader = new StreamReader(path))
-                    {
-                        var line = reader.ReadLine();
-                        while(line != null && line != "")
-                        {
-                            line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
-                            var proxy_array = line.Split(':');
-                            DiscordProxy proxy = null;
-                            if(proxy_array.Length > 2)
-                            {
-                                proxy = new DiscordProxy(proxy_array[0], int.Parse(proxy_array[1]), proxy_array[2], proxy_array[3]);
-                            }
-                            else
-                            {
-                                proxy = new DiscordProxy(proxy_array[0], int.Parse(proxy_array[1]));
-                            }
+                App.mainWindow.ShowNotification("Please select a group before loading your proxies");
+                return;
+            }
 
+            Task.Run(() => {
+                var dialog = new CommonOpenFileDialog();
+                dialog.Title = "Select proxies file";
+                dialog.DefaultExtension = ".txt";
+                dialog.AddToMostRecentlyUsedList = true;
+                dialog.EnsureFileExists = true;
+                dialog.EnsurePathExists = true;
+                string path = "";
+                List<DiscordProxy> proxies = new List<DiscordProxy>();
+                var result = CommonFileDialogResult.Ok;
+                Dispatcher.Invoke(() => result = dialog.ShowDialog());
+                if (result == CommonFileDialogResult.Ok)
+                {
+                    path = dialog.FileName;
+                    if (path.EndsWith(".txt"))
+                    {
+                        using (var reader = new StreamReader(path))
+                        {
+                            var line = reader.ReadLine();
+                            while (line != null && line != "")
+                            {
+                                try
+                                {
+                                    line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                                    var proxy_array = line.Split(':');
+                                    DiscordProxy proxy = null;
+                                    if (proxy_array.Length > 2)
+                                    {
+                                        if (int.TryParse(proxy_array[1], out var port))
+                                            proxy = new DiscordProxy(proxy_array[0], port, proxy_array[2], proxy_array[3]);
+                                        else
+                                            proxy = new DiscordProxy(proxy_array[2], int.Parse(proxy_array[3]), proxy_array[1], proxy_array[2]);
+                                    }
+                                    else
+                                    {
+                                        proxy = new DiscordProxy(proxy_array[0], int.Parse(proxy_array[1]));
+                                    }
+                                    line = reader.ReadLine();
+                                    proxies.Add(proxy);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Dispatcher.Invoke(() => { 
+                                        App.mainWindow.ShowNotification("Format of selected proxies seems to be wrong.\nHint: {host}:{port}:{username}:{password}");
+                                    });
+                                    return;
+                                }
+                            }
+                        }
+                        _currentGroup.Append(proxies);
+                        Dispatcher.Invoke(() =>
+                        {
+                            ListProxies.ItemsSource = _currentGroup._proxies;
+                            ListProxies.Items.Refresh();
+                            App.mainWindow.ShowNotification("Proxies added successfully: " + proxies.Count.ToString());
+                            UpdateProxyCount();
+                        });
+                        while (true)
+                        {
+                            try
+                            {
+                                using (var writer = new StreamWriter(App.strWorkPath + "\\proxies\\" + _currentGroup._name + ".txt"))
+                                {
+                                    foreach (var proxy in proxies)
+                                    {
+                                        writer.WriteLine(proxy.ToString());
+                                    }
+                                }
+                                break;
+                            }
+                            catch(Exception ex)
+                            {
+                                Thread.Sleep(1000);
+                            }
                         }
                     }
                 }
-            }
+            });
         }
 
         private void Add_Group_Click(object sender, RoutedEventArgs e)
@@ -106,29 +161,115 @@ namespace DiskoAIO.MVVM.View
             }
             GroupComboBox.ItemsSource = source;
             GroupComboBox.SelectedIndex = source.Length - 1;
+            UpdateProxyCount();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            while (true)
+            if (_currentGroup == null)
             {
-                try
+                App.mainWindow.ShowNotification("No group is selected for deletion");
+                return;
+            }
+            var popup = new WarningPopupView("You are about to delete group: " + _currentGroup._name + "\nAre you sure you want to continue?");
+            popup.ShowDialog();
+            if (!popup.hasConfirmed)
+                return;
+            var result = _currentGroup.Delete();
+            if (result > 0)
+                return;
+            if (App.proxyGroups.Count > 0)
+                _currentGroup = App.proxyGroups.First();
+            else
+                _currentGroup = null;
+
+            var source = new string[] { };
+            foreach (var group in App.proxyGroups)
+            {
+                source = source.Append(group._name).ToArray();
+            }
+            GroupComboBox.ItemsSource = source;
+            if (_currentGroup != null)
+                GroupComboBox.SelectedItem = _currentGroup._name == null ? "" : _currentGroup._name;
+            GroupComboBox.Items.Refresh();
+            UpdateProxyCount();
+        }
+
+        private void DeleteProxy_Click(object sender, RoutedEventArgs e)
+        {
+            var lbItem = FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListProxies.ItemContainerGenerator.IndexFromContainer(lbItem);
+            _currentGroup._proxies.RemoveAt(index);
+            ListProxies.ItemsSource = _currentGroup._proxies;
+            ListProxies.Items.Refresh();
+            UpdateProxyCount();
+        }
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            //get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);    //we’ve reached the end of the tree
+            if (parentObject == null) return null;
+            //check if the parent matches the type we’re looking for
+            T parent = parentObject as T;
+            if (parent != null)
+                return parent;
+            else
+                return FindParent<T>(parentObject);
+        }
+
+        private void GroupComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                _currentGroup = App.proxyGroups.Where(o => o._name == GroupComboBox.SelectedItem.ToString()).First();
+                ListProxies.ItemsSource = _currentGroup._proxies;
+            }
+            catch (Exception ex)
+            {
+                _currentGroup = null;
+                ListProxies.ItemsSource = new List<DiscordProxy>();
+            }
+            ListProxies.Items.Refresh();
+            UpdateProxyCount();
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentGroup == null)
+                return;
+            Task.Run(() =>
+            {
+                while (true)
                 {
-                    if (_currentGroup == null)
-                        return;
-                    _currentGroup.Delete();
-                    var source = new string[] { };
-                    foreach (var group in App.proxyGroups)
+                    try
                     {
-                        source = source.Append(group._name).ToArray();
+                        using (var writer = new StreamWriter(App.strWorkPath + "\\proxies\\" + _currentGroup._name + ".txt"))
+                        {
+                            foreach (var proxy in _currentGroup._proxies)
+                            {
+                                writer.WriteLine(proxy.ToString());
+                            }
+                        }
+                        break;
                     }
-                    GroupComboBox.ItemsSource = source;
-                    break;
+                    catch (Exception ex)
+                    {
+                        Thread.Sleep(1000);
+                    }
                 }
-                catch(Exception ex)
+                Dispatcher.Invoke(() =>
                 {
-                    Thread.Sleep(1000);
-                }
+                    App.mainWindow.ShowNotification("Successfully saved your current proxies");
+                });
+            });
+        }
+        private void UpdateProxyCount()
+        {
+            if (_currentGroup == null)
+                ProxyCounter.Content = "Proxies: 0";
+            else
+            {
+                ProxyCounter.Content = "Proxies: " + _currentGroup._proxies.Count.ToString();
             }
         }
     }

@@ -32,6 +32,8 @@ namespace DiskoAIO
         public string Note
         {
             get {
+                if (_note == null)
+                    _note = "";
                 if (_note.Length > 20)
                     return _note.Substring(0, 17) + "...";
                 else
@@ -39,14 +41,40 @@ namespace DiskoAIO
                 }
             set { _note = value; }
         }
-        public DiscordToken(int group_id, ulong user_id, string token, bool isPhoneVerified = false, bool isMailVerified = false, string note = null)
+        public DiscordToken(ulong user_id, string token, bool isPhoneVerified = false, bool isMailVerified = false, string note = null)
         {
-            _group_id = group_id;
             _user_id = user_id;
             _token = token;
             _isPhoneVerified = isPhoneVerified;
             _isMailVerified = isMailVerified;
             _note = note;
+        }
+        public static DiscordToken Load(string[] token_array)
+        {
+            if(token_array.First().Length == 59)
+            {
+                return new DiscordToken(0, token_array[0]);
+            }
+            else if(token_array.Length < 2)
+            {
+                return null;
+            }
+            else if(token_array.Length == 3)
+            {
+                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]));
+            }
+            else if (token_array.Length == 4)
+            {
+                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]), bool.Parse(token_array[3]));
+            }
+            else if (token_array.Length == 5)
+            {
+                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]), bool.Parse(token_array[3]), token_array[4]);
+            }
+            else
+            {
+                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1]);
+            }
         }
         public override string ToString()
         {

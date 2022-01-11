@@ -36,6 +36,8 @@ namespace DiskoAIO.MVVM.View
             else
                 if(App.accountsGroups.Count > 0)
                     _currentGroup = App.accountsGroups.First();
+
+            ServerID.Focus();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -62,6 +64,19 @@ namespace DiskoAIO.MVVM.View
         private void Start_Task(object sender, RoutedEventArgs e)
         {
             App.mainWindow.ShowNotification("Task started successfully");
+        }
+        private void StackPanel_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox s = e.Source as TextBox;
+                if (s != null)
+                {
+                    s.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                }
+
+                e.Handled = true;
+            }
         }
     }
 }

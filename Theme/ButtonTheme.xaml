@@ -52,7 +52,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/trashbin_grey.ico"/>
+                                <Image Source="/Images/trashbin_gray.ico"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -83,7 +83,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -94,7 +94,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/phone.ico"/>
+                                <Image Source="/Images/phone.ico" Margin="5"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -104,7 +104,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -115,7 +115,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/mail.ico"/>
+                                <Image Source="/Images/email_white.ico" Margin="5"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -125,7 +125,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -136,7 +136,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/browser_grey.ico"/>
+                                <Image Source="/Images/browser_grey.ico"  Margin="5"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -146,7 +146,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -157,7 +157,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/pencil_grey.ico"/>
+                                <Image Source="/Images/pencil_grey.ico" Margin="5"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -167,7 +167,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -178,7 +178,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/trashbin_grey.ico"/>
+                                <Image Source="/Images/trashbin_grey.ico" Margin="5"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -188,7 +188,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -199,7 +199,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/cross_red.ico"/>
+                                <Image Source="/Images/cross_red.ico" Margin="5"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -209,7 +209,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -230,7 +230,28 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Green"/>
+                <Setter Property="Background" Value="#A585FF"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}" x:Key="SaveButton">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Image Source="/Images/save_white.ico" Margin="5"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#A585FF"/>
             </Trigger>
         </Style.Triggers>
     </Style>
