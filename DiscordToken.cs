@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Discord;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,10 +11,10 @@ namespace DiskoAIO
     {
         public int _group_id { get; set; }
         public ulong _user_id { get; set; } 
-        public ulong User_id
+        public string User_id
         {
-            get { return _user_id; }
-            set { _user_id = value; }
+            get { return _user_id.ToString(); }
+            set { _user_id = ulong.Parse(value); }
         }
         public string _token { get; set; }
         public bool _isPhoneVerified { get; set; }
@@ -33,7 +34,7 @@ namespace DiskoAIO
         {
             get {
                 if (_note == null)
-                    _note = "";
+                    _note = "Double tap to add note...";
                 if (_note.Length > 20)
                     return _note.Substring(0, 17) + "...";
                 else
@@ -51,9 +52,21 @@ namespace DiskoAIO
         }
         public static DiscordToken Load(string[] token_array)
         {
+            DiscordClient client = null;
             if(token_array.First().Length == 59)
             {
-                return new DiscordToken(0, token_array[0]);
+                try
+                {
+                    client = new DiscordClient(token_array[0]);
+                }
+                catch (InvalidTokenException)
+                {
+                    return null;
+                }
+            }
+            if (token_array.First().Length == 59)
+            {
+                return new DiscordToken(client.User.Id, token_array[0], client.User.PhoneNumber == null ? false: true, client.User.EmailVerified);
             }
             else if(token_array.Length < 2)
             {
@@ -78,7 +91,7 @@ namespace DiskoAIO
         }
         public override string ToString()
         {
-            return this._token + ':' + this._user_id + ':' + this.IsPhoneVerified + ':' + IsMailVerified.ToString() + ':' + this._note;
+            return this.User_id + ':' + this._token + ':' + this.IsPhoneVerified + ':' + IsMailVerified.ToString() + ':' + this.Note;
         }
     }
 }

@@ -39,9 +39,9 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <Label Content="{Binding UserId}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                        <Label Content="{Binding User_id}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="150" Margin="75, 0, 0, 0"/>
-                        <Label Content="{Binding Note}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                        <Label Content="{Binding Note}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="150" Margin="75, 0, 0, 0"/>
                         <WrapPanel Grid.Column="2"  Width="150" Margin="75, 0, 0, 0">
                             <Button Style="{StaticResource PhoneButton}" x:Name="PhoneButton" Width="30"/>

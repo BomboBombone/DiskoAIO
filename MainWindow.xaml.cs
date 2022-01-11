@@ -74,7 +74,7 @@ namespace DiskoAIO
             Storyboard sb = Resources["CloseMenu"] as Storyboard;
             sb.Begin(InAppNotification);
         }
-        public void ShowNotification(string text)
+        public void ShowNotification(string text, int duration = 2000)
         {
             Task.Run(() =>
             {
@@ -92,7 +92,7 @@ namespace DiskoAIO
                 });
 
                 int ticks = 0;
-                while (ticks < notificationAnimationDuration)
+                while (ticks < duration)
                 {
                     Thread.Sleep(1);
                     ticks += 1;

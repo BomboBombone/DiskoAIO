@@ -1,0 +1,105 @@
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
+using FFmpeg.AutoGen;
+using OpenCvSharp;
+using OpenCvSharp.CPlusPlus;
+
+internal sealed unsafe class VideoWriter : IDisposable
+{
+    private readonly AVCodec* _codec;
+    private readonly AVCodecContext* _context;
+    private readonly AVFrame* _frame;
+
+    private readonly Size _frameSize;
+    private readonly int _ySize;
+    private readonly int _uSize;
+    private readonly Mat _yuvFrame;
+    private readonly FileStream _stream;
+
+    static VideoWriter()
+    {
+        ffmpeg.avcodec_register_all();
+    }
+
+    public VideoWriter(string path, int fps, Size frameSize)
+    {
+        _frameSize = frameSize;
+        var codecId = AVCodecID.AV_CODEC_ID_H264;
+        _codec = ffmpeg.avcodec_find_encoder(codecId);
+        if (_codec == null) throw new InvalidOperationException("Codec not found");
+        _context = ffmpeg.avcodec_alloc_context3(_codec);
+        _context->width = _frameSize.Width;
+        _context->height = _frameSize.Height;
+        _context->time_base = new AVRational { num = 1, den = fps };
+        _context->pix_fmt = AVPixelFormat.AV_PIX_FMT_YUV420P;
+        ffmpeg.av_opt_set(_context->priv_data, "preset", "veryslow", 0);
+
+        if (ffmpeg.avcodec_open2(_context, _codec, null) < 0) throw new InvalidOperationException("Could not open codec");
+
+        _frame = ffmpeg.av_frame_alloc();
+        if (_frame == null) throw new InvalidOperationException("Could not allocate video frame");
+        _frame->format = (int)_context->pix_fmt;
+        _frame->width = _context->width;
+        _frame->height = _context->height;
+        _frame->linesize[0] = _frameSize.Width;
+        _frame->linesize[1] = _frameSize.Width / 2;
+        _frame->linesize[2] = _frameSize.Width / 2;
+
+        _ySize = _frame->linesize[0] * _frame->height;
+        _uSize = _frame->linesize[1] * _frame->height / 2;
+        _yuvFrame = new Mat();
+        _stream = File.Create(path);
+    }
+
+    public void Dispose()
+    {
+        while (!EncodeFrame())
+        {
+        }
+
+        _stream.Flush();
+        _stream.Dispose();
+        _yuvFrame.Dispose();
+
+        ffmpeg.avcodec_close(_context);
+        ffmpeg.av_free(_frame);
+        ffmpeg.av_free(_context);
+        ffmpeg.av_free(_codec);
+    }
+
+    public void Write(Mat brgFrame)
+    {
+        if (brgFrame.Size() != _frameSize)
+            throw new ArgumentException("Invalid size", nameof(brgFrame));
+
+        Cv2.CvtColor(brgFrame, _yuvFrame, ColorConversionCodes.BGR2YUV_I420);
+
+        _frame->data0 = (sbyte*)_yuvFrame.DataStart;
+        _frame->data1 = _frame->data0 + _ySize;
+        _frame->data2 = _frame->data1 + _uSize;
+
+        EncodeFrame();
+    }
+
+    private bool EncodeFrame()
+    {
+        var pkt = ffmpeg.av_packet_alloc();
+        try
+        {
+            if (ffmpeg.avcodec_send_frame(_context, _frame) < 0)
+                throw new InvalidOperationException("Could not send frame");
+
+            var ret = ffmpeg.avcodec_receive_packet(_context, pkt);
+            if (ret == -11) return false;
+            if (ret < 0) throw new InvalidOperationException("Could not receive packet");
+            using (var packetStream = new UnmanagedMemoryStream((byte*)pkt->data, pkt->size)) packetStream.CopyTo(_stream);
+            return true;
+        }
+        finally
+        {
+            ffmpeg.av_packet_free(&pkt);
+        }
+    }
+}

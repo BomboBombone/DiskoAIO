@@ -81,6 +81,9 @@ namespace DiskoAIO.MVVM.View
                     path = dialog.FileName;
                     if (path.EndsWith(".txt"))
                     {
+                        Dispatcher.Invoke(() => {
+                            App.mainWindow.ShowNotification("Adding proxies, please wait...", 1000);
+                        });
                         using (var reader = new StreamReader(path))
                         {
                             var line = reader.ReadLine();
@@ -104,6 +107,12 @@ namespace DiskoAIO.MVVM.View
                                     }
                                     line = reader.ReadLine();
                                     proxies.Add(proxy);
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        ListProxies.ItemsSource = proxies;
+                                        ListProxies.Items.Refresh();
+                                        UpdateProxyCount();
+                                    });
                                 }
                                 catch (Exception ex)
                                 {

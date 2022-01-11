@@ -40,6 +40,13 @@ namespace DiskoAIO.MVVM.View
             else
                  if (App.accountsGroups.Count > 0)
                     _currentGroup = App.accountsGroups.First();
+            if (_currentGroup != null)
+            {
+                GroupComboBox.SelectedItem = _currentGroup._name;
+
+                ListTokens.ItemsSource = _currentGroup._accounts;
+            }
+            UpdateAccountCount();
         }
         private void ListTokens_SourceUpdated(object sender, DataTransferEventArgs e)
         {
@@ -93,6 +100,9 @@ namespace DiskoAIO.MVVM.View
             else
                 _currentGroup = null;
 
+            ListTokens.ItemsSource = new List<DiscordToken>();
+            ListTokens.Items.Refresh();
+
             var source = new string[] { };
             foreach (var group in App.accountsGroups)
             {
@@ -138,6 +148,9 @@ namespace DiskoAIO.MVVM.View
                     path = dialog.FileName;
                     if (path.EndsWith(".txt"))
                     {
+                        Dispatcher.Invoke(() => {
+                            App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
+                        });
                         using (var reader = new StreamReader(path))
                         {
                             var line = reader.ReadLine();
@@ -150,6 +163,12 @@ namespace DiskoAIO.MVVM.View
                                     var token = DiscordToken.Load(token_array);
                                     line = reader.ReadLine();
                                     tokens.Add(token);
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        ListTokens.ItemsSource = tokens;
+                                        ListTokens.Items.Refresh();
+                                        UpdateAccountCount();
+                                    });
                                 }
                                 catch (Exception ex)
                                 {
@@ -165,7 +184,7 @@ namespace DiskoAIO.MVVM.View
                         {
                             ListTokens.ItemsSource = _currentGroup._accounts;
                             ListTokens.Items.Refresh();
-                            App.mainWindow.ShowNotification("Tokens added successfully: " + proxies.Count.ToString());
+                            App.mainWindow.ShowNotification("Tokens added successfully: " + tokens.Count.ToString());
                             UpdateAccountCount();
                         });
                         while (true)
