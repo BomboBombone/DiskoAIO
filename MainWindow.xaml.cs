@@ -39,7 +39,7 @@ namespace DiskoAIO
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
-
+            DiscordDriver.CleanUp();
             Environment.Exit(0);
         }
 

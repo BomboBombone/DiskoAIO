@@ -34,7 +34,7 @@ namespace DiskoAIO
         {
             get {
                 if (_note == null)
-                    _note = "Double tap to add note...";
+                    _note = "Double click to add note...";
                 return _note;
                 }
             set { _note = value; }

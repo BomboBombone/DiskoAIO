@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiskoAIO.MVVM.View;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace DiskoAIO
 {
@@ -20,11 +22,17 @@ namespace DiskoAIO
         public static List<AccountGroup> accountsGroups { get; set; } = new List<AccountGroup>();
         public static List<ProxyGroup> proxyGroups { get; set; } = new List<ProxyGroup>();
         public static MainWindow mainWindow { get; set; }
+        public static ProxiesView proxiesView { get; set; } = null;
+        public static AccountsView accountsView { get; set; } = null;
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             var strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
             SetAccountGroups();
+
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+            this.Dispatcher.UnhandledException += App_DispatcherUnhandledException;
 
             mainWindow = new MainWindow();
             mainWindow.Show();
@@ -107,7 +115,19 @@ namespace DiskoAIO
                     proxyGroups.Add(group);
             }
         }
+        static void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            if (args.IsTerminating)
+                DiscordDriver.CleanUp();
+        }
+        void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            // Process unhandled exception
 
+            // Prevent default unhandled exception processing
+            e.Handled = true;
+        }
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
             //get parent item

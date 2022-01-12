@@ -27,6 +27,8 @@ namespace DiskoAIO.MVVM.View
         public ProxiesView()
         {
             InitializeComponent();
+            if (App.proxiesView == null)
+                App.proxiesView = this;
             var source = new string[] { };
             foreach(var group in App.proxyGroups)
             {
@@ -73,7 +75,8 @@ namespace DiskoAIO.MVVM.View
                 dialog.EnsureFileExists = true;
                 dialog.EnsurePathExists = true;
                 string path = "";
-                List<DiscordProxy> proxies = new List<DiscordProxy>();
+                List<DiscordProxy> proxies = _currentGroup._proxies;
+                int start_count = proxies.Count;
                 var result = CommonFileDialogResult.Ok;
                 Dispatcher.Invoke(() => result = dialog.ShowDialog());
                 if (result == CommonFileDialogResult.Ok)
@@ -99,7 +102,7 @@ namespace DiskoAIO.MVVM.View
                                         if (int.TryParse(proxy_array[1], out var port))
                                             proxy = new DiscordProxy(proxy_array[0], port, proxy_array[2], proxy_array[3]);
                                         else
-                                            proxy = new DiscordProxy(proxy_array[2], int.Parse(proxy_array[3]), proxy_array[1], proxy_array[2]);
+                                            proxy = new DiscordProxy(proxy_array[2], int.Parse(proxy_array[3]), proxy_array[0], proxy_array[1]);
                                     }
                                     else
                                     {
@@ -117,12 +120,12 @@ namespace DiskoAIO.MVVM.View
                                 }
                             }
                         }
-                        _currentGroup.Append(proxies);
+                        _currentGroup._proxies = proxies;
                         Dispatcher.Invoke(() =>
                         {
                             ListProxies.ItemsSource = _currentGroup._proxies;
                             ListProxies.Items.Refresh();
-                            App.mainWindow.ShowNotification("Proxies added successfully: " + proxies.Count.ToString());
+                            App.mainWindow.ShowNotification("Proxies added successfully: " + (proxies.Count - start_count).ToString());
                             UpdateProxyCount();
                         });
                         while (true)

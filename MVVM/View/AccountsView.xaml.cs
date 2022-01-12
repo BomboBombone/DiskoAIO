@@ -26,9 +26,15 @@ namespace DiskoAIO.MVVM.View
     {
         public int currentTokens { get; set; } = 0;
         public AccountGroup _currentGroup { get; set; } = null;
+        public string to_search { get; set; } = "";
+        public static bool adding_accounts { get; set; } = false;
+        public static int seconds_remaining { get; set; } = 0;
+
         public AccountsView()
         {
             InitializeComponent();
+            if (App.accountsView == null)
+                App.accountsView = this;
             var source = new string[] { };
             foreach (var group in App.accountsGroups)
             {
@@ -47,6 +53,12 @@ namespace DiskoAIO.MVVM.View
                 ListTokens.ItemsSource = _currentGroup._accounts;
             }
             UpdateAccountCount();
+            if (seconds_remaining == 0)
+                adding_accounts = false;
+            if (adding_accounts)
+            {
+                App.mainWindow.ShowNotification($"Still adding tokens, estimated time:\n{TimeSpan.FromSeconds(seconds_remaining).ToString()}", 2000);
+            }
         }
         private void ListTokens_SourceUpdated(object sender, DataTransferEventArgs e)
         {
@@ -57,10 +69,15 @@ namespace DiskoAIO.MVVM.View
                 currentTokens += 1;
             }
             TokenCounter.Content = "Accounts: " + currentTokens.ToString();
-
+            App.accountsView.ListTokens.Items.Refresh();
         }
         private void Add_Group_Click(object sender, RoutedEventArgs e)
         {
+            if (adding_accounts)
+            {
+                App.mainWindow.ShowNotification("Cannot create group while adding tokens");
+                return;
+            }
             var inputName = new InputPopupView("Choose a name for the account group", 16);
             inputName.ShowDialog();
             var accountGroup = new AccountGroup(null, inputName.answer);
@@ -86,6 +103,11 @@ namespace DiskoAIO.MVVM.View
             if (_currentGroup == null)
             {
                 App.mainWindow.ShowNotification("No group is selected for deletion");
+                return;
+            }
+            if (adding_accounts)
+            {
+                App.mainWindow.ShowNotification("Cannot delete group while adding tokens");
                 return;
             }
             var popup = new WarningPopupView("You are about to delete group: " + _currentGroup._name + "\nAre you sure you want to continue?");
@@ -130,7 +152,13 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Please select a group before loading your accounts");
                 return;
             }
+            if (adding_accounts)
+            {
+                App.mainWindow.ShowNotification("Another group is being filled with tokens, wait for it to finish");
+                return;
+            }
             Task.Run(() => {
+                adding_accounts = true;
                 var dialog = new CommonOpenFileDialog();
                 dialog.Title = "Select tokens file";
                 dialog.DefaultExtension = ".txt";
@@ -138,19 +166,33 @@ namespace DiskoAIO.MVVM.View
                 dialog.EnsureFileExists = true;
                 dialog.EnsurePathExists = true;
                 string path = "";
-                List<DiscordProxy> proxies = new List<DiscordProxy>();
                 var result = CommonFileDialogResult.Ok;
                 Dispatcher.Invoke(() => result = dialog.ShowDialog());
                 if (result == CommonFileDialogResult.Ok)
                 {
-                    var tokens = new List<DiscordToken>();
-
+                    var tokens = _currentGroup._accounts;
+                    int start_count = tokens.Count;
                     path = dialog.FileName;
                     if (path.EndsWith(".txt"))
                     {
                         Dispatcher.Invoke(() => {
                             App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
                         });
+                        int lines = 0;
+                        using (var reader = new StreamReader(path))
+                        {
+                            var line = reader.ReadLine();
+                            while (line != null && line != "")
+                            {
+                                lines += 1;
+                                line = reader.ReadLine();
+                            }
+                        }
+                        var group_id = _currentGroup._id;
+                        var group_name = _currentGroup._name;
+                        var group_index = App.accountsGroups.IndexOf(_currentGroup);
+
+                        seconds_remaining = (int)(lines / 3);
                         using (var reader = new StreamReader(path))
                         {
                             var line = reader.ReadLine();
@@ -163,11 +205,20 @@ namespace DiskoAIO.MVVM.View
                                     var token = DiscordToken.Load(token_array);
                                     line = reader.ReadLine();
                                     tokens.Add(token);
+                                    App.accountsGroups[group_index]._accounts.Add(token);
+
+                                    lines -= 1;
+                                    seconds_remaining = (int)(lines / 3);
+
                                     Dispatcher.Invoke(() =>
                                     {
-                                        ListTokens.ItemsSource = tokens;
-                                        ListTokens.Items.Refresh();
+                                        if(_currentGroup._name == group_name)
+                                        {
+                                            App.accountsView.ListTokens.ItemsSource = tokens;
+                                            App.accountsView.ListTokens.Items.Refresh();
+                                        }
                                         UpdateAccountCount();
+
                                     });
                                 }
                                 catch (Exception ex)
@@ -179,14 +230,14 @@ namespace DiskoAIO.MVVM.View
                                 }
                             }
                         }
-                        _currentGroup.Append(tokens);
                         Dispatcher.Invoke(() =>
                         {
                             ListTokens.ItemsSource = _currentGroup._accounts;
                             ListTokens.Items.Refresh();
-                            App.mainWindow.ShowNotification("Tokens added successfully: " + tokens.Count.ToString());
+                            App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
                             UpdateAccountCount();
                         });
+
                         while (true)
                         {
                             try
@@ -207,12 +258,14 @@ namespace DiskoAIO.MVVM.View
                         }
                     }
                 }
+                adding_accounts = false;
+
             });
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentGroup == null)
+            if (_currentGroup == null || adding_accounts)
                 return;
             Task.Run(() =>
             {
@@ -272,7 +325,7 @@ namespace DiskoAIO.MVVM.View
                 return;
             }
             if (input.answer == "")
-                input.answer = "Double tap to add note...";
+                input.answer = "Double click to add note...";
             var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
             var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
 
@@ -285,6 +338,39 @@ namespace DiskoAIO.MVVM.View
             var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
             var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
             _currentGroup._accounts.RemoveAt(index);
+            ListTokens.ItemsSource = _currentGroup._accounts;
+            ListTokens.Items.Refresh();
+            UpdateAccountCount();
+        }
+
+        private void Open_Browser(object sender, RoutedEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            new DiscordDriver(_currentGroup._accounts[index]._token);
+        }
+
+        private void Search_Input(object sender, TextCompositionEventArgs e)
+        {
+            if(e.Text == "\r")
+            {
+                ListTokens.ItemsSource = _currentGroup._accounts.Where(o => o.Note.ToLower().Contains(to_search.ToLower()) && (o.Note != "Double click to add note..." || to_search == "")).ToList();
+                ListTokens.Items.Refresh();
+            }
+        }
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            to_search = ((TextBox)e.OriginalSource).Text;
+        }
+
+        private void GroupComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(GroupComboBox.SelectedItem == null)
+            {
+                return;
+            }
+            _currentGroup = App.accountsGroups.Where(o => o._name == GroupComboBox.SelectedItem.ToString()).ToArray()[0];
             ListTokens.ItemsSource = _currentGroup._accounts;
             ListTokens.Items.Refresh();
             UpdateAccountCount();

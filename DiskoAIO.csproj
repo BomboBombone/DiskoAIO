@@ -74,6 +74,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WebDriver, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Selenium.WebDriver.4.1.0\lib\net47\WebDriver.dll</HintPath>
+    </Reference>
     <Reference Include="websocket-sharp, Version=1.0.2.59611, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
       <HintPath>packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll</HintPath>
     </Reference>
@@ -504,14 +507,12 @@
     <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\IncomingVoiceStream.cs" />
     <Compile Include="Anarchy\WebSockets\Media\Voice\VoiceConnectionProperties.cs" />
     <Compile Include="CheckerTask.cs" />
+    <Compile Include="DiscordDriver.cs" />
     <Compile Include="GiveawayTask.cs" />
     <Compile Include="JoinTask.cs" />
     <Compile Include="LeaveTask.cs" />
     <Compile Include="MVVM\View\CheckWinnersView.xaml.cs">
       <DependentUpon>CheckWinnersView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MVVM\View\DiscordBrowserWindow.xaml.cs">
-      <DependentUpon>DiscordBrowserWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProxyGroup.cs" />
     <Compile Include="DiskoTask.cs" />
@@ -537,10 +538,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\CheckWinnersView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MVVM\View\DiscordBrowserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -727,6 +724,10 @@
   <ItemGroup>
     <Resource Include="Images\browser_white.ico" />
     <Resource Include="Images\pencil_white.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\pause_white.ico" />
+    <Resource Include="Images\play_white.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

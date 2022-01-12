@@ -33,7 +33,7 @@ namespace DiskoAIO.MVVM.View
             limit = char_limit;
             LimitText.Text = "0/" + char_limit.ToString();
             canUserNumbers = useNumbers;
-            if (preview_text == "Double tap to add note...")
+            if (preview_text == "Double click to add note...")
                 preview_text = "";
             InputText.Text = preview_text;
             InputText.TextChanged += InputText_TextChanged;
