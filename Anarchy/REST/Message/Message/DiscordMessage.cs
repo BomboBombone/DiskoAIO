@@ -150,8 +150,8 @@ namespace Discord
 
 
         [JsonProperty("components")]
-        [JsonConverter(typeof(DeepJsonConverter<MessageComponent>))]
-        public List<MessageComponent> Components { get; private set; }
+        [JsonConverter(typeof(DeepJsonConverter<RowComponent>))]
+        public List<RowComponent> Components { get; private set; }
 
 
         [JsonProperty("stickers")]

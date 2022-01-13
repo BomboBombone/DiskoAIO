@@ -511,6 +511,7 @@
     <Compile Include="GiveawayTask.cs" />
     <Compile Include="JoinTask.cs" />
     <Compile Include="LeaveTask.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="MVVM\View\CheckWinnersView.xaml.cs">
       <DependentUpon>CheckWinnersView.xaml</DependentUpon>
     </Compile>

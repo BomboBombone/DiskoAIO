@@ -1,10 +1,14 @@
-﻿using DiskoAIO.MVVM.View;
+﻿using Discord;
+using DiskoAIO.MVVM.View;
+using Leaf.xNet;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -18,16 +22,22 @@ namespace DiskoAIO
     /// </summary>
     public partial class App : Application
     {
+        [DllImport("wininet.dll")]
+        private extern static bool InternetGetConnectedState(out int Description, int ReservedValue);
+        public static bool connected_to_internet { get; set; } = false;
+
         public static string strWorkPath { get; set; }
         public static List<AccountGroup> accountsGroups { get; set; } = new List<AccountGroup>();
         public static List<ProxyGroup> proxyGroups { get; set; } = new List<ProxyGroup>();
         public static MainWindow mainWindow { get; set; }
         public static ProxiesView proxiesView { get; set; } = null;
         public static AccountsView accountsView { get; set; } = null;
+        public static TasksView taskManager { get; set; } = null;
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             var strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
+            connected_to_internet = IsConnectedToInternet();
             SetAccountGroups();
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
@@ -37,7 +47,31 @@ namespace DiskoAIO
             mainWindow = new MainWindow();
             mainWindow.Show();
         }
-
+        public static bool IsConnectedToInternet()
+        {
+            int Desc;
+            return InternetGetConnectedState(out Desc, 0);
+        }
+        public static void SendToWebhook(string webhook_link, string text)
+        {
+            var embed = new EmbedMaker() {Color = System.Drawing.Color.MediumPurple,
+                Author = new EmbedAuthor()
+                {
+                    IconUrl = "https://cdn.discordapp.com/attachments/896745588505313280/930993204176756756/Logo.png",
+                    Name = "DiskoAIO",
+                    Url = "http://diskoaio.com"
+                },
+                Footer = new EmbedFooter()
+                {
+                    Text = "DiskoAIO"
+                }
+            };
+            embed.AddField("Winners:", text);
+            ulong id = ulong.Parse(webhook_link.Split('/').Where(o => ulong.TryParse(o, out ulong any) == true).ToArray()[0]);
+            var token = webhook_link.Split('/').Last();
+            DiscordDefaultWebhook defaultWebhook = new DiscordDefaultWebhook(id, token);
+            defaultWebhook.SendMessage("", embed);
+        }
         private void SetAccountGroups()
         {
             if (!Directory.Exists(strWorkPath + "/groups"))
@@ -118,6 +152,7 @@ namespace DiskoAIO
         static void MyHandler(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;
+            Debug.Log(e.Message + "///" + e.StackTrace);
             if (args.IsTerminating)
                 DiscordDriver.CleanUp();
         }

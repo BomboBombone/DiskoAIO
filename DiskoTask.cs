@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO
 {
-    interface DiskoTask
+    public interface DiskoTask
     {
-        TaskType type { get; set; }
+        string Type { get; }
         Progress progress { get; set; }
         AccountGroup accountGroup { get; set; }
         ProxyGroup proxyGroup { get; set; }
+        string Account { get; }
+        string Proxy { get; }
+        int delay { get; set; }
+        bool Running { get; set; }
+        void Start();
+        void Stop();
+        void Pause();
+        void Resume();
     }
     public struct Progress
     {
@@ -19,7 +27,7 @@ namespace DiskoAIO
         public int completed_tokens { get; set; }
         public override string ToString()
         {
-            return total_tokens.ToString() + '/' + completed_tokens.ToString();
+            return completed_tokens.ToString() + '/' + total_tokens.ToString();
         }
         public Progress(int _total_tokens)
         {

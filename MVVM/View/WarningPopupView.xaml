@@ -7,13 +7,13 @@
         mc:Ignorable="d"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize" Background="Transparent"
-        Title="Warning" Height="250" Width="400"
+        Title="Warning" Height="200" Width="400"
         AllowsTransparency="True" MouseDown="Window_MouseDown">
     <Border Background="#151520" CornerRadius="10">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="150"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="3*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <Image Source="/Images/Logo.ico" Width="50" HorizontalAlignment="Left" 
@@ -29,7 +29,7 @@
             <TextBlock Text="" FontSize="15" VerticalAlignment="Center" Foreground="AntiqueWhite"
                        HorizontalAlignment="Center"
                    Grid.Row="1" Margin="15" x:Name="TextField" TextWrapping="WrapWithOverflow"/>
-            <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0, -10, 0, 10">
                 <Button Content="Cancel" x:Name="CancelButton"
                         Margin="250,0,0,0" Click="ExitButton_Click" Style="{StaticResource CancelButton}"/>
                 <Button Content="Confirm" Click="Confirm_Click" Style="{StaticResource DiskoButton}"/>

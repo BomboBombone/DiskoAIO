@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using DiskoAIO.Properties;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace DiskoAIO.MVVM.View
@@ -40,7 +41,7 @@ namespace DiskoAIO.MVVM.View
             else
                  if (App.proxyGroups.Count > 0)
                     _currentGroup = App.proxyGroups.First();
-            
+            GroupComboBox.SelectedItem = Settings.Default.ProxyGroup;
             if(_currentGroup != null)
             {
                 GroupComboBox.SelectedItem = _currentGroup._name;

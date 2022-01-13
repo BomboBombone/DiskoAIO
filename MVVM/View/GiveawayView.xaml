@@ -25,36 +25,21 @@
                        FontSize="12" Foreground="White" Margin="20, 0"/>
                 <ComboBox Name="TokenGroup"/>
                 <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0"/>
+                       FontSize="12" Foreground="White" Margin="20, 0"
+                       Name="ProxiesLabel"/>
                 <ComboBox Name="ProxiesGroup"/>
             </WrapPanel>
         </StackPanel>
         <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
-            <TextBlock Text="SERVER INFO:" Style="{StaticResource DiskoLabelTitle}"
+            <TextBlock Text="MESSAGE INFO:" Style="{StaticResource DiskoLabelTitle}"
                        Margin="20, 50, 20, 30"/>
             <WrapPanel VerticalAlignment="Center">
                 <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
                     <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Server ID" FontFamily="/Fonts/#Montserrat" 
+                        <Label Content="Message link" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Channel ID" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="ChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Message ID" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="MessageID" PreviewTextInput="textBox_PreviewTextInput"/>
+                        <TextBox Style="{StaticResource ModernTextBox}" Width="690" Height="50"
+                                 Name="MessageLink" PreviewTextInput="textBox_PreviewTextInput"/>
                     </StackPanel>
                 </Border>
             </WrapPanel>
@@ -85,7 +70,8 @@
                                    Foreground="White" FontSize="12"
                                    Margin="10, 0, 35, 0"/>
                         <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
-                                          Style="{StaticResource DiskoToggle}"/>
+                                          Style="{StaticResource DiskoToggle}"
+                                      Click="UseProxies_Click"/>
                     </WrapPanel>
                 </Border>
             </WrapPanel>

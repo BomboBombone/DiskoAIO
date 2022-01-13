@@ -34,8 +34,9 @@ namespace DiskoAIO
                 {
                     try
                     {
-                        driver.GetDevToolsSession();
-                        Thread.Sleep(1000);
+                        if (driver.GetDevToolsSession().ActiveSessionId == null)
+                            throw new Exception();
+                        Thread.Sleep(5000);
                     }
                     catch (Exception ex)
                     {

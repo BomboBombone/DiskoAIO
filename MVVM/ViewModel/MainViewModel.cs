@@ -1,4 +1,5 @@
 ﻿using DiskoAIO.Core;
+using DiskoAIO.MVVM.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,8 @@ namespace DiskoAIO.MVVM.ViewModel
         }
         public MainViewModel()
         {
+            if (App.taskManager == null)
+                App.taskManager = new TasksView();
             JoinerVm = new JoinerVM();
             GiveawaysVm = new GiveawaysVM();
             ProxiesVm = new ProxiesVM();

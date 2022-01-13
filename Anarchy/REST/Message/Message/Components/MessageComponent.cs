@@ -6,5 +6,7 @@ namespace Discord
     {
         [JsonProperty("type")]
         public MessageComponentType Type { get; protected set; }
+        [JsonProperty("components")]
+        public string CustomId { get; protected set; }
     }
 }

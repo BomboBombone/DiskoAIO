@@ -54,7 +54,10 @@ namespace DiskoAIO
             {
                 try
                 {
-                    client = new DiscordClient(token_array[0]);
+                    if (App.IsConnectedToInternet())
+                        client = new DiscordClient(token_array[0]);
+                    else
+                        throw new InvalidTokenException("");
                 }
                 catch (InvalidTokenException)
                 {

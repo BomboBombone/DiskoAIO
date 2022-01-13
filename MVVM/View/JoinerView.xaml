@@ -21,7 +21,8 @@
                        FontSize="12" Foreground="White" Margin="20, 0"/>
                 <ComboBox Name="TokenGroup"/>
                 <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0"/>
+                       FontSize="12" Foreground="White" Margin="20, 0"
+                       Name="ProxiesLabel"/>
                 <ComboBox Name="ProxiesGroup"/>
             </WrapPanel>
         </StackPanel>
@@ -34,7 +35,7 @@
                         <Label Content="Invite" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                         <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="Invite" PreviewTextInput="textBox_PreviewTextInput"/>
+                                 Name="Invite"/>
                     </StackPanel>
                 </Border>
                 <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Name="VerificationChannelBorder">
@@ -81,7 +82,8 @@
                                    Foreground="White" FontSize="12"
                                    Margin="10"/>
                             <ToggleButton Margin="0, 0, 10, 0" Name="BypassReaction"
-                                          Style="{StaticResource DiskoToggle}"/>                        
+                                          Style="{StaticResource DiskoToggle}"
+                                          Click="BypassReaction_Click"/>                        
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -91,7 +93,8 @@
                                    Foreground="White" FontSize="12"
                                    Margin="10, 0, 35, 0"/>
                         <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
-                                          Style="{StaticResource DiskoToggle}"/>
+                                          Style="{StaticResource DiskoToggle}"
+                                      Click="UseProxies_Click"/>
                     </WrapPanel>
                 </Border>
             </WrapPanel>

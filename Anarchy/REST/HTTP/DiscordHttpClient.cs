@@ -160,18 +160,13 @@ namespace Discord
                             var proxyURI = new Uri(string.Format("{0}:{1}", "http://" + _discordClient.Proxy.Host, _discordClient.Proxy.Port));
                             client = new HttpClient(new HttpClientHandler() { Proxy = _discordClient.Proxy == null ? null : new WebProxy(proxyURI, true, null, credentials)});
                         }
-                        var token = _discordClient.Token;
+                        var token = _discordClient.Token == null ? null : _discordClient.Token;
 
                         if (_discordClient.Token != null)
                             client.DefaultRequestHeaders.Add("Authorization", _discordClient.Token);
-                        if (_discordClient.Token.StartsWith("Bot ") || (_discordClient.User != null && _discordClient.User.Type == DiscordUserType.Bot))
-                            client.DefaultRequestHeaders.Add("User-Agent", "Anarchy/0.8.1.0");
-                        else
-                        {
-                            client.DefaultRequestHeaders.Add("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
-                            client.DefaultRequestHeaders.Add("Accept-Language", "it");
-                            client.DefaultRequestHeaders.Add("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
-                        }
+                        client.DefaultRequestHeaders.Add("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
+                        client.DefaultRequestHeaders.Add("Accept-Language", "it");
+                        client.DefaultRequestHeaders.Add("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
                         var response = client.SendAsync(new HttpRequestMessage()
                         {
                             Content = hasData ? new System.Net.Http.StringContent(json, Encoding.UTF8, "application/json") : null,

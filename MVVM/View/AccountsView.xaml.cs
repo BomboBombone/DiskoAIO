@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using DiskoAIO.Properties;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -46,6 +47,8 @@ namespace DiskoAIO.MVVM.View
             else
                  if (App.accountsGroups.Count > 0)
                     _currentGroup = App.accountsGroups.First();
+            GroupComboBox.SelectedItem = Settings.Default.TokenGroup;
+
             if (_currentGroup != null)
             {
                 GroupComboBox.SelectedItem = _currentGroup._name;
@@ -58,6 +61,10 @@ namespace DiskoAIO.MVVM.View
             if (adding_accounts)
             {
                 App.mainWindow.ShowNotification($"Still adding tokens, estimated time:\n{TimeSpan.FromSeconds(seconds_remaining).ToString()}", 2000);
+            }
+            if (!App.IsConnectedToInternet())
+            {
+                App.mainWindow.ShowNotification("You are not connected to internet");
             }
         }
         private void ListTokens_SourceUpdated(object sender, DataTransferEventArgs e)
@@ -157,6 +164,11 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Another group is being filled with tokens, wait for it to finish");
                 return;
             }
+            if (!App.IsConnectedToInternet())
+            {
+                App.mainWindow.ShowNotification("You are not connected to internet");
+                return;
+            }
             Task.Run(() => {
                 adding_accounts = true;
                 var dialog = new CommonOpenFileDialog();
@@ -203,9 +215,17 @@ namespace DiskoAIO.MVVM.View
                                     line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
                                     var token_array = line.Split(':');
                                     var token = DiscordToken.Load(token_array);
+                                    if (token == null)
+                                        continue;
+                                    if (tokens.Contains(token))
+                                    {
+                                        lines -= 1;
+                                        seconds_remaining = (int)(lines / 3);
+
+                                        continue;
+                                    }
                                     line = reader.ReadLine();
                                     tokens.Add(token);
-                                    App.accountsGroups[group_index]._accounts.Add(token);
 
                                     lines -= 1;
                                     seconds_remaining = (int)(lines / 3);
@@ -246,6 +266,8 @@ namespace DiskoAIO.MVVM.View
                                 {
                                     foreach (var token in tokens)
                                     {
+                                        if (token == null)
+                                            continue;
                                         writer.WriteLine(token.ToString());
                                     }
                                 }
@@ -253,11 +275,14 @@ namespace DiskoAIO.MVVM.View
                             }
                             catch (Exception ex)
                             {
-                                Thread.Sleep(1000);
+                                Thread.Sleep(100);
                             }
                         }
+                        App.accountsGroups[group_index]._accounts = tokens;
+
                     }
                 }
+
                 adding_accounts = false;
 
             });

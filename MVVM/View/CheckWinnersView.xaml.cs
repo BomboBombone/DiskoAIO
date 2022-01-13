@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiskoAIO.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,7 +38,7 @@ namespace DiskoAIO.MVVM.View
                 if(App.accountsGroups.Count > 0)
                     _currentGroup = App.accountsGroups.First();
 
-            ServerID.Focus();
+            MessageLink.Focus();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -63,7 +64,39 @@ namespace DiskoAIO.MVVM.View
         }
         private void Start_Task(object sender, RoutedEventArgs e)
         {
+            var info = MessageLink.Text.Split('/');
+            if (!(MessageLink.Text.Length == 85 &&
+                ulong.TryParse(info.Last(), out var message_id) &&
+                ulong.TryParse(info[info.Length - 2], out var channel_id) &&
+                ulong.TryParse(info[info.Length - 3], out var server_id)))
+            {
+                App.mainWindow.ShowNotification("Please insert a valid message link");
+                return;
+            }
+            if(TokenGroup.SelectedItem == null)
+            {
+                App.mainWindow.ShowNotification("Please select an account group");
+                return;
+            }
+            AccountGroup accounts = null;
+            foreach (var group in App.accountsGroups)
+            {
+                if (group._name == TokenGroup.SelectedItem.ToString())
+                {
+                    accounts = group;
+                    break;
+                }
+            }
+            if (accounts == null)
+            {
+                App.mainWindow.ShowNotification("Couldn't get specified account group, try again later");
+                return;
+            }
+            var checkerTask = new CheckerTask(accounts, server_id, channel_id, message_id);
+            checkerTask.Start();
+            App.taskManager.AddTask(checkerTask);
             App.mainWindow.ShowNotification("Task started successfully");
+            this.Close();
         }
         private void StackPanel_PreviewKeyDown(object sender, KeyEventArgs e)
         {

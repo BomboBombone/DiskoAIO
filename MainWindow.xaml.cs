@@ -15,6 +15,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using System.Threading;
+using DiskoAIO.MVVM.View;
+using System.Runtime.InteropServices;
+using System.Runtime;
 
 namespace DiskoAIO
 {
@@ -23,6 +26,7 @@ namespace DiskoAIO
     /// </summary>
     public partial class MainWindow : Window
     {
+
         System.Timers.Timer clock_time { get; set; } = null;
         public NotificationState notificationState { get; set; } = NotificationState.Closed;
         public int notificationAnimationDuration { get; } = 2000;
@@ -38,7 +42,12 @@ namespace DiskoAIO
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
+            var confirm = new WarningPopupView("All of your current tasks will be stopped and deleted.\nAre you sure you want to quit?");
+            confirm.ShowDialog();
+            if (confirm.hasConfirmed != true)
+                return;
             WindowState = WindowState.Minimized;
+            window.ShowInTaskbar = false;
             DiscordDriver.CleanUp();
             Environment.Exit(0);
         }
@@ -109,6 +118,7 @@ namespace DiskoAIO
                 });
             });
         }
+
     }
     public enum NotificationState
     {

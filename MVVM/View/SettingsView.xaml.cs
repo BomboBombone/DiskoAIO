@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,13 +27,31 @@ namespace DiskoAIO.MVVM.View
             InitializeComponent();
 
             Type.ItemsSource = new string[] { "Reaction", "Button" };
+            Task.Run(() =>
+            {
+                Thread.Sleep(50);
+                while (true)
+                {
+                    try
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            BypassReaction.IsChecked = Settings.Default.BypassReaction;
+                            AcceptRules.IsChecked = Settings.Default.AcceptRules;
+                            TokenGroup.SelectedItem = Settings.Default.TokenGroup;
+                            ProxiesGroup.SelectedItem = Settings.Default.ProxyGroup;
+                            Webhook.Text = Settings.Default.Webhook;
+                            UseProxies.IsChecked = Settings.Default.UseProxies;
+                        });
+                        break;
+                    }
+                    catch(Exception ex)
+                    {
+                        Thread.Sleep(1);
+                    }
+                }
+            });
 
-            BypassReaction.IsChecked = Settings.Default.BypassReaction;
-            AcceptRules.IsChecked = Settings.Default.AcceptRules;
-            TokenGroup.SelectedItem = Settings.Default.TokenGroup;
-            ProxiesGroup.SelectedItem = Settings.Default.ProxyGroup;
-            Webhook.Text = Settings.Default.Webhook;
-            UseProxies.IsChecked = Settings.Default.UseProxies;
             //SendInfoWebhook.IsChecked = Settings.Default.SendWebhook;
             Delay.Text = Settings.Default.Delay.ToString();
             CheckerTokenGroup.SelectedItem = Settings.Default.CheckerGroup;
