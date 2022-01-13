@@ -64,7 +64,7 @@ namespace DiskoAIO
                 if (_proxyGroup != null)
                     return _proxyGroup._name;
                 else
-                    return "null";
+                    return "None";
             }
         }
         public bool Running
@@ -139,12 +139,16 @@ namespace DiskoAIO
                     if (message.Id != messageID)
                         continue;
                     found = true;
-                    var mes_arr = message.Content.Split('!');
+                    var mes_arr = message.Content.Split('@');
                     foreach (var piece in mes_arr)
                     {
                         try
                         {
                             if (ulong.TryParse(piece.Substring(0, 18), out var user_id))
+                            {
+                                user_ids = user_ids.Append(user_id).ToArray();
+                            }
+                            if (ulong.TryParse(piece.Substring(1, 19), out user_id))
                             {
                                 user_ids = user_ids.Append(user_id).ToArray();
                             }

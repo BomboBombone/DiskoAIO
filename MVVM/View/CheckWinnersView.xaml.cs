@@ -37,7 +37,7 @@ namespace DiskoAIO.MVVM.View
             else
                 if(App.accountsGroups.Count > 0)
                     _currentGroup = App.accountsGroups.First();
-
+            TokenGroup.SelectedItem = Settings.Default.CheckerGroup;
             MessageLink.Focus();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

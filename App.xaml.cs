@@ -54,7 +54,7 @@ namespace DiskoAIO
         }
         public static void SendToWebhook(string webhook_link, string text)
         {
-            var embed = new EmbedMaker() {Color = System.Drawing.Color.MediumPurple,
+            var embed = new EmbedMaker() { Color = System.Drawing.Color.MediumPurple,
                 Author = new EmbedAuthor()
                 {
                     IconUrl = "https://cdn.discordapp.com/attachments/896745588505313280/930993204176756756/Logo.png",
@@ -64,7 +64,8 @@ namespace DiskoAIO
                 Footer = new EmbedFooter()
                 {
                     Text = "DiskoAIO"
-                }
+                },
+                Timestamp = DateTime.Now
             };
             embed.AddField("Winners:", text);
             ulong id = ulong.Parse(webhook_link.Split('/').Where(o => ulong.TryParse(o, out ulong any) == true).ToArray()[0]);

@@ -64,7 +64,7 @@ namespace DiskoAIO
                 if (_proxyGroup != null)
                     return _proxyGroup._name;
                 else
-                    return "null";
+                    return "None";
             }
         }
         public bool Running

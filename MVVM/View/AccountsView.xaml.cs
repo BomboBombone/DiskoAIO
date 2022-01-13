@@ -214,7 +214,15 @@ namespace DiskoAIO.MVVM.View
                                 {
                                     line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
                                     var token_array = line.Split(':');
-                                    var token = DiscordToken.Load(token_array);
+                                    DiscordToken token = null;
+                                    var task = Task.Run(() =>
+                                    {
+                                        token = DiscordToken.Load(token_array);
+                                    });
+                                    if (task.Wait(TimeSpan.FromSeconds(2)))
+                                        ;
+                                    else
+                                        continue;
                                     if (token == null)
                                         continue;
                                     if (tokens.Contains(token))
