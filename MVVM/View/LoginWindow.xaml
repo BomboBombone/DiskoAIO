@@ -1,0 +1,91 @@
+﻿<Window x:Class="DiskoAIO.MVVM.View.LoginWindow" x:Name="loginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="380"
+        AllowsTransparency="True" Background="Transparent"
+        WindowStyle="None" ResizeMode="NoResize"
+        MouseDown="Window_MouseDown">
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="10*"/>
+            </Grid.RowDefinitions>
+
+            <Border CornerRadius="10" Grid.RowSpan="2">
+                <Border.Background>
+                    <LinearGradientBrush>
+                        <GradientStop Color="#930DF6" Offset="0.0"/>
+                        <GradientStop Color="#151520" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Button Content="X" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="12" FontStretch="Expanded" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center" Margin="10, 10" FontWeight="Black"
+                    Padding="1,1,0,0" Background="Transparent" Foreground="White"
+                    x:Name="ExitButton" Style="{StaticResource ExitButtonTheme}" Click="ExitButton_Click"/>
+            <Button Content="__" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="9" FontStretch="Expanded" VerticalContentAlignment="Top"
+                    HorizontalContentAlignment="Center" FontWeight="Black" Foreground="White"
+                    Padding="1,-1,0,0" Background="Transparent" Margin="40, 10"
+                    x:Name="MinimizeButton" Style="{StaticResource MinimizeButtonTheme}" Click="MinimizeButton_Click" Grid.RowSpan="2"/>
+
+            <StackPanel VerticalAlignment="Center">
+                <Image Source="/Images/Logo.ico" Width="80"/>
+                <TextBlock Text="DiskoAIO" Margin="0, 20, 0, 0"
+                           FontFamily="/Fonts/#Montserrat"
+                           FontSize="22"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           FontWeight="Black"/>
+            </StackPanel>
+
+
+
+            <StackPanel Grid.Row="1" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Style="{StaticResource UsernameBox}"
+                             BorderThickness="0"
+                             Width="235"
+                             HorizontalContentAlignment="Left"
+                             Opacity="0.5"
+                             Height="35"
+                             Margin="63,0,0,0"
+                             Name="UsernameIn"/>
+                </StackPanel>
+                <Border Width="250"
+                        Height="2"
+                        Background="White"
+                        Opacity="0.5"/>
+
+
+
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <TextBox Style="{StaticResource PasswordBox}"
+                             BorderThickness="0"
+                             Width="235"
+                             HorizontalContentAlignment="Left"
+                             Opacity="0.5"
+                             Height="35"
+                             Margin="63,0,0,0"
+                                 Name="PasswordIn"/>
+                </StackPanel>
+                <Border Width="250"
+                        Height="2"
+                        Background="White"
+                        Opacity="0.5"/>
+
+
+                <Button Width="100" Height="40" Content="LOGIN" Margin="0,50,0,0"
+                            Style="{StaticResource DiskoButton}"
+                        Click="Login_Click"/>
+
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

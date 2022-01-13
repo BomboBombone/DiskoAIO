@@ -222,7 +222,7 @@ namespace DiskoAIO
                                     clients1[i] = null;
                                     clients[clients.IndexOf(client)] = null;
                                 }
-                                if (c >= 4)
+                                if (c >= 1)
                                 {
                                     _progress.completed_tokens += 1;
 

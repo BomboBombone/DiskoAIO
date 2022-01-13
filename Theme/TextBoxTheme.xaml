@@ -26,4 +26,60 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="{x:Type TextBox}" x:Key="UsernameBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border CornerRadius="10" Background="Transparent" Width="200" Height="40">
+                        <Grid>
+                            <Rectangle StrokeThickness="1"/>
+                            <TextBox Margin="1" Background="Transparent" VerticalContentAlignment="Center" Foreground="White" x:Name="PasswordBox" Padding="0" BorderThickness="0"
+                                     FontSize="20" Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <TextBlock IsHitTestVisible="False" Text="Username" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,0" FontSize="20" Foreground="#A2A7BC" Grid.Column="1"
+                                       FontFamily="/Fonts/#Montserrat">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=PasswordBox}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="{x:Type TextBox}" x:Key="PasswordBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border CornerRadius="10" Background="Transparent" Width="200" Height="40">
+                        <Grid>
+                            <Rectangle StrokeThickness="1"/>
+                            <TextBox Margin="1" Background="Transparent" VerticalContentAlignment="Center" Foreground="White" x:Name="PasswordBox" Padding="0" BorderThickness="0"
+                                     FontSize="20" Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <TextBlock IsHitTestVisible="False" Text="Password" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,0" FontSize="20" Foreground="#A2A7BC" Grid.Column="1"
+                                       FontFamily="/Fonts/#Montserrat">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=PasswordBox}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

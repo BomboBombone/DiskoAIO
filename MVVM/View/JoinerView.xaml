@@ -52,7 +52,7 @@
             <TextBlock Text="SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
                        Margin="20, 20, 20, 30"/>
             <WrapPanel>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80">
                     <StackPanel  Margin="5, 5, 0, 0">
                         <Label Content="Tokens to skip" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
@@ -60,7 +60,7 @@
                                  Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"/>
                     </StackPanel>
                 </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80">
                     <StackPanel  Margin="5, 5, 0, 0">
                         <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
@@ -83,19 +83,17 @@
                                    Margin="10"/>
                             <ToggleButton Margin="0, 0, 10, 0" Name="BypassReaction"
                                           Style="{StaticResource DiskoToggle}"
-                                          Click="BypassReaction_Click"/>                        
+                                          Click="BypassReaction_Click"/>
                         </WrapPanel>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,10">
-                    <WrapPanel VerticalAlignment="Center">
-                        <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
+                        <WrapPanel VerticalAlignment="Center">
+                            <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
                                    Foreground="White" FontSize="12"
-                                   Margin="10, 0, 35, 0"/>
-                        <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
+                                   Margin="10, 10, 70, 0"/>
+                            <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
                                           Style="{StaticResource DiskoToggle}"
                                       Click="UseProxies_Click"/>
-                    </WrapPanel>
+                        </WrapPanel>
+                    </StackPanel>
                 </Border>
             </WrapPanel>
         </StackPanel>

@@ -94,12 +94,12 @@ namespace DiskoAIO
                 invite = invite.Remove(0, "https://discord.gg/".Length);
             if (invite.StartsWith("https://discord.com/invite/"))
                 invite = invite.Remove(0, "https://discord.com/invite/".Length);
-            var (guildId, channelWelcomeId) = Get_GuildID(invite);
+            var (guildId, channelWelcomeId) = JoinTask.Get_GuildID(invite);
             if (guildId == "1")
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    App.mainWindow.ShowNotification("Invalid invite or IP banned from Discord, try again later");
+                    App.mainWindow.ShowNotification("IP banned from Discord, try again using proxies or a VPN");
                 });
                 joining = false;
                 return;
@@ -169,7 +169,7 @@ namespace DiskoAIO
                                     clients1[i] = null;
                                     clients[clients.IndexOf(client)] = null;
                                 }
-                                if (c >= 4)
+                                if (c >= 1)
                                 {
                                     _progress.completed_tokens += 1;
 
@@ -270,32 +270,6 @@ namespace DiskoAIO
                 }
             });
             join.Start();
-        }
-        public static (string, string) Get_GuildID(string invite)
-        {
-            string request_url = $"https://discord.com/api/v9/invites/{invite}";
-            HttpClient client = new HttpClient();
-            var response = client.SendAsync(new HttpRequestMessage()
-            {
-                Method = new System.Net.Http.HttpMethod("GET"),
-                RequestUri = new Uri(request_url)
-            }).GetAwaiter().GetResult();
-            if (((int)response.StatusCode) == 429)
-            {
-                return ("1", null);
-            }
-            var jtoken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
-            var json = JObject.Parse(jtoken.ToString());
-            try
-            {
-                string guild_id = json["guild"].Value<string>("id");
-                string channel_id = json["channel"].Value<string>("id");
-                return (guild_id, channel_id);
-            }
-            catch (Exception ex)
-            {
-                return (null, null);
-            }
         }
         public bool? IsInGuild(DiscordClient Client, ulong guildId)
         {

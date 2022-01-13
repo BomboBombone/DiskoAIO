@@ -105,7 +105,7 @@ namespace DiskoAIO
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    App.mainWindow.ShowNotification("Invalid invite or IP banned from Discord, try again later");
+                    App.mainWindow.ShowNotification("IP banned from Discord, try again using proxies or a VPN");
                 });
                 joining = false;
                 return;
@@ -211,7 +211,6 @@ namespace DiskoAIO
                                             }
                                             verifyingCount--;
                                             _progress.completed_tokens += 1;
-
                                         });
                                     }
                                     catch (Exception ex)
@@ -227,7 +226,7 @@ namespace DiskoAIO
                                     clients1[i] = null;
                                     clients[clients.IndexOf(client)] = null;
                                 }
-                                if (c >= 4)
+                                if (c >= 1)
                                 {
                                     _progress.completed_tokens += 1;
 
@@ -331,20 +330,43 @@ namespace DiskoAIO
             });
             join.Start();
         }
-        public static (string, string) Get_GuildID(string invite)
+        public static (string, string) Get_GuildID(string invite, ProxyGroup proxies = null)
         {
             string request_url = $"https://discord.com/api/v9/invites/{invite}";
-            HttpClient client = new HttpClient();
-            var response = client.SendAsync(new HttpRequestMessage()
+            HttpRequest request = new HttpRequest()
             {
-                Method = new System.Net.Http.HttpMethod("GET"),
-                RequestUri = new Uri(request_url)
-            }).GetAwaiter().GetResult();
+                KeepTemporaryHeadersOnRedirect = false,
+                EnableMiddleHeaders = false,
+                AllowEmptyHeaderValues = false
+                //SslProtocols = SslProtocols.Tls12
+            };
+            if(proxies != null)
+            {
+                var rnd = new Random();
+                var proxy = proxies._proxies[rnd.Next(0, proxies._proxies.Count - 1)];
+                if (proxy.Username != null && proxy.Username != "")
+                    request.Proxy = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
+                else
+                    request.Proxy = new HttpProxyClient(proxy.Host, proxy.Port);
+
+            }
+            request.ClearAllHeaders();
+            request.AddHeader("Accept", "*/*");
+            request.AddHeader("Accept-Encoding", "gzip, deflate");
+            request.AddHeader("Accept-Language", "it");
+            request.AddHeader("Connection", "keep-alive");
+            request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
+            request.AddHeader("DNT", "1");
+            request.AddHeader("origin", "https://discord.com");
+            request.AddHeader("Referer", "https://discord.com/channels/@me");
+            request.AddHeader("TE", "Trailers");
+            var response = request.Get(request_url);
+            var resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
             if (((int)response.StatusCode) == 429)
             {
                 return ("1", null);
             }
-            var jtoken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
+            var jtoken = JToken.Parse(response.ToString());
             var json = JObject.Parse(jtoken.ToString());
             try
             {

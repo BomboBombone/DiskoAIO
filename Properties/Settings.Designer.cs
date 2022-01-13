@@ -142,5 +142,41 @@ namespace DiskoAIO.Properties {
                 this["UseProxies"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tk1 {
+            get {
+                return ((string)(this["tk1"]));
+            }
+            set {
+                this["tk1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tk2 {
+            get {
+                return ((string)(this["tk2"]));
+            }
+            set {
+                this["tk2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string APIkey {
+            get {
+                return ((string)(this["APIkey"]));
+            }
+            set {
+                this["APIkey"] = value;
+            }
+        }
     }
 }

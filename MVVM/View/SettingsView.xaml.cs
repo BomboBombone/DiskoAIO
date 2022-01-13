@@ -99,7 +99,7 @@ namespace DiskoAIO.MVVM.View
             Settings.Default.UseProxies = (bool)UseProxies.IsChecked;
             Settings.Default.Save();
             Settings.Default.Reload();
-
+            App.SaveSettings();
             App.mainWindow.ShowNotification("Successfully saved current settings");
         }
     }
