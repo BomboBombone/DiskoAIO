@@ -42,6 +42,7 @@ namespace DiskoAIO.MVVM.View
                             ProxiesGroup.SelectedItem = Settings.Default.ProxyGroup;
                             Webhook.Text = Settings.Default.Webhook;
                             UseProxies.IsChecked = Settings.Default.UseProxies;
+                            SendInfoWebhook.IsChecked = Settings.Default.SendWebhook;
                         });
                         break;
                     }
@@ -97,6 +98,7 @@ namespace DiskoAIO.MVVM.View
             Settings.Default.Delay = int.Parse(Delay.Text);
             Settings.Default.CheckerGroup = (string)CheckerTokenGroup.SelectedItem;
             Settings.Default.UseProxies = (bool)UseProxies.IsChecked;
+            Settings.Default.SendWebhook = (bool)SendInfoWebhook.IsChecked;
             Settings.Default.Save();
             Settings.Default.Reload();
             App.SaveSettings();

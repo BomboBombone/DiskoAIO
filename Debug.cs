@@ -17,6 +17,14 @@ namespace DiskoAIO
             {
                 try
                 {
+                    if(!Directory.Exists(App.strWorkPath + "\\logs"))
+                    {
+                        Directory.CreateDirectory(App.strWorkPath + "\\logs");
+                    }
+                    if(!File.Exists(App.strWorkPath + "\\logs\\log.txt"))
+                    {
+                        File.Create(App.strWorkPath + "\\logs\\log.txt");
+                    }
                     using (StreamWriter w = File.AppendText(App.strWorkPath + "\\logs\\log.txt"))
                     {
                         w.WriteLine(input + " - " + DateTime.Now.ToString());

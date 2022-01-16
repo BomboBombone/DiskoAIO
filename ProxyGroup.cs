@@ -51,6 +51,7 @@ namespace DiskoAIO
                 }
                 catch (Exception ex)
                 {
+                    Debug.Log(ex.Message);
                     Thread.Sleep(1000);
                 }
             }

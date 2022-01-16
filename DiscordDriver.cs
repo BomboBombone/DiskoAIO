@@ -17,31 +17,38 @@ namespace DiskoAIO
         {
             Task.Run(() =>
             {
-                driver = (ChromeDriver)GetSeleniumDriver();
-                driver.ExecuteScript("window.location.href = \"https://discord.com/login\"");
-                driver.ExecuteScript($"let token = \"{token}\";" +
-                    "function login(token) {" +
-                    "    setInterval(() => {" +
-                    "      document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `\"${ token}\"`" +
-                    "    }, 50);" +
-                    "    setTimeout(() => {" +
-                    "      location.reload();" +
-                    "    }, 2500);" +
-                    "   }" +
-                    "login(token);");
-                driver_list.Add(driver);
-                while (true)
+                try
                 {
-                    try
+                    driver = (ChromeDriver)GetSeleniumDriver();
+                    driver.ExecuteScript("window.location.href = \"https://discord.com/login\"");
+                    driver.ExecuteScript($"let token = \"{token}\";" +
+                        "function login(token) {" +
+                        "    setInterval(() => {" +
+                        "      document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `\"${ token}\"`" +
+                        "    }, 50);" +
+                        "    setTimeout(() => {" +
+                        "      location.reload();" +
+                        "    }, 2500);" +
+                        "   }" +
+                        "login(token);");
+                    driver_list.Add(driver);
+                    while (true)
                     {
-                        if (driver.GetDevToolsSession().ActiveSessionId == null)
-                            throw new Exception();
-                        Thread.Sleep(5000);
+                        try
+                        {
+                            if (driver.GetDevToolsSession().ActiveSessionId == null)
+                                throw new Exception();
+                            Thread.Sleep(5000);
+                        }
+                        catch (Exception ex)
+                        {
+                            driver.Dispose();
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        driver.Dispose();
-                    }
+                }
+                catch(Exception ex)
+                {
+                    Debug.Log(ex.Message);
                 }
             });
             App.mainWindow.ShowNotification("Discord started, loggin in. Please wait...");

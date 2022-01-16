@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiskoAIO.Properties;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
 using System;
@@ -72,21 +73,30 @@ namespace DiskoAIO
             get { return joining && !paused; }
             set { joining = value; paused = !value; }
         }
+        public bool Paused
+        {
+            get { return paused; }
+        }
         public string invite { get; set; }
 
         public int delay { get; set; } = 2;
+        public int max_tokens { get; set; } = 0;
+
         ulong serverID { get; set; }
         int skip { get; set; }
         public bool joining { get; set; } = true;
         public bool paused { get; set; } = false;
-        public LeaveTask(AccountGroup accounts, string _invite, ProxyGroup proxies = null, int _delay = 2, int skip_tokens = 0)
+        public LeaveTask(AccountGroup accounts, string _invite, ProxyGroup proxies = null, int _delay = 2, int max = 0, int skip_tokens = 0)
         {
             accountGroup = accounts;
             proxyGroup = proxies;
-            delay = _delay;
+            delay = _delay * 1000;
+            if (max == 0)
+                max = accounts._accounts.Count;
+            max_tokens = max;
             skip = skip_tokens;
             invite = _invite;
-            progress = new Progress(accountGroup._accounts.Count);
+            progress = new Progress(max);
         }
         public void Start()
         {
@@ -104,6 +114,7 @@ namespace DiskoAIO
                 joining = false;
                 return;
             }
+            serverID = ulong.Parse(guildId);
             var clients = new List<DiscordClient>() { };
             var joined = 0;
             var token_list = new List<string>() { };
@@ -111,7 +122,7 @@ namespace DiskoAIO
             {
                 if (accountGroup._accounts.IndexOf(tk) < skip)
                     continue;
-                if (token_list.Count >= accountGroup._accounts.Count)
+                if (token_list.Count >= max_tokens)
                     break;
                 token_list.Add(tk._token);
             }
@@ -125,7 +136,7 @@ namespace DiskoAIO
                         Thread.Sleep(500);
                     try
                     {
-                        if (joined == token_list.Count)
+                        if (joined == max_tokens)
                             joining = false;
                     }
                     catch (Exception ex) { }
@@ -158,6 +169,7 @@ namespace DiskoAIO
                                     catch (Exception ex)
                                     {
                                         _progress.completed_tokens += 1;
+                                        Debug.Log(ex.Message);
 
                                         c++;
                                         continue;
@@ -181,6 +193,7 @@ namespace DiskoAIO
                             }
                             catch (Exception ex)
                             {
+                                Debug.Log(ex.Message);
                             }
                             i++;
                             var to_sleep = delay - (DateTime.Now - joined_time).TotalMilliseconds;
@@ -191,6 +204,8 @@ namespace DiskoAIO
                     }
                     catch (InvalidOperationException ex) { Thread.Sleep(100); }
                 }
+                if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
+                    App.SendToWebhook(Settings.Default.Webhook, "Leave task completed successfully");
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -242,6 +257,10 @@ namespace DiskoAIO
                                 break;
                             }
                         }
+                        if (!joining)
+                            return;
+                        while (paused)
+                            Thread.Sleep(500);
                         if (IsInGuild(client, serverID) == false)
                         {
                             joined++;

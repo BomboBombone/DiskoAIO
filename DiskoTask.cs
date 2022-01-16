@@ -16,6 +16,7 @@ namespace DiskoAIO
         string Proxy { get; }
         int delay { get; set; }
         bool Running { get; set; }
+        bool Paused { get; }
         void Start();
         void Stop();
         void Pause();
@@ -33,6 +34,21 @@ namespace DiskoAIO
         {
             total_tokens = _total_tokens;
             completed_tokens = 0;
+        }
+        public void Fill()
+        {
+            completed_tokens = total_tokens;
+        }
+        public void Add(int amount)
+        {
+            if (completed_tokens + amount > total_tokens)
+            {
+                Fill();
+            }
+            else
+            {
+                completed_tokens += amount;
+            }
         }
     }
 }

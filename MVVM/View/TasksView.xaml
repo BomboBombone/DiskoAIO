@@ -4,9 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
+             xmlns:base="clr-namespace:DiskoAIO"
              mc:Ignorable="d" 
              d:DesignHeight="670" d:DesignWidth="1000">
     <Grid>
+        <Grid.Resources>
+            <base:TaskStateToColorConverter x:Key="TaskConverter"/>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
@@ -36,6 +40,16 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="75"/>
                         </Grid.ColumnDefinitions>
+                        <Ellipse x:Name="StateCheckmark"  Margin="45, 0, 0, 0" Visibility="Visible"  Grid.Column="0"
+                        Width="10" Height="10">
+                            <Ellipse.Fill>
+                                <MultiBinding Converter="{StaticResource TaskConverter}" Mode="OneWay">
+                                    <Binding Path="Running" />
+                                    <Binding Path="Paused" />
+                                </MultiBinding>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        
                         <Label Content="{Binding progress}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="150" Margin="75, 0, 45, 0"/>
                         <Label Content="{Binding Type}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"

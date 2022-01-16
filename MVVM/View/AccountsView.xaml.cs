@@ -27,7 +27,7 @@ namespace DiskoAIO.MVVM.View
     {
         public int currentTokens { get; set; } = 0;
         public AccountGroup _currentGroup { get; set; } = null;
-        public string to_search { get; set; } = "";
+        public static string to_search { get; set; } = "";
         public static bool adding_accounts { get; set; } = false;
         public static int seconds_remaining { get; set; } = 0;
 
@@ -222,9 +222,19 @@ namespace DiskoAIO.MVVM.View
                                     if (task.Wait(TimeSpan.FromSeconds(2)))
                                         ;
                                     else
+                                    {
+                                        lines -= 1;
+                                        seconds_remaining = (int)(lines / 3);
                                         continue;
+                                    }
                                     if (token == null)
-                                        continue;
+                                    {
+                                        {
+                                            lines -= 1;
+                                            seconds_remaining = (int)(lines / 3);
+                                            continue;
+                                        }
+                                    }
                                     if (tokens.Contains(token))
                                     {
                                         lines -= 1;
@@ -252,7 +262,7 @@ namespace DiskoAIO.MVVM.View
                                 catch (Exception ex)
                                 {
                                     Dispatcher.Invoke(() => {
-                                        App.mainWindow.ShowNotification("Format of selected proxies seems to be wrong.\nHint: {host}:{port}:{username}:{password}");
+                                        App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
                                     });
                                     return;
                                 }
@@ -348,23 +358,26 @@ namespace DiskoAIO.MVVM.View
             ListTokens.Items.Refresh();
         }
 
-        private void Note_Click(object sender, RoutedEventArgs e)
+        private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            var input = new InputPopupView("Add your note here", 64);
-            input.ShowDialog();
-            if(input.answer == null)
+            var source = new List<DiscordToken>();
+            foreach (var o in _currentGroup._accounts)
             {
-                App.mainWindow.ShowNotification("Invalid note, please try again", 1000);
-                return;
+                if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                    o.Note != "Double click to add note..." &&
+                    to_search != "")
+                {
+                    source.Add(o);
+                }
+                else if (o.User_id.Contains(to_search))
+                    source.Add(o);
             }
-            if (input.answer == "")
-                input.answer = "Double click to add note...";
+
             var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
             var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
 
-            _currentGroup._accounts[index].Note = input.answer;
-            App.mainWindow.ShowNotification("Successfully saved note");
-            ListTokens.Items.Refresh();
+            var popup = new AccountSettingsPopup(GroupComboBox.SelectedItem.ToString(), source[index], index);
+            popup.Show();
         }
         private void DeleteToken_Click(object sender, RoutedEventArgs e)
         {
@@ -380,15 +393,42 @@ namespace DiskoAIO.MVVM.View
         {
             var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
             var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
-            new DiscordDriver(_currentGroup._accounts[index]._token);
+            var source = new List<DiscordToken>();
+
+            foreach (var o in _currentGroup._accounts)
+            {
+                if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                    o.Note != "Double click to add note..." &&
+                    to_search != "")
+                {
+                    source.Add(o);
+                }
+                else if (o.User_id.Contains(to_search))
+                    source.Add(o);
+            }
+            new DiscordDriver(source[index]._token);
         }
 
         private void Search_Input(object sender, TextCompositionEventArgs e)
         {
             if(e.Text == "\r")
             {
-                ListTokens.ItemsSource = _currentGroup._accounts.Where(o => o.Note.ToLower().Contains(to_search.ToLower()) && (o.Note != "Double click to add note..." || to_search == "")).ToList();
+                var source = new List<DiscordToken>();
+                foreach(var o in _currentGroup._accounts)
+                {
+                    if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                        o.Note != "Double click to add note..." &&
+                        to_search != "")
+                    {
+                        source.Add(o);
+                    }
+                    else if (o.User_id.Contains(to_search))
+                        source.Add(o);
+                }
+
+                ListTokens.ItemsSource = source;
                 ListTokens.Items.Refresh();
+                UpdateAccountCount();
             }
         }
 

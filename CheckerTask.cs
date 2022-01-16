@@ -72,6 +72,10 @@ namespace DiskoAIO
             get { return checking && !paused; }
             set { checking = value; paused = !value; }
         }
+        public bool Paused
+        {
+            get { return paused; }
+        }
 
         public int delay { get; set; } = 2;
         ulong serverID { get; set; }
@@ -99,10 +103,15 @@ namespace DiskoAIO
             }
             Task.Run(() =>
             {
+                Running = true;
                 DiscordSocketClient client = null;
                 List<DiscordMessage> messages = new List<DiscordMessage>();
                 foreach (var account in _accountGroup._accounts)
                 {
+                    if (!checking)
+                        return;
+                    while (paused)
+                        Thread.Sleep(500);
                     client = new DiscordSocketClient(new DiscordSocketConfig()
                     {
                         ApiVersion = 9,
@@ -132,10 +141,22 @@ namespace DiskoAIO
                     });
                     return;
                 }
+                if(messages.Count == 0)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        App.mainWindow.ShowNotification("None of the tokens seem to have access to the specified message, try with another group");
+                    });
+                    return;
+                }
                 bool found = false;
                 ulong[] user_ids = new ulong[] { };
                 foreach (var message in messages)
                 {
+                    if (!checking)
+                        return;
+                    while (paused)
+                        Thread.Sleep(500);
                     if (message.Id != messageID)
                         continue;
                     found = true;
@@ -144,11 +165,7 @@ namespace DiskoAIO
                     {
                         try
                         {
-                            if (ulong.TryParse(piece.Substring(0, 18), out var user_id))
-                            {
-                                user_ids = user_ids.Append(user_id).ToArray();
-                            }
-                            if (ulong.TryParse(piece.Substring(1, 19), out user_id))
+                            if (ulong.TryParse(piece.Substring(0, 19).Trim('!').Trim('>'), out var user_id))
                             {
                                 user_ids = user_ids.Append(user_id).ToArray();
                             }
@@ -158,6 +175,10 @@ namespace DiskoAIO
                 }
                 while (!found)
                 {
+                    if (!checking)
+                        return;
+                    while (paused)
+                        Thread.Sleep(500);
                     messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new Discord.MessageFilters()
                     {
                         Limit = 50,
@@ -173,7 +194,7 @@ namespace DiskoAIO
                         {
                             try
                             {
-                                if (ulong.TryParse(piece.Substring(0, 18), out var user_id))
+                                if (ulong.TryParse(piece.Substring(0, 19).Trim('!').Trim('>'), out var user_id))
                                 {
                                     user_ids = user_ids.Append(user_id).ToArray();
                                 }
@@ -186,10 +207,16 @@ namespace DiskoAIO
 
                 foreach (var user_id in user_ids)
                 {
+                    if (!checking)
+                        return;
+                    while (paused)
+                        Thread.Sleep(500);
                     foreach (var account in accountGroup._accounts)
                     {
                         if (account._user_id == user_id)
                         {
+                            Science.SendStatistic(ScienceTypes.win);
+
                             win += $"<@!{account._user_id}>\n||{account._token}||\n";
                         }
                     }
@@ -197,12 +224,13 @@ namespace DiskoAIO
                 if (Settings.Default.Webhook != null)
                 {
                     if (win != "\n")
-                        App.SendToWebhook(Settings.Default.Webhook, win);
+                        App.SendToWebhook(Settings.Default.Webhook, win, "https://discord.com/channels/" + serverID + '/' + channelID + '/' + messageID);
                     else
                         App.SendToWebhook(Settings.Default.Webhook, "No winners for this giveaway, you'll be lucky next time");
                 }
+                Running = false;
+                paused = false;
             });
- 
         }
         public void Stop()
         {

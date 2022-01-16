@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiskoAIO.Properties;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
 using System;
@@ -71,6 +72,10 @@ namespace DiskoAIO
         {
             get { return joining && !paused; }
             set { joining = value; paused = !value; }
+        }
+        public bool Paused
+        {
+            get { return paused; }
         }
         public int delay { get; set; } = 2;
         private GiveawayType giveawayType { get; set; }
@@ -244,6 +249,10 @@ namespace DiskoAIO
                     }
                     catch (InvalidOperationException ex) { Thread.Sleep(100); }
                 }
+                Science.SendStatistic(ScienceTypes.giveaway);
+                if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
+                    App.SendToWebhook(Settings.Default.Webhook, "Giveaway task completed successfully");
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     App.mainWindow.ShowNotification("Giveaway task completed successfully");
@@ -294,6 +303,10 @@ namespace DiskoAIO
                                 break;
                             }
                         }
+                        if (!joining)
+                            return;
+                        while (paused)
+                            Thread.Sleep(500);
                         clients.Add(client);
 
                     });
@@ -336,7 +349,8 @@ namespace DiskoAIO
         {
             accountGroup = accounts;
             proxyGroup = proxies;
-            delay = _delay;
+            delay = _delay * 1000;
+
             giveawayType = gtype;
             serverID = server_id;
             channelID = channel_id;

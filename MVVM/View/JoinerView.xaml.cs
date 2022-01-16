@@ -84,7 +84,16 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Please insert a valid message link");
                 return;
             }
-
+            if (TokenGroup.SelectedItem == null)
+            {
+                App.mainWindow.ShowNotification("Please select an account group");
+                return;
+            }
+            if (ProxiesGroup.SelectedItem == null && (bool)UseProxies.IsChecked)
+            {
+                App.mainWindow.ShowNotification("Please select a proxy group group");
+                return;
+            }
             AccountGroup accounts = null;
             foreach (var group in App.accountsGroups)
             {
@@ -117,17 +126,19 @@ namespace DiskoAIO.MVVM.View
                 }
             }
             int skip = 0;
+            int max = 0;
             int delay = Settings.Default.Delay;
             if (MinimumDelay.Text != "")
                 delay = int.Parse(MinimumDelay.Text);
             if (SkipTokens.Text != "")
                 skip = int.Parse(SkipTokens.Text);
-            ulong channelID = 0;
-            if(ulong.TryParse(ChannelID.Text, out channelID))
+            if (MaxTokens.Text != "")
+                max = int.Parse(MaxTokens.Text);
+            if(ulong.TryParse(ChannelID.Text, out var channelID))
             {
 
             }
-            var joinerTask = new JoinTask(accounts, Invite.Text, channelID, proxies, delay, skip, (bool)AcceptRules.IsChecked, (bool)BypassReaction.IsChecked);
+            var joinerTask = new JoinTask(accounts, Invite.Text, channelID, proxies, delay, max, skip, (bool)AcceptRules.IsChecked, (bool)BypassReaction.IsChecked);
             joinerTask.Start();
             App.taskManager.AddTask(joinerTask);
             App.mainWindow.ShowNotification("Task started successfully");
@@ -140,7 +151,16 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Please insert a valid message link");
                 return;
             }
-
+            if(TokenGroup.SelectedItem == null)
+            {
+                App.mainWindow.ShowNotification("Please select an account group");
+                return;
+            }
+            if (ProxiesGroup.SelectedItem == null && (bool)UseProxies.IsChecked)
+            {
+                App.mainWindow.ShowNotification("Please select a proxy group group");
+                return;
+            }
             AccountGroup accounts = null;
             foreach (var group in App.accountsGroups)
             {
@@ -173,17 +193,20 @@ namespace DiskoAIO.MVVM.View
                 }
             }
             int skip = 0;
+            int max = 0;
             int delay = Settings.Default.Delay;
             if (MinimumDelay.Text != "")
                 delay = int.Parse(MinimumDelay.Text);
             if (SkipTokens.Text != "")
                 skip = int.Parse(SkipTokens.Text);
+            if (MaxTokens.Text != "")
+                max = int.Parse(MaxTokens.Text);
             ulong channelID = 0;
             if (ulong.TryParse(ChannelID.Text, out channelID))
             {
 
             }
-            var leaveTask = new LeaveTask(accounts, Invite.Text, proxies, delay, skip);
+            var leaveTask = new LeaveTask(accounts, Invite.Text, proxies, delay, max, skip);
             leaveTask.Start();
             App.taskManager.AddTask(leaveTask);
             App.mainWindow.ShowNotification("Task started successfully");

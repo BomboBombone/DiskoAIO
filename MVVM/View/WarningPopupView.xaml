@@ -9,7 +9,8 @@
         ResizeMode="NoResize" Background="Transparent"
         Title="Warning" Height="200" Width="400"
         AllowsTransparency="True" MouseDown="Window_MouseDown">
-    <Border Background="#151520" CornerRadius="10">
+    <Border Background="#151520" CornerRadius="10"
+            BorderThickness="2" BorderBrush="#443D6B">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>

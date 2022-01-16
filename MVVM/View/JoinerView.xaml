@@ -8,9 +8,9 @@
              d:DesignHeight="670" d:DesignWidth="1000">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="2*"/>
+            <RowDefinition Height="300"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="40 ,0 ,0 ,0">
@@ -28,7 +28,7 @@
         </StackPanel>
         <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
             <TextBlock Text="SERVER INFO:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 50, 20, 30"/>
+                       Margin="20, 0, 20, 30"/>
             <WrapPanel VerticalAlignment="Center">
                 <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
                     <StackPanel  Margin="5, 5, 0, 0">
@@ -62,13 +62,21 @@
                 </Border>
                 <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80">
                     <StackPanel  Margin="5, 5, 0, 0">
+                        <Label Content="Max tokens" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="MaxTokens" PreviewTextInput="textBox_PreviewTextInput"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80">
+                    <StackPanel  Margin="5, 5, 0, 0">
                         <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                         <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
                                  Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
                     </StackPanel>
                 </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,20">
                     <StackPanel>
                         <WrapPanel>
                             <Label Content="Accept rules" FontFamily="/Fonts/#Montserrat"
@@ -88,7 +96,7 @@
                         <WrapPanel VerticalAlignment="Center">
                             <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
                                    Foreground="White" FontSize="12"
-                                   Margin="10, 10, 70, 0"/>
+                                   Margin="10, 10, 70, 10"/>
                             <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
                                           Style="{StaticResource DiskoToggle}"
                                       Click="UseProxies_Click"/>
@@ -97,9 +105,9 @@
                 </Border>
             </WrapPanel>
         </StackPanel>
-        <StackPanel Margin="40, 0, 0, 0" Grid.Row="3">
+        <StackPanel Margin="0, -38, 0, 0" Grid.Row="3">
             <WrapPanel>
-                <Button Style="{StaticResource DiskoButton}" Content="Leave" Margin="530, 0, 20, 0"
+                <Button Style="{StaticResource DiskoButton}" Content="Leave" Margin="650, 0, 20, 0"
                         Width="100" Height="40" Click="Leave_Task"/>
                 <Button Style="{StaticResource DiskoButton}" Content="Join"
                         Width="100" Height="40" Click="Join_Task"/>

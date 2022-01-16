@@ -49,44 +49,55 @@ namespace DiskoAIO
         }
         public static DiscordToken Load(string[] token_array)
         {
-            DiscordClient client = null;
-            if(token_array.First().Length == 59)
+            try
             {
-                try
+                DiscordClient client = null;
+                if(!ulong.TryParse(token_array[0], out var id))
                 {
-                    if (App.IsConnectedToInternet())
-                        client = new DiscordClient(token_array[0]);
-                    else
-                        throw new InvalidTokenException("");
+                    foreach (var part in token_array)
+                    {
+                        if (part.Length == 59)
+                        {
+                            try
+                            {
+                                if (App.IsConnectedToInternet())
+                                    client = new DiscordClient(part);
+                                else
+                                    throw new InvalidTokenException("");
+                                return new DiscordToken(client.User.Id, part, client.User.PhoneNumber == null ? false : true, client.User.EmailVerified);
+                            }
+                            catch (InvalidTokenException)
+                            {
+                                return null;
+                            }
+                        }
+                    }
                 }
-                catch (InvalidTokenException)
+
+                if (token_array.Length < 2)
                 {
                     return null;
                 }
+                else if (token_array.Length == 3)
+                {
+                    return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]));
+                }
+                else if (token_array.Length == 4)
+                {
+                    return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]), bool.Parse(token_array[3]));
+                }
+                else if (token_array.Length == 5)
+                {
+                    return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]), bool.Parse(token_array[3]), token_array[4]);
+                }
+                else
+                {
+                    return new DiscordToken(ulong.Parse(token_array[0]), token_array[1]);
+                }
             }
-            if (token_array.First().Length == 59)
-            {
-                return new DiscordToken(client.User.Id, token_array[0], client.User.PhoneNumber == null ? false: true, client.User.EmailVerified);
-            }
-            else if(token_array.Length < 2)
+            catch (Exception ex)
             {
                 return null;
-            }
-            else if(token_array.Length == 3)
-            {
-                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]));
-            }
-            else if (token_array.Length == 4)
-            {
-                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]), bool.Parse(token_array[3]));
-            }
-            else if (token_array.Length == 5)
-            {
-                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1], bool.Parse(token_array[2]), bool.Parse(token_array[3]), token_array[4]);
-            }
-            else
-            {
-                return new DiscordToken(ulong.Parse(token_array[0]), token_array[1]);
             }
         }
         public override string ToString()

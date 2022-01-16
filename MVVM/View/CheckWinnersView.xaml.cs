@@ -92,6 +92,11 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Couldn't get specified account group, try again later");
                 return;
             }
+            if(Settings.Default.Webhook == "")
+            {
+                App.mainWindow.ShowNotification("No webhook found, please insert one to use giveaway checker");
+                return;
+            }
             var checkerTask = new CheckerTask(accounts, server_id, channel_id, message_id);
             checkerTask.Start();
             App.taskManager.AddTask(checkerTask);

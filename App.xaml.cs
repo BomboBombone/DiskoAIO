@@ -24,6 +24,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Security.Principal;
 using System.Net.Http;
+using System.Threading;
 
 namespace DiskoAIO
 {
@@ -47,56 +48,134 @@ namespace DiskoAIO
         public static TasksView taskManager { get; set; } = null;
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+            {
+                Mutex mutex = new System.Threading.Mutex(false, "supercooluniquemutex");
+                try
+                {
+                    bool tryAgain = true;
+                    while (tryAgain)
+                    {
+                        bool result = false;
+                        try
+                        {
+                            result = mutex.WaitOne(0, false);
+                        }
+                        catch (AbandonedMutexException ex)
+                        {
+                            // No action required
+                            result = true;
+                        }
+                        if (result)
+                        {
+                            // Run the application
+                            tryAgain = false;
+                        }
+                        else
+                        {
+                            foreach (Process proc in Process.GetProcesses())
+                            {
+                                if (proc.ProcessName.Equals(Process.GetCurrentProcess().ProcessName) && proc.Id != Process.GetCurrentProcess().Id)
+                                {
+                                    proc.Kill();
+                                    break;
+                                }
+                            }
+                            // Wait for process to close
+                            Thread.Sleep(2000);
+                        }
+                    }
+                }
+                finally
+                {
+                    if (mutex != null)
+                    {
+                        mutex.Close();
+                        mutex = null;
+                    }
+                }
+                return;
+            }
+
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
+
+            LoadSettings();
+
             connected_to_internet = IsConnectedToInternet();
             SetAccountGroups();
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
             this.Dispatcher.UnhandledException += App_DispatcherUnhandledException;
+            var loadingScreen = new LoadingWindow();
+
             if (!IsServiceInstalled("DiskoUpdater"))
             {
+                loadingScreen.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                loadingScreen.Show();
+
                 Debug.Log("Updater not installed");
                 if (!IsUserAdministrator())
                 {
+
                     var popup = new WarningPopupView("You need to run this program as administrator the first time running it", false);
                     popup.ShowDialog();
+                    loadingScreen.Close();
+
                     return;
                 }
-                if(!File.Exists(strWorkPath + "\\DiskoUpdater.exe"))
+
+                if (!File.Exists(strWorkPath + "\\DiskoUpdater.exe"))
                 {
+
                     var popup = new WarningPopupView("Couldn't find the updater, please reinstall the program or contact our support", false);
                     popup.ShowDialog();
+                    loadingScreen.Close();
+
                     return;
                 }
+
                 var proc = Process.Start(new ProcessStartInfo()
                 {
                     FileName = "sc.exe",
                     Arguments = "CREATE \"DiskoUpdater\" binpath=" + $"\"{strWorkPath}\\DiskoUpdater.exe\"",
                 });
                 proc.WaitForExit();
+                proc.Dispose();
                 Debug.Log("Created service DiskoUpdater");
+
                 proc = Process.Start(new ProcessStartInfo()
                 {
                     FileName = "sc.exe",
                     Arguments = "config DiskoUpdater start=auto"
                 });
                 proc.WaitForExit();
+                proc.Dispose();
+
                 Debug.Log("Set service to start automatically");
+
                 proc = Process.Start(new ProcessStartInfo()
                 {
                     FileName = "sc.exe",
                     Arguments = "start DiskoUpdater"
                 });
                 proc.WaitForExit();
+                proc.Dispose();
+
                 Debug.Log("Started the updater");
             }
-            if (Settings.Default.tk1 != "" && Settings.Default.tk2 != null)
+            loadingScreen.Hide();
+            loadingScreen.ShowInTaskbar = false;
+
+            if (Settings.Default.tk1 != "" && Settings.Default.tk1 != null)
             {
+                Debug.Log("Credentials saved in settings found");
                 var key = LoginWindow.login(Settings.Default.tk1, Settings.Default.tk2);
                 if (key == null)
                 {
+                    Debug.Log("Invalid credentials");
+
                     Settings.Default.tk1 = "";
                     Settings.Default.tk2 = "";
                     var Login = new LoginWindow();
@@ -104,6 +183,8 @@ namespace DiskoAIO
                 }
                 else
                 {
+                    Debug.Log("Valid credentials and api key retrieved");
+
                     App.api_key = key;
                     Settings.Default.APIkey = key;
 
@@ -113,24 +194,33 @@ namespace DiskoAIO
                     App.SaveSettings();
                 }
             }
+            else
+            {
+                Debug.Log("Credentials not found");
 
-
+                var Login = new LoginWindow();
+                Login.ShowDialog();
+            }
+            Science.SendStatistic(ScienceTypes.login);
             mainWindow = new MainWindow();
+
             mainWindow.Show();
+            loadingScreen.Close();
         }
         public static bool IsConnectedToInternet()
         {
             int Desc;
             return InternetGetConnectedState(out Desc, 0);
         }
-        public static void SendToWebhook(string webhook_link, string text)
+
+        public static void SendToWebhook(string webhook_link, string text, string link = "https://diskoaio.com")
         {
             var embed = new EmbedMaker() { Color = System.Drawing.Color.MediumPurple,
                 Author = new EmbedAuthor()
                 {
                     IconUrl = "https://cdn.discordapp.com/attachments/896745588505313280/930993204176756756/Logo.png",
                     Name = "DiskoAIO",
-                    Url = "http://diskoaio.com"
+                    Url = link
                 },
                 Footer = new EmbedFooter()
                 {
@@ -138,7 +228,7 @@ namespace DiskoAIO
                 },
                 Timestamp = DateTime.Now
             };
-            embed.AddField("Winners:", text);
+            embed.AddField($"Info:", text);
             ulong id = ulong.Parse(webhook_link.Split('/').Where(o => ulong.TryParse(o, out ulong any) == true).ToArray()[0]);
             var token = webhook_link.Split('/').Last();
             DiscordDefaultWebhook defaultWebhook = new DiscordDefaultWebhook(id, token);
@@ -212,7 +302,7 @@ namespace DiskoAIO
                         }
                         catch (FormatException ex)
                         {
-                            ;
+                            Debug.Log(ex.Message);
                         }
                     }
                 }
@@ -226,7 +316,11 @@ namespace DiskoAIO
             Exception e = (Exception)args.ExceptionObject;
             Debug.Log(e.Message + "///" + e.StackTrace);
             if (args.IsTerminating)
+            {
+                Science.SendStatistic(ScienceTypes.logout);
                 DiscordDriver.CleanUp();
+                Application.Current.Dispatcher.InvokeShutdown();
+            }
         }
         void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
@@ -234,6 +328,7 @@ namespace DiskoAIO
 
             // Prevent default unhandled exception processing
             e.Handled = true;
+            Debug.Log(e.Exception.ToString());
         }
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
@@ -263,10 +358,15 @@ namespace DiskoAIO
         public static void SaveSettings()
         {
             string exe_name = "DiskoAIO";
+            string settings_file = "";
+            using (var reader = new StreamReader(strExeFilePath + ".config"))
+            {
+                settings_file = reader.ReadToEnd();
+            }
+            settings_file.Replace("<value />", "<value></value>");
+            XDocument xmlFile = XDocument.Parse(settings_file);
 
-            XDocument xmlFile = XDocument.Load(strExeFilePath + ".config");
-
-            foreach (XElement setting in xmlFile.Elements("configuration").Elements("userSettings").Elements($"{exe_name}.Settings").Elements("setting"))
+            foreach (XElement setting in xmlFile.Elements("configuration").Elements("userSettings").Elements($"{exe_name}.Properties.Settings").Elements("setting"))
             {
                 switch (setting.Attribute("name").Value)
                 {
@@ -308,10 +408,18 @@ namespace DiskoAIO
                         break;
                 };
             }
-            XElement xe = xmlFile.XPathSelectElement($"/userSettings/{exe_name}.Settings[1]");
-
-            File.Delete(strWorkPath + @"\DiskoAIO.exe.config");
-            xmlFile.Save(strWorkPath + @"\DiskoAIO.exe.config");
+            File.Delete(strWorkPath + @"\DiskoAIO.exe.config.bk");
+            xmlFile.Save(strWorkPath + @"\DiskoAIO.exe.config.bk");
+        }
+        private static void LoadSettings()
+        {
+            if(File.Exists(strWorkPath + @"\DiskoAIO.exe.config.bk"))
+            {
+                File.Delete(strWorkPath + @"\DiskoAIO.exe.config");
+                File.Move(strWorkPath + @"\DiskoAIO.exe.config.bk", strWorkPath + @"\DiskoAIO.exe.config");
+                Settings.Default.Reload();
+                Settings.Default.Save();
+            }
         }
         private static bool IsUserAdministrator()
         {

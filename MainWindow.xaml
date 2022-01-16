@@ -16,14 +16,15 @@
     </Window.DataContext>
     <Window.Resources>
         <Storyboard x:Key="OpenMenu">
-            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,0,-250,0" To="0,0,0,0" DecelerationRatio="0.9" Duration="0:0:0.5"/>
+            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,0,-250,0" To="0,0,0,-2" DecelerationRatio="0.9" Duration="0:0:0.5"/>
         </Storyboard>
 
         <Storyboard x:Key="CloseMenu">
-            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,0,0,0" To="0,0,-250,0" DecelerationRatio="0.9" Duration="0:0:0.5"/>
+            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,0,0,-2" To="0,0,-250,0" DecelerationRatio="0.9" Duration="0:0:0.5"/>
         </Storyboard>
     </Window.Resources>
-    <Border Background="#151520" CornerRadius="25" MouseDown="Window_MouseDown">
+    <Border Background="#151520" CornerRadius="25" MouseDown="Window_MouseDown"
+            BorderThickness="2" BorderBrush="#443D6B">
         <Grid>
             <Grid.Resources>
                 <!--Set x: share to get the latest every time-->
@@ -50,6 +51,7 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Border Background="#181824" Grid.Column="3" Panel.ZIndex="2" Name="InAppNotification" Width="250"
+                    BorderThickness="2" BorderBrush="#443D6B"
                     Margin='0,0,-250,0' VerticalAlignment="Top" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" CornerRadius="10, 0, 0, 10">
                 <Grid>
                     <Grid.RowDefinitions>

@@ -39,6 +39,28 @@
   <PropertyGroup>
     <ApplicationIcon>Logo.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Leaf.xNet, Version=5.2.10.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Leaf.xNet.5.2.10\lib\net45\Leaf.xNet.dll</HintPath>
@@ -513,14 +535,22 @@
     <Compile Include="JoinTask.cs" />
     <Compile Include="LeaveTask.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="MVVM\View\AccountSettingsPopup.xaml.cs">
+      <DependentUpon>AccountSettingsPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\CheckWinnersView.xaml.cs">
       <DependentUpon>CheckWinnersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProxyGroup.cs" />
     <Compile Include="DiskoTask.cs" />
+    <Compile Include="Science.cs" />
+    <Compile Include="TaskStateToColorConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -538,6 +568,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MVVM\View\AccountSettingsPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\AccountsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -555,6 +589,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\JoinerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\LoadingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -737,6 +775,15 @@
   <ItemGroup>
     <Resource Include="Images\pause_white.ico" />
     <Resource Include="Images\play_white.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\splashscreen.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\splashscreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\copy_white.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

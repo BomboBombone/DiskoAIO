@@ -32,11 +32,20 @@ namespace DiskoAIO.MVVM.View
         {
             var request_url = $"https://diskoaio.com/api/accounts?email={username}&password={password}";
             HttpClient client = new HttpClient();
-            var response = client.SendAsync(new HttpRequestMessage()
+            HttpResponseMessage response = null;
+            try
             {
-                Method = new HttpMethod("GET"),
-                RequestUri = new Uri(request_url)
-            }).GetAwaiter().GetResult();
+                response = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new HttpMethod("GET"),
+                    RequestUri = new Uri(request_url)
+                }).GetAwaiter().GetResult();
+            }
+            catch
+            {
+                var popup = new WarningPopupView("Please make sure you're connected to internet before attempting to open DiskoAIO again");
+                return null;
+            }
             if (response.StatusCode.ToString() == "BadRequest")
                 return null;
             if(response.StatusCode == System.Net.HttpStatusCode.BadGateway)
@@ -86,6 +95,7 @@ namespace DiskoAIO.MVVM.View
                     return;
                 else
                 {
+                    Debug.Log("Mac address found is invalid: " + mac_addr);
                     var popup = new WarningPopupView("Your licence key seems to be invalid, please try again or contact support");
                     popup.ShowDialog();
 
@@ -134,6 +144,8 @@ namespace DiskoAIO.MVVM.View
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
+            Application.Current.Dispatcher.InvokeShutdown();
+
             Environment.Exit(0);
         }
 
@@ -168,6 +180,8 @@ namespace DiskoAIO.MVVM.View
                 Settings.Default.Save();
                 Settings.Default.Reload();
                 App.SaveSettings();
+                var popup = new WarningPopupView("Successfully claimed your licence", false);
+                popup.ShowDialog();
                 this.Close();
             }
         }

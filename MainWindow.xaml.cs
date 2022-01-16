@@ -39,7 +39,11 @@ namespace DiskoAIO
             if (Mouse.LeftButton == MouseButtonState.Pressed)
                 this.DragMove();
         }
-
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            Application.Current.Dispatcher.InvokeShutdown();
+        }
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             var confirm = new WarningPopupView("All of your current tasks will be stopped and deleted.\nAre you sure you want to quit?");
@@ -48,7 +52,11 @@ namespace DiskoAIO
                 return;
             WindowState = WindowState.Minimized;
             window.ShowInTaskbar = false;
+            Science.SendStatistic(ScienceTypes.logout);
+
             DiscordDriver.CleanUp();
+            Application.Current.Dispatcher.InvokeShutdown();
+
             Environment.Exit(0);
         }
 
