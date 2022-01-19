@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
-             mc:Ignorable="d" 
+             mc:Ignorable="d" Drop="Grid_Drop" AllowDrop="True" DragOver="Grid_DragOver"
              d:DesignHeight="670" d:DesignWidth="1000">
     <Grid>
         <Grid.Resources>
@@ -23,12 +23,16 @@
                     Click="Delete_Click"/>
             <Button Width="30" Height="30" Style="{StaticResource AddButton}"  Margin="0, 0, 20, 0" 
                     Click="Add_Group_Click"/>
-            <TextBox x:Name="SearchBox" Style="{StaticResource SearchBox}" Margin="100, 0, 0, 0"
+            <TextBox x:Name="SearchBox" Style="{StaticResource SearchBox}" Margin="50, 0, 0, 0"
                     TextChanged="SearchBox_TextChanged" PreviewTextInput="Search_Input"/>
             <Button Width="30" Height="30" Style="{StaticResource SaveButton}" Margin="50, 0, 20, 0"
                     Click="Save_Click"/>
             <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="0, 0, 0, 0" 
                     Click="Load_Tokens_Click"/>
+            <Button Width="30" Height="30" Style="{StaticResource CheckerButton}"  Margin="20, 0, 0, 0" 
+                    Click="Check_Tokens_Click"/>
+            <Button Style="{StaticResource ImageChangerButton}" ToolTip="Mass image changer"
+                    Height="30" Width="30" Margin="20, 0, 0, 0" Click="Change_Image_Click"/>
         </WrapPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -80,8 +84,10 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <Label Content="Accounts: 0" x:Name="TokenCounter" Grid.Row="2" FontWeight="Black"
+        <WrapPanel Grid.Row="2">
+            <Label Content="Accounts: 0" x:Name="TokenCounter" FontWeight="Black"
                FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
                Margin="80 ,0, 0, 12"/>
+        </WrapPanel>
     </Grid>
 </UserControl>

@@ -9,97 +9,126 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="10*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <StackPanel Margin="40, 0, 0, 0" Grid.Row="0">
-            <TextBlock Text="GENERAL DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+        <ScrollViewer Grid.Row="0">
+            <StackPanel>
+                <StackPanel Margin="40, 20, 0, 0" Grid.Row="0">
+                    <TextBlock Text="GENERAL DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
                        Margin="20, 10, 20, 30"/>
-            <WrapPanel VerticalAlignment="Center">
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Delay (seconds)" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="Delay" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel>
-                        <WrapPanel>
-                            <Label Content="Accept rules" FontFamily="/Fonts/#Montserrat"
-                                   Foreground="White" FontSize="12"
-                                   Margin="10"/>
-                            <ToggleButton Margin="90, 0, 10, 0" Name="AcceptRules"
-                                          Style="{StaticResource DiskoToggle}"/>
-                        </WrapPanel>
-                        <WrapPanel>
-                            <Label Content="Bypass reaction verification" FontFamily="/Fonts/#Montserrat"
-                                   Foreground="White" FontSize="12"
-                                   Margin="10"/>
-                            <ToggleButton Margin="0, 0, 10, 0" Name="BypassReaction"
-                                          Style="{StaticResource DiskoToggle}"/>
-                        </WrapPanel>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,10">
                     <WrapPanel VerticalAlignment="Center">
-                        <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
-                                   Foreground="White" FontSize="12"
-                                   Margin="10, 0, 35, 0"/>
-                        <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
-                                          Style="{StaticResource DiskoToggle}"/>
-                    </WrapPanel>
-                </Border>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40 ,0 ,0 ,0" Grid.Row="2">
-            <TextBlock Text="GROUP DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 20, 20, 30"/>
-            <WrapPanel>
-                <Label Content="Accounts:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
-                <ComboBox Name="TokenGroup"/>
-                <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
-                <ComboBox Name="ProxiesGroup" Margin="65, 0, 0, 0"/>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40 ,0 ,0 ,0" Grid.Row="1">
-            <TextBlock Text="GIVEAWAY DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 40, 20, 30"/>
-            <WrapPanel>
-                <Label Content="Type:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
-                <ComboBox Name="Type" Margin="30, 0, 0, 0"/>
-                <Label Content="Checker accounts:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
-                <ComboBox Name="CheckerTokenGroup"/>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40 ,0 ,0 ,0" Grid.Row="3">
-            <TextBlock Text="WEBHOOK DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 0, 20, 30"/>
-            <WrapPanel>
-                <Border Background="#181824" CornerRadius="10, 0, 10, 0" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Webhook" FontFamily="/Fonts/#Montserrat" 
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Delay (seconds)" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
-                        <WrapPanel>
-                            <TextBox Style="{StaticResource ModernTextBox}" Width="725" Height="50"
-                                 Name="Webhook"/>
-                            <ToggleButton Margin="10, 0, 20, 0" Name="SendInfoWebhook"
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="Delay" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                            <StackPanel>
+                                <WrapPanel>
+                                    <Label Content="Accept rules" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10"/>
+                                    <ToggleButton Margin="90, 0, 10, 0" Name="AcceptRules"
                                           Style="{StaticResource DiskoToggle}"/>
-                        </WrapPanel>
-                    </StackPanel>
-                </Border>
-            </WrapPanel>
-        </StackPanel>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <Label Content="Bypass reaction verification" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10"/>
+                                    <ToggleButton Margin="0, 0, 10, 0" Name="BypassReaction"
+                                          Style="{StaticResource DiskoToggle}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                            <StackPanel>
+                                <WrapPanel VerticalAlignment="Center">
+                                    <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10, 10, 72, 10"/>
+                                    <ToggleButton Margin="0, 0, 10, 0" Name="UseProxies"
+                                          Style="{StaticResource DiskoToggle}"/>
+                                </WrapPanel>
+                                <WrapPanel VerticalAlignment="Center">
+                                    <Label Content="Captcha verification" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10, 10, 20, 10"/>
+                                    <ToggleButton Margin="0, 0, 10, 0" Name="BypassCaptcha"
+                                          Style="{StaticResource DiskoToggle}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="40 ,20 ,0 ,0" Grid.Row="2">
+                    <TextBlock Text="GROUP DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 20, 20, 30"/>
+                    <WrapPanel>
+                        <Label Content="Accounts:" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
+                        <ComboBox Name="TokenGroup"/>
+                        <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
+                        <ComboBox Name="ProxiesGroup" Margin="65, 0, 0, 0"/>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="40 ,0 ,0 ,0" Grid.Row="1">
+                    <TextBlock Text="GIVEAWAY DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 40, 20, 30"/>
+                    <WrapPanel>
+                        <Label Content="Type:" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
+                        <ComboBox Name="Type" Margin="30, 0, 0, 0"/>
+                        <Label Content="Checker accounts:" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White" Margin="20, 0, 20, 0"/>
+                        <ComboBox Name="CheckerTokenGroup"/>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="40 ,20 ,0 ,0" Grid.Row="3">
+                    <TextBlock Text="WEBHOOK DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 0, 20, 30"/>
+                    <WrapPanel>
+                        <Border Background="#181824" CornerRadius="10, 0, 10, 0" Margin="20 ,0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Webhook" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource ModernTextBox}" Width="725" Height="50"
+                                 Name="Webhook"/>
+                                    <ToggleButton Margin="10, 0, 20, 0" Name="SendInfoWebhook"
+                                          Style="{StaticResource DiskoToggle}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="40 ,20 ,0 ,20">
+                    <TextBlock Text="CAPTCHA DEFAULT SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 0, 20, 30"/>
+                    <WrapPanel>
+                        <Border Background="#181824" CornerRadius="10, 0, 10, 0" Margin="20 ,0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Anti-Captcha api key" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource ModernTextBox}" Width="790" Height="50"
+                                 Name="Anti_Captcha_Key"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
         <Button Style="{StaticResource DiskoButton}" Content="Save" Grid.Row="4"
                 HorizontalAlignment="Right" Width="70"
                 Margin="100, 0, 100, 30" Click="Save_Click"/>
     </Grid>
+
+    
 </UserControl>

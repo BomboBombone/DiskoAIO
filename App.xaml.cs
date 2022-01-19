@@ -100,8 +100,6 @@ namespace DiskoAIO
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
 
-            LoadSettings();
-
             connected_to_internet = IsConnectedToInternet();
             SetAccountGroups();
 
@@ -406,20 +404,13 @@ namespace DiskoAIO
                     case "Webhook":
                         setting.Element("value").Value = Settings.Default.Webhook;
                         break;
+                    case "Anti_Captcha":
+                        setting.Element("value").Value = Settings.Default.Anti_Captcha;
+                        break;
                 };
             }
-            File.Delete(strWorkPath + @"\DiskoAIO.exe.config.bk");
-            xmlFile.Save(strWorkPath + @"\DiskoAIO.exe.config.bk");
-        }
-        private static void LoadSettings()
-        {
-            if(File.Exists(strWorkPath + @"\DiskoAIO.exe.config.bk"))
-            {
-                File.Delete(strWorkPath + @"\DiskoAIO.exe.config");
-                File.Move(strWorkPath + @"\DiskoAIO.exe.config.bk", strWorkPath + @"\DiskoAIO.exe.config");
-                Settings.Default.Reload();
-                Settings.Default.Save();
-            }
+            File.Delete(strWorkPath + @"\DiskoAIO.exe.config");
+            xmlFile.Save(strWorkPath + @"\DiskoAIO.exe.config");
         }
         private static bool IsUserAdministrator()
         {
@@ -511,6 +502,8 @@ namespace DiskoAIO
         Join,
         Leave,
         Giveaway,
-        CheckWin
+        CheckWin,
+        CheckAccount,
+        ChangeImage
     }
 }

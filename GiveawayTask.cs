@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Gateway;
 using DiskoAIO.Properties;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
@@ -167,7 +168,6 @@ namespace DiskoAIO
                                             try
                                             {
                                                 client.AddMessageReaction(channelID, messageID, reaction.Emoji.Name, reaction.Emoji.Id);
-
                                             }
                                             catch { }
                                         }
@@ -215,8 +215,6 @@ namespace DiskoAIO
                                     }
                                     catch (Exception ex)
                                     {
-                                        _progress.completed_tokens += 1;
-
                                         c++;
                                         continue;
                                     }
@@ -251,7 +249,7 @@ namespace DiskoAIO
                 }
                 Science.SendStatistic(ScienceTypes.giveaway);
                 if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
-                    App.SendToWebhook(Settings.Default.Webhook, "Giveaway task completed successfully");
+                    App.SendToWebhook(Settings.Default.Webhook, $"Giveaway task completed successfully\n**Original message:** https://discord.com/channels/{serverID}/{channelID}/{messageID}");
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -360,7 +358,7 @@ namespace DiskoAIO
             progress = new Progress(accountGroup._accounts.Count);
         }
 
-        private void Click_Button(DiscordClient client, DiscordMessage message)
+        public void Click_Button(DiscordClient client, DiscordMessage message)
         {
             string endpoint = "https://discord.com/api/v9/interactions";
             HttpRequest request = new HttpRequest()
@@ -391,9 +389,16 @@ namespace DiskoAIO
             request.AddHeader("X-Super-Properties", client.Config.SuperProperties.ToBase64());
 
             HttpResponse response;
-            string json = "{" + $"\"type\":3,\"nonce\":\"930838527963299840\",\"guild_id\":\"{serverID}\",\"channel_id\":\"{channelID}\",\"message_flags\":0,\"message_id\":\"{message.Id}\",\"application_id\":\"{message.Author.User.Id}\",\"session_id\":\"940e9ab61c31856394fff318ccbb06d8\",\"data\":"+ "{" + $"\"component_type\":2,\"custom_id\":\"{message.Components[0].Components[0].Id}\"" + "}}";
+            var socketClient = new DiscordSocketClient();
+            socketClient.Login(client.Token);
+            while (!socketClient.LoggedIn)
+                Thread.Sleep(10);
+            var rnd = new Random();
+            var salt = rnd.Next(10000, 99999).ToString();
+            string json = "{" + $"\"type\":3,\"nonce\":\"9398285279632{salt}\",\"guild_id\":\"{serverID}\",\"channel_id\":\"{channelID}\",\"message_flags\":0,\"message_id\":\"{message.Id}\",\"application_id\":\"{message.Author.User.Id}\",\"session_id\":\"{socketClient.SessionId}\",\"data\":" + "{" + $"\"component_type\":2,\"custom_id\":\"{message.Components[0].Components[0].Id}\"" + "}}";
             request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
             response = request.Post(endpoint, json, "application/json");
+            socketClient.Dispose();
             var resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
         }
         public void Resume()

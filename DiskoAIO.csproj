@@ -112,6 +112,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AccountCheckerTask.cs" />
     <Compile Include="Anarchy\Commands\Command\CommandAttribute.cs" />
     <Compile Include="Anarchy\Commands\Command\CommandBase.cs" />
     <Compile Include="Anarchy\Commands\Command\CommandHandler.cs" />
@@ -529,9 +530,32 @@
     <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\DiscordVoicePacket.cs" />
     <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\IncomingVoiceStream.cs" />
     <Compile Include="Anarchy\WebSockets\Media\Voice\VoiceConnectionProperties.cs" />
+    <Compile Include="anticaptcha-csharp\AnticaptchaBase.cs" />
+    <Compile Include="anticaptcha-csharp\ApiResponse\BalanceResponse.cs" />
+    <Compile Include="anticaptcha-csharp\ApiResponse\CreateTaskResponse.cs" />
+    <Compile Include="anticaptcha-csharp\ApiResponse\TaskResultResponse.cs" />
+    <Compile Include="anticaptcha-csharp\Api\AntiGateTask.cs" />
+    <Compile Include="anticaptcha-csharp\Api\FunCaptcha.cs" />
+    <Compile Include="anticaptcha-csharp\Api\GeeTestProxyless.cs" />
+    <Compile Include="anticaptcha-csharp\Api\HCaptcha.cs" />
+    <Compile Include="anticaptcha-csharp\Api\HCaptchaProxyless.cs" />
+    <Compile Include="anticaptcha-csharp\Api\ImageToText.cs" />
+    <Compile Include="anticaptcha-csharp\Api\RecaptchaV2.cs" />
+    <Compile Include="anticaptcha-csharp\Api\RecaptchaV2Enterprise.cs" />
+    <Compile Include="anticaptcha-csharp\Api\RecaptchaV2EnterpriseProxyless.cs" />
+    <Compile Include="anticaptcha-csharp\Api\RecaptchaV2Proxyless.cs" />
+    <Compile Include="anticaptcha-csharp\Api\RecaptchaV3Proxyless.cs" />
+    <Compile Include="anticaptcha-csharp\Helper\DebugHelper.cs" />
+    <Compile Include="anticaptcha-csharp\Helper\HttpHelper.cs" />
+    <Compile Include="anticaptcha-csharp\Helper\JsonHelper.cs" />
+    <Compile Include="anticaptcha-csharp\Helper\StringHelper.cs" />
+    <Compile Include="anticaptcha-csharp\IAnticaptchaTaskProtocol.cs" />
+    <Compile Include="anticaptcha-csharp\Program.cs" />
+    <Compile Include="CaptchaSolvers\WickSolver.cs" />
     <Compile Include="CheckerTask.cs" />
     <Compile Include="DiscordDriver.cs" />
     <Compile Include="GiveawayTask.cs" />
+    <Compile Include="ImageChangerTask.cs" />
     <Compile Include="JoinTask.cs" />
     <Compile Include="LeaveTask.cs" />
     <Compile Include="Debug.cs" />
@@ -704,6 +728,8 @@
     </EmbeddedResource>
     <Resource Include="Fonts\Montserrat.ttf" />
     <None Include="Anarchy\packages.config" />
+    <None Include="anticaptcha-csharp\App.config" />
+    <None Include="anticaptcha-csharp\packages.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -784,6 +810,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\copy_white.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="anticaptcha-csharp\.gitattributes" />
+    <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\image_icon.ico" />
+    <Resource Include="Images\account_checker.ico" />
+    <Resource Include="anticaptcha-csharp\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

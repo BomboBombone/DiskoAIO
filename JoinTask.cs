@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Gateway;
 using DiskoAIO.Properties;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
@@ -87,7 +88,11 @@ namespace DiskoAIO
 
         public bool acceptRules { get; set; }
         public bool bypassReaction { get; set; }
-        public JoinTask(AccountGroup accounts, string _invite, ulong channel_id, ProxyGroup proxies = null, int _delay = 2, int max = 0, int skip_tokens = 0, bool rules = false, bool reaction = false)
+        public bool bypassCaptcha { get; set; }
+        public ulong captchaChannelID { get; set; }
+        public string captchaBotType { get; set; }
+
+        public JoinTask(AccountGroup accounts, string _invite, ulong channel_id, ProxyGroup proxies = null, int _delay = 2, int max = 0, int skip_tokens = 0, bool rules = false, bool reaction = false, bool captcha = false, ulong captchaChannelId = 0, string captchaType = "Wick")
         {
             accountGroup = accounts;
             proxyGroup = proxies;
@@ -102,11 +107,16 @@ namespace DiskoAIO
 
             acceptRules = rules;
             bypassReaction = reaction;
+            bypassCaptcha = captcha;
+            captchaChannelID = captchaChannelId;
+            captchaBotType = captchaType;
         }
         public void Start()
         {
             if (invite.StartsWith("https://discord.gg/"))
                 invite = invite.Remove(0, "https://discord.gg/".Length);
+            if (invite.StartsWith("discord.gg/"))
+                invite = invite.Remove(0, "discord.gg/".Length);
             if (invite.StartsWith("https://discord.com/invite/"))
                 invite = invite.Remove(0, "https://discord.com/invite/".Length);
             var (guildId, channelWelcomeId) = Get_GuildID(invite);
@@ -139,6 +149,8 @@ namespace DiskoAIO
                 int verifyingCount = 0;
                 var joined_time = DateTime.Now;
                 var messages = new List<DiscordMessage>();
+                var captchaMessages = new List<DiscordMessage>();
+
                 DiscordMessage mes = null;
                 MessageReaction reaction = null;
                 while (joining)
@@ -181,11 +193,12 @@ namespace DiskoAIO
                                             if (acceptRules)
                                             {
                                                 var z = 0;
-                                                while (z < 3)
+                                                while (z < 1)
                                                 {
                                                     try
                                                     {
                                                         var accepted = client.GetGuildVerificationForm(serverID, invite);
+                                                        break;
                                                     }
                                                     catch (Exception ex) { Thread.Sleep((int)delay); z++; Debug.Log(ex.Message); }
                                                 }
@@ -221,6 +234,129 @@ namespace DiskoAIO
                                                             Debug.Log(ex.Message);
                                                         }
                                                     }
+                                                }
+                                            }
+                                            if (bypassCaptcha)
+                                            {
+                                                try
+                                                {
+                                                    if (captchaBotType == "Wick")
+                                                    {
+                                                        client.Proxy = null;
+                                                        if (captchaMessages.Count == 0 || mes == null)
+                                                        {
+                                                            captchaMessages = (List<DiscordMessage>)client.GetChannelMessages(captchaChannelID, new MessageFilters()
+                                                            {
+                                                                Limit = 50
+                                                            });
+                                                        }
+                                                        DateTime clicked = DateTime.Now;
+                                                        foreach (var message in captchaMessages)
+                                                        {
+                                                            if (message.Components.Count < 1 || message.Author.User.Id != 548410451818708993)
+                                                                continue;
+                                                            try
+                                                            {
+                                                                Click_Button(client, message);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                Debug.Log(ex.Message);
+                                                            }
+                                                        }
+                                                        var dm = client.CreateDM(548410451818708993);
+                                                        var dms = new List<DiscordMessage>();
+                                                        int tries = 0;
+                                                        while (true && tries < 20)
+                                                        {
+                                                            try
+                                                            {
+                                                                dms = (List<DiscordMessage>)dm.GetMessages(new MessageFilters()
+                                                                {
+                                                                    Limit = 50
+                                                                });
+                                                                tries++;
+                                                                if (dms.Count < 1)
+                                                                    continue;
+                                                                else
+                                                                {
+                                                                    if (dms.First().SentAt.Subtract(clicked).TotalSeconds >= 0)
+                                                                        break;
+                                                                }
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                Thread.Sleep(1000);
+                                                                tries++;
+
+                                                            }
+                                                        }
+                                                        if (tries == 20)
+                                                            throw new Exception("Token seems to be already verified");
+                                                        string solution = "";
+                                                        foreach (var message in dms)
+                                                        {
+                                                            if (message.Embed.Image != null)
+                                                            {
+                                                                solution = CaptchaSolvers.WickSolver.Solve(message.Embed.Image.Url);
+                                                                while(solution == null)
+                                                                    solution = CaptchaSolvers.WickSolver.Solve(message.Embed.Image.Url);
+
+                                                                break;
+                                                            }
+                                                        }
+                                                        dm.SendMessage(solution, false);
+                                                        tries = 0;
+                                                        while (true && tries < 3)
+                                                        {
+                                                            try
+                                                            {
+                                                                dms = (List<DiscordMessage>)dm.GetMessages(new MessageFilters()
+                                                                {
+                                                                    Limit = 50
+                                                                });
+                                                                tries++;
+                                                                if (dms.Count < 1)
+                                                                    continue;
+                                                                else
+                                                                {
+                                                                    if(dms.First().Embed != null && dms.First().Embed.Title.Contains("You have been verified!"))
+                                                                    {
+                                                                        break;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        foreach (var dm1 in dms)
+                                                                        {
+                                                                            try
+                                                                            {
+                                                                                if (dm1.Embed.Image != null)
+                                                                                {
+                                                                                    solution = CaptchaSolvers.WickSolver.Solve(dm1.Embed.Image.Url);
+                                                                                    if (solution == null)
+                                                                                        continue;
+                                                                                    dm.SendMessage(solution, false);
+
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                            catch(Exception ex) { }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                Thread.Sleep(1000);
+                                                                tries++;
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    Debug.Log(ex.Message);
                                                 }
                                             }
                                             verifyingCount--;
@@ -268,7 +404,7 @@ namespace DiskoAIO
 
                 Science.SendStatistic(ScienceTypes.join);
                 if(Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
-                    App.SendToWebhook(Settings.Default.Webhook, "Join task completed successfully");
+                    App.SendToWebhook(Settings.Default.Webhook, "Join task completed successfully\n**Server:** https://discord.gg/" + invite);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -324,7 +460,7 @@ namespace DiskoAIO
                             return;
                         while (paused)
                             Thread.Sleep(500);
-                        if (IsInGuild(client, serverID) == true && !bypassReaction && !acceptRules)
+                        if (IsInGuild(client, serverID) == true && !bypassReaction && !acceptRules && !bypassCaptcha)
                         {
                             joined++;
                             _progress.completed_tokens++;
@@ -429,6 +565,49 @@ namespace DiskoAIO
                 }
             }
             return null;
+        }
+        public void Click_Button(DiscordClient client, DiscordMessage message)
+        {
+            string endpoint = "https://discord.com/api/v9/interactions";
+            HttpRequest request = new HttpRequest()
+            {
+                KeepTemporaryHeadersOnRedirect = false,
+                EnableMiddleHeaders = false,
+                AllowEmptyHeaderValues = false
+                //SslProtocols = SslProtocols.Tls12
+            };
+            request.Proxy = client.Proxy;
+            /*
+            request.Proxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port);
+            if (_discordClient.Proxy.Username != null && _discordClient.Proxy.Username != "")
+                request.Proxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port, _discordClient.Proxy.Username, _discordClient.Proxy.Password);
+            */
+            request.ClearAllHeaders();
+            request.AddHeader("Accept", "*/*");
+            request.AddHeader("Accept-Encoding", "gzip, deflate");
+            request.AddHeader("Accept-Language", "it");
+            request.AddHeader("Authorization", client.Token);
+            request.AddHeader("Connection", "keep-alive");
+            request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
+            request.AddHeader("DNT", "1");
+            request.AddHeader("origin", "https://discord.com");
+            request.AddHeader("Referer", "https://discord.com/channels/@me");
+            request.AddHeader("TE", "Trailers");
+            request.AddHeader("User-Agent", client.Config.SuperProperties.UserAgent);
+            request.AddHeader("X-Super-Properties", client.Config.SuperProperties.ToBase64());
+
+            HttpResponse response;
+            var socketClient = new DiscordSocketClient();
+            socketClient.Login(client.Token);
+            while (!socketClient.LoggedIn)
+                Thread.Sleep(10);
+            var rnd = new Random();
+            var salt = rnd.Next(10000, 99999).ToString();
+            string json = "{" + $"\"type\":3,\"nonce\":\"9398285279632{salt}\",\"guild_id\":\"{serverID}\",\"channel_id\":\"{captchaChannelID}\",\"message_flags\":0,\"message_id\":\"{message.Id}\",\"application_id\":\"{message.Author.User.Id}\",\"session_id\":\"{socketClient.SessionId}\",\"data\":" + "{" + $"\"component_type\":2,\"custom_id\":\"{message.Components[0].Components[0].Id}\"" + "}}";
+            request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
+            response = request.Post(endpoint, json, "application/json");
+            socketClient.Dispose();
+            var resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
         }
         public void Stop()
         {

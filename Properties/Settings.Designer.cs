@@ -178,5 +178,29 @@ namespace DiskoAIO.Properties {
                 this["APIkey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Anti_Captcha {
+            get {
+                return ((string)(this["Anti_Captcha"]));
+            }
+            set {
+                this["Anti_Captcha"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool BypassCaptcha {
+            get {
+                return ((bool)(this["BypassCaptcha"]));
+            }
+            set {
+                this["BypassCaptcha"] = value;
+            }
+        }
     }
 }

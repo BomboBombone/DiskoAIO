@@ -122,6 +122,11 @@ namespace Discord
                             var json_arr = json.Split(',');
                             json = json_arr[0] + "," + json_arr[3] + "}";
                         }
+                        else
+                        {
+                            var json_arr = json.Split(',');
+                            json = "{" + json_arr[3] + ',' + json_arr[4] + "}";
+                        }
                         HttpRequest request = new HttpRequest()
                         {
                             KeepTemporaryHeadersOnRedirect = false,

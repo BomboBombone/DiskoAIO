@@ -269,5 +269,102 @@ namespace DiskoAIO.MVVM.View
                 ProxyCounter.Content = "Proxies: " + _currentGroup._proxies.Count.ToString();
             }
         }
+
+        private void Grid_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.All;
+            e.Handled = true;
+        }
+
+        private void UserControl_Drop(object sender, DragEventArgs e)
+        {
+            if (_currentGroup == null)
+            {
+                App.mainWindow.ShowNotification("Please select a group before loading your proxies");
+                return;
+            }
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                Dispatcher.Invoke(() => {
+                    App.mainWindow.ShowNotification("Adding proxies, please wait...", 1000);
+                });
+                foreach (var path in files)
+                {
+                    if (!path.EndsWith(".txt"))
+                        continue;
+
+                    List<DiscordProxy> proxies = _currentGroup._proxies;
+                    int start_count = proxies.Count;
+                    var result = CommonFileDialogResult.Ok;
+                    if (result == CommonFileDialogResult.Ok)
+                    {
+                        if (path.EndsWith(".txt"))
+                        {
+                            using (var reader = new StreamReader(path))
+                            {
+                                var line = reader.ReadLine();
+                                while (line != null && line != "")
+                                {
+                                    try
+                                    {
+                                        line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                                        var proxy_array = line.Split(':');
+                                        DiscordProxy proxy = null;
+                                        if (proxy_array.Length > 2)
+                                        {
+                                            if (int.TryParse(proxy_array[1], out var port))
+                                                proxy = new DiscordProxy(proxy_array[0], port, proxy_array[2], proxy_array[3]);
+                                            else
+                                                proxy = new DiscordProxy(proxy_array[2], int.Parse(proxy_array[3]), proxy_array[0], proxy_array[1]);
+                                        }
+                                        else
+                                        {
+                                            proxy = new DiscordProxy(proxy_array[0], int.Parse(proxy_array[1]));
+                                        }
+                                        line = reader.ReadLine();
+                                        proxies.Add(proxy);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Dispatcher.Invoke(() => {
+                                            App.mainWindow.ShowNotification("Format of selected proxies seems to be wrong.\nHint: {host}:{port}:{username}:{password}");
+                                        });
+                                        return;
+                                    }
+                                }
+                            }
+                            _currentGroup._proxies = proxies;
+                            Dispatcher.Invoke(() =>
+                            {
+                                ListProxies.ItemsSource = _currentGroup._proxies;
+                                ListProxies.Items.Refresh();
+                                App.mainWindow.ShowNotification("Proxies added successfully: " + (proxies.Count - start_count).ToString());
+                                UpdateProxyCount();
+                            });
+                            while (true)
+                            {
+                                try
+                                {
+                                    using (var writer = new StreamWriter(App.strWorkPath + "\\proxies\\" + _currentGroup._name + ".txt"))
+                                    {
+                                        foreach (var proxy in proxies)
+                                        {
+                                            writer.WriteLine(proxy.ToString());
+                                        }
+                                    }
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Thread.Sleep(1000);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

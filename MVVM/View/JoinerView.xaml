@@ -24,6 +24,10 @@
                        FontSize="12" Foreground="White" Margin="20, 0"
                        Name="ProxiesLabel"/>
                 <ComboBox Name="ProxiesGroup"/>
+                <Label Content="Captcha type:" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White" Margin="20, 0"
+                       Name="CaptchaBotLabel"/>
+                <ComboBox Name="CaptchaBotGroup" ContextMenuClosing="Captcha_Change" />
             </WrapPanel>
         </StackPanel>
         <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
@@ -40,10 +44,18 @@
                 </Border>
                 <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Name="VerificationChannelBorder">
                     <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Verification channel ID" FontFamily="/Fonts/#Montserrat" 
+                        <Label Content="Reaction channel ID" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                         <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
                                  Name="ChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Name="CaptchaChannelBorder">
+                    <StackPanel  Margin="5, 5, 0, 0">
+                        <Label Content="Captcha channel ID" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="CaptchaChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
                     </StackPanel>
                 </Border>
             </WrapPanel>
@@ -82,24 +94,36 @@
                             <Label Content="Accept rules" FontFamily="/Fonts/#Montserrat"
                                    Foreground="White" FontSize="12"
                                    Margin="10"/>
-                            <ToggleButton Margin="90, 0, 10, 0" Name="AcceptRules"
+                            <ToggleButton Margin="55, 0, 10, 0" Name="AcceptRules"
                                           Style="{StaticResource DiskoToggle}"/>
                         </WrapPanel>
                         <WrapPanel>
-                            <Label Content="Bypass reaction verification" FontFamily="/Fonts/#Montserrat"
+                            <Label Content="Reaction verification" FontFamily="/Fonts/#Montserrat"
                                    Foreground="White" FontSize="12"
                                    Margin="10"/>
-                            <ToggleButton Margin="0, 0, 10, 0" Name="BypassReaction"
+                            <ToggleButton Margin="5, 0, 0, 0" Name="BypassReaction"
                                           Style="{StaticResource DiskoToggle}"
                                           Click="BypassReaction_Click"/>
                         </WrapPanel>
+                    </StackPanel>
+                </Border>
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,20">
+                    <StackPanel>
                         <WrapPanel VerticalAlignment="Center">
                             <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
                                    Foreground="White" FontSize="12"
-                                   Margin="10, 10, 70, 10"/>
-                            <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
+                                   Margin="10, 10, 72, 10"/>
+                            <ToggleButton Margin="0, 0, 10, 0" Name="UseProxies"
                                           Style="{StaticResource DiskoToggle}"
                                       Click="UseProxies_Click"/>
+                        </WrapPanel>
+                        <WrapPanel VerticalAlignment="Center">
+                            <Label Content="Captcha verification" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10, 10, 20, 10"/>
+                            <ToggleButton Margin="0, 0, 10, 0" Name="BypassCaptcha"
+                                          Style="{StaticResource DiskoToggle}"
+                                      Click="BypassCaptcha_Click"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>

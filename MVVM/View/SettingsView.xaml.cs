@@ -43,6 +43,8 @@ namespace DiskoAIO.MVVM.View
                             Webhook.Text = Settings.Default.Webhook;
                             UseProxies.IsChecked = Settings.Default.UseProxies;
                             SendInfoWebhook.IsChecked = Settings.Default.SendWebhook;
+                            BypassCaptcha.IsChecked = Settings.Default.BypassCaptcha;
+                            Anti_Captcha_Key.Text = Settings.Default.Anti_Captcha;
                         });
                         break;
                     }
@@ -99,6 +101,8 @@ namespace DiskoAIO.MVVM.View
             Settings.Default.CheckerGroup = (string)CheckerTokenGroup.SelectedItem;
             Settings.Default.UseProxies = (bool)UseProxies.IsChecked;
             Settings.Default.SendWebhook = (bool)SendInfoWebhook.IsChecked;
+            Settings.Default.BypassCaptcha = (bool)BypassCaptcha.IsChecked;
+            Settings.Default.Anti_Captcha = Anti_Captcha_Key.Text;
             Settings.Default.Save();
             Settings.Default.Reload();
             App.SaveSettings();

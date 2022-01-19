@@ -102,6 +102,8 @@ namespace DiskoAIO
         {
             if (invite.StartsWith("https://discord.gg/"))
                 invite = invite.Remove(0, "https://discord.gg/".Length);
+            if (invite.StartsWith("discord.gg/"))
+                invite = invite.Remove(0, "discord.gg/".Length);
             if (invite.StartsWith("https://discord.com/invite/"))
                 invite = invite.Remove(0, "https://discord.com/invite/".Length);
             var (guildId, channelWelcomeId) = JoinTask.Get_GuildID(invite);
@@ -205,7 +207,7 @@ namespace DiskoAIO
                     catch (InvalidOperationException ex) { Thread.Sleep(100); }
                 }
                 if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
-                    App.SendToWebhook(Settings.Default.Webhook, "Leave task completed successfully");
+                    App.SendToWebhook(Settings.Default.Webhook, "Leave task completed successfully\n**Server:** https://discord.gg/" + invite);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -264,6 +266,7 @@ namespace DiskoAIO
                         if (IsInGuild(client, serverID) == false)
                         {
                             joined++;
+                            _progress.completed_tokens++;
                             return;
                         }
                         else

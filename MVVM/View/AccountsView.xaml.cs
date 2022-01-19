@@ -219,12 +219,13 @@ namespace DiskoAIO.MVVM.View
                                     {
                                         token = DiscordToken.Load(token_array);
                                     });
-                                    if (task.Wait(TimeSpan.FromSeconds(2)))
+                                    if (task.Wait(TimeSpan.FromSeconds(3)))
                                         ;
                                     else
                                     {
                                         lines -= 1;
                                         seconds_remaining = (int)(lines / 3);
+                                        line = reader.ReadLine();
                                         continue;
                                     }
                                     if (token == null)
@@ -232,6 +233,8 @@ namespace DiskoAIO.MVVM.View
                                         {
                                             lines -= 1;
                                             seconds_remaining = (int)(lines / 3);
+                                            line = reader.ReadLine();
+
                                             continue;
                                         }
                                     }
@@ -447,6 +450,204 @@ namespace DiskoAIO.MVVM.View
             ListTokens.ItemsSource = _currentGroup._accounts;
             ListTokens.Items.Refresh();
             UpdateAccountCount();
+        }
+
+        private void Check_Tokens_Click(object sender, RoutedEventArgs e)
+        {
+            App.mainWindow.ShowNotification("Checking current group, invalid accounts will be deleted soon");
+            var checkerTask = new AccountCheckerTask(_currentGroup);
+            checkerTask.Start();
+            App.taskManager.AddTask(checkerTask);
+        }
+
+        private void Grid_Drop(object sender, DragEventArgs e)
+        {
+            if (_currentGroup == null)
+            {
+                App.mainWindow.ShowNotification("Please select a group before loading your accounts");
+                return;
+            }
+            if (adding_accounts)
+            {
+                App.mainWindow.ShowNotification("Another group is being filled with tokens, wait for it to finish");
+                return;
+            }
+            if (!App.IsConnectedToInternet())
+            {
+                App.mainWindow.ShowNotification("You are not connected to internet");
+                return;
+            }
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // Assuming you have one file that you care about, pass it off to whatever
+                // handling code you have defined.
+                Task.Run(() =>
+                {
+                    foreach (var file in files)
+                    {
+                        if (!file.EndsWith(".txt"))
+                            continue;
+
+                        adding_accounts = true;
+                        var result = CommonFileDialogResult.Ok;
+                        if (result == CommonFileDialogResult.Ok)
+                        {
+                            var tokens = _currentGroup._accounts;
+                            int start_count = tokens.Count;
+                            if (file.EndsWith(".txt"))
+                            {
+                                Dispatcher.Invoke(() => {
+                                    App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
+                                });
+                                int lines = 0;
+                                using (var reader = new StreamReader(file))
+                                {
+                                    var line = reader.ReadLine();
+                                    while (line != null && line != "")
+                                    {
+                                        lines += 1;
+                                        line = reader.ReadLine();
+                                    }
+                                }
+                                var group_id = _currentGroup._id;
+                                var group_name = _currentGroup._name;
+                                var group_index = App.accountsGroups.IndexOf(_currentGroup);
+
+                                seconds_remaining = (int)(lines / 3);
+                                using (var reader = new StreamReader(file))
+                                {
+                                    var line = reader.ReadLine();
+                                    while (line != null && line != "")
+                                    {
+                                        try
+                                        {
+                                            line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                                            var token_array = line.Split(':');
+                                            DiscordToken token = null;
+                                            var task = Task.Run(() =>
+                                            {
+                                                token = DiscordToken.Load(token_array);
+                                            });
+                                            if (task.Wait(TimeSpan.FromSeconds(3)))
+                                                ;
+                                            else
+                                            {
+                                                lines -= 1;
+                                                seconds_remaining = (int)(lines / 3);
+                                                line = reader.ReadLine();
+                                                continue;
+                                            }
+                                            if (token == null)
+                                            {
+                                                {
+                                                    lines -= 1;
+                                                    seconds_remaining = (int)(lines / 3);
+                                                    line = reader.ReadLine();
+
+                                                    continue;
+                                                }
+                                            }
+                                            if (tokens.Contains(token))
+                                            {
+                                                lines -= 1;
+                                                seconds_remaining = (int)(lines / 3);
+
+                                                continue;
+                                            }
+                                            line = reader.ReadLine();
+                                            tokens.Add(token);
+
+                                            lines -= 1;
+                                            seconds_remaining = (int)(lines / 3);
+
+                                            Dispatcher.Invoke(() =>
+                                            {
+                                                if (_currentGroup._name == group_name)
+                                                {
+                                                    App.accountsView.ListTokens.ItemsSource = tokens;
+                                                    App.accountsView.ListTokens.Items.Refresh();
+                                                }
+                                                UpdateAccountCount();
+
+                                            });
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Dispatcher.Invoke(() => {
+                                                App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
+                                            });
+                                            return;
+                                        }
+                                    }
+                                }
+                                Dispatcher.Invoke(() =>
+                                {
+                                    ListTokens.ItemsSource = _currentGroup._accounts;
+                                    ListTokens.Items.Refresh();
+                                    App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
+                                    UpdateAccountCount();
+                                });
+
+                                while (true)
+                                {
+                                    try
+                                    {
+                                        using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
+                                        {
+                                            foreach (var token in tokens)
+                                            {
+                                                if (token == null)
+                                                    continue;
+                                                writer.WriteLine(token.ToString());
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Thread.Sleep(100);
+                                    }
+                                }
+                                App.accountsGroups[group_index]._accounts = tokens;
+
+                            }
+                        }
+
+                    }
+                    adding_accounts = false;
+                });
+
+            }
+        }
+
+        private void Grid_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.All;
+            e.Handled = true;
+        }
+
+        private void Change_Image_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog();
+            dialog.Title = "Select images folder";
+            dialog.IsFolderPicker = true;
+            dialog.AddToMostRecentlyUsedList = true;
+            dialog.EnsureFileExists = true;
+            dialog.EnsurePathExists = true;
+            string path = "";
+            var result = CommonFileDialogResult.Ok;
+            Dispatcher.Invoke(() => result = dialog.ShowDialog());
+            if (result == CommonFileDialogResult.Ok)
+            {
+                path = dialog.FileName;
+                var changerTask = new ImageChangerTask(_currentGroup, path);
+                changerTask.Start();
+                App.taskManager.AddTask(changerTask);
+                App.mainWindow.ShowNotification("Image changer task started successfully");
+            }
         }
     }
 }

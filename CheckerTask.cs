@@ -21,7 +21,7 @@ namespace DiskoAIO
         }
         public string Type
         {
-            get { return "Checker"; }
+            get { return "Giveaway checker"; }
         }
         private Progress _progress;
         public Progress progress
@@ -226,7 +226,7 @@ namespace DiskoAIO
                     if (win != "\n")
                         App.SendToWebhook(Settings.Default.Webhook, win, "https://discord.com/channels/" + serverID + '/' + channelID + '/' + messageID);
                     else
-                        App.SendToWebhook(Settings.Default.Webhook, "No winners for this giveaway, you'll be lucky next time");
+                        App.SendToWebhook(Settings.Default.Webhook, "No winners for this giveaway, you'll be lucky next time", "https://discord.com/channels/" + serverID + '/' + channelID + '/' + messageID);
                 }
                 Running = false;
                 paused = false;

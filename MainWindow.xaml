@@ -24,7 +24,7 @@
         </Storyboard>
     </Window.Resources>
     <Border Background="#151520" CornerRadius="25" MouseDown="Window_MouseDown"
-            BorderThickness="2" BorderBrush="#443D6B">
+            BorderThickness="2" BorderBrush="#443D6B" >
         <Grid>
             <Grid.Resources>
                 <!--Set x: share to get the latest every time-->
