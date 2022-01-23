@@ -145,7 +145,13 @@ namespace DiskoAIO
                                             {
                                                 messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
                                                 {
-                                                    Limit = 50
+                                                    Limit = 1,
+                                                    AfterId = messageID
+                                                });
+                                                messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                {
+                                                    Limit = 2,
+                                                    BeforeId = messages.First().Id
                                                 });
                                                 foreach (var message in messages)
                                                 {

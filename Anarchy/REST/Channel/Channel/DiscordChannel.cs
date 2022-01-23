@@ -13,6 +13,8 @@ namespace Discord
 
         [JsonProperty("type")]
         public ChannelType Type { get; protected set; }
+        [JsonProperty("rate_limit_per_user")]
+        public int RateLimit { get; private set; }
 
 
         public bool InGuild

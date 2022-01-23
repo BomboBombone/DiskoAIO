@@ -119,7 +119,7 @@ namespace DiskoAIO
                 invite = invite.Remove(0, "discord.gg/".Length);
             if (invite.StartsWith("https://discord.com/invite/"))
                 invite = invite.Remove(0, "https://discord.com/invite/".Length);
-            var (guildId, channelWelcomeId) = Get_GuildID(invite);
+            var (guildId, channelWelcomeId) = Get_GuildID(invite, proxyGroup);
             if (guildId == "1" || guildId == null)
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -200,39 +200,47 @@ namespace DiskoAIO
                                                         var accepted = client.GetGuildVerificationForm(serverID, invite);
                                                         break;
                                                     }
-                                                    catch (Exception ex) { Thread.Sleep((int)delay); z++; Debug.Log(ex.Message); }
+                                                    catch (Exception ex) { z++; Debug.Log("Couldn't accept TOS - " + ex.Message); }
                                                 }
                                             }
                                             if (bypassReaction)
                                             {
                                                 if (messages.Count == 0 || mes == null)
                                                 {
-                                                    messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                    try
                                                     {
-                                                        Limit = 50
-                                                    });
-                                                    foreach (var message in messages)
-                                                    {
-                                                        var reactions = message.Reactions;
-                                                        foreach (var react in reactions)
+                                                        messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
                                                         {
-                                                            if (reaction == null)
-                                                                reaction = react;
-                                                            else
+                                                            Limit = 50
+                                                        });
+                                                        foreach (var message in messages)
+                                                        {
+                                                            var reactions = message.Reactions;
+                                                            foreach (var react in reactions)
                                                             {
-                                                                if (react.Count > reaction.Count)
+                                                                if (reaction == null)
                                                                     reaction = react;
+                                                                else
+                                                                {
+                                                                    if (react.Count > reaction.Count)
+                                                                        reaction = react;
+                                                                }
+
                                                             }
 
+                                                            try
+                                                            {
+                                                                client.AddMessageReaction(channelID, message.Id, reaction.Emoji.Name, reaction.Emoji.Id);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                Debug.Log(ex.Message);
+                                                            }
                                                         }
-
-                                                        try
-                                                        {
-                                                            client.AddMessageReaction(channelID, message.Id, reaction.Emoji.Name, reaction.Emoji.Id);
-                                                        }
-                                                        catch (Exception ex){
-                                                            Debug.Log(ex.Message);
-                                                        }
+                                                    }
+                                                    catch(Exception ex)
+                                                    {
+                                                        Debug.Log(ex.Message);
                                                     }
                                                 }
                                             }
@@ -366,7 +374,7 @@ namespace DiskoAIO
                                     catch (Exception ex)
                                     {
                                         _progress.completed_tokens += 1;
-                                        Debug.Log(ex.Message);
+                                        Debug.Log("Error during join - " + ex.Message);
                                         c++;
                                         continue;
                                     }
@@ -378,7 +386,8 @@ namespace DiskoAIO
                                 }
                                 if (c >= 1)
                                 {
-                                    _progress.completed_tokens += 1;
+                                    if(!hasJoined)
+                                        _progress.completed_tokens += 1;
 
                                     clients1[i] = null;
                                     clients[clients.IndexOf(client)] = null;

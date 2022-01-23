@@ -18,6 +18,7 @@ using System.Threading;
 using DiskoAIO.MVVM.View;
 using System.Runtime.InteropServices;
 using System.Runtime;
+using System.Reflection;
 
 namespace DiskoAIO
 {
@@ -33,6 +34,7 @@ namespace DiskoAIO
         public MainWindow()
         {
             InitializeComponent();
+            VersionLabel.Content = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

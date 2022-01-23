@@ -178,6 +178,8 @@ namespace Discord
                             Method = new System.Net.Http.HttpMethod(method.ToString()),
                             RequestUri = new Uri(endpoint)
                         }).GetAwaiter().GetResult();
+                        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                            throw new Exception();
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
                     }
                     else
@@ -285,7 +287,7 @@ namespace Discord
                             }
                             else
                             {
-                                json_string = json_string.Replace(",\"description\":null,\"automations\":null", "");
+                                //json_string = json_string.Replace(",\"description\":null,\"automations\":null", "");
                             }
                         }
                         json_string = "{" + json_string.Substring(desc.Length);

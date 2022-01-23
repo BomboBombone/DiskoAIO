@@ -504,6 +504,8 @@ namespace DiskoAIO
         Giveaway,
         CheckWin,
         CheckAccount,
-        ChangeImage
+        ChangeImage,
+        ChatBot,
+        ChatSpam
     }
 }

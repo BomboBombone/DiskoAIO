@@ -111,6 +111,9 @@
                     <RadioButton Content="Giveaways" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeGiveaways}"  LostFocus="Radio_LostFocus"
                              Command="{Binding GiveawaysViewCommand}"/>
+                    <RadioButton Content="Chat" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemeChat}"  LostFocus="Radio_LostFocus"
+                             Command="{Binding ChatViewCommand}"/>
                     <RadioButton Content="Proxies" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeProxies}"  LostFocus="Radio_LostFocus"
                              Command="{Binding ProxiesViewCommand}"/>
@@ -120,6 +123,7 @@
                     <RadioButton Content="Tasks" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeTasks}"  LostFocus="Radio_LostFocus"
                              Command="{Binding TasksViewCommand}"/>
+
                     <TextBlock Text="SETTINGS" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
                                Margin="30, 70, 30, 10" FontWeight="Black"/>
                     <RadioButton Content="Settings" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
@@ -129,6 +133,10 @@
             </Border>
             <ContentControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"
                             Content="{Binding CurrentView}"/>
+            <Label Name="VersionLabel" Content="v1.0.0.0" FontSize="9" 
+                    FontWeight="Black" Foreground="White" Grid.Row="2"
+                   HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                   Grid.Column="0" Margin="30,0, 0, 20"/>
             <Button Content="X" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
                     FontSize="12" FontStretch="Expanded" VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center" Margin="10, 10" FontWeight="Black"

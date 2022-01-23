@@ -27,6 +27,7 @@ namespace DiskoAIO.MVVM.View
             InitializeComponent();
 
             Type.ItemsSource = new string[] { "Reaction", "Button" };
+            ChatTypeGroup.ItemsSource = ChatView.chatTypes;
             Task.Run(() =>
             {
                 Thread.Sleep(50);
@@ -45,6 +46,9 @@ namespace DiskoAIO.MVVM.View
                             SendInfoWebhook.IsChecked = Settings.Default.SendWebhook;
                             BypassCaptcha.IsChecked = Settings.Default.BypassCaptcha;
                             Anti_Captcha_Key.Text = Settings.Default.Anti_Captcha;
+                            ResponseRate.Text = Settings.Default.AIResponseRate.ToString();
+                            ReplyRate.Text = Settings.Default.AIReplyRate.ToString();
+                            ChatTypeGroup.SelectedItem = Settings.Default.ChatType;
                         });
                         break;
                     }
@@ -92,6 +96,12 @@ namespace DiskoAIO.MVVM.View
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
+            if(!(int.TryParse(ReplyRate.Text, out var replyRate) && int.TryParse(ResponseRate.Text, out var responseRate)) || replyRate > 100 || responseRate > 100 || replyRate < 1 || responseRate < 1)
+            {
+                App.mainWindow.ShowNotification("Please select a response/reply rate between 1 and 100");
+                return;
+            }
+
             Settings.Default.BypassReaction = (bool)BypassReaction.IsChecked;
             Settings.Default.AcceptRules = (bool)AcceptRules.IsChecked;
             Settings.Default.TokenGroup = (string)TokenGroup.SelectedItem;
@@ -103,6 +113,9 @@ namespace DiskoAIO.MVVM.View
             Settings.Default.SendWebhook = (bool)SendInfoWebhook.IsChecked;
             Settings.Default.BypassCaptcha = (bool)BypassCaptcha.IsChecked;
             Settings.Default.Anti_Captcha = Anti_Captcha_Key.Text;
+            Settings.Default.AIReplyRate = int.Parse(ReplyRate.Text);
+            Settings.Default.AIResponseRate = int.Parse(ResponseRate.Text);
+            Settings.Default.ChatType = ChatTypeGroup.SelectedItem.ToString();
             Settings.Default.Save();
             Settings.Default.Reload();
             App.SaveSettings();

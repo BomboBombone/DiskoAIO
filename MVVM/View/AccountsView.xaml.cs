@@ -649,5 +649,25 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Image changer task started successfully");
             }
         }
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            var source = new List<DiscordToken>();
+
+            foreach (var o in _currentGroup._accounts)
+            {
+                if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                    o.Note != "Double click to add note..." &&
+                    to_search != "")
+                {
+                    source.Add(o);
+                }
+                else if (o.User_id.Contains(to_search))
+                    source.Add(o);
+            }
+            Clipboard.SetText(source[index].User_id);
+            App.mainWindow.ShowNotification("Successfully copied Discord ID");
+        }
     }
 }

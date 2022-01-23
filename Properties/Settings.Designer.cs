@@ -202,5 +202,41 @@ namespace DiskoAIO.Properties {
                 this["BypassCaptcha"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int AIResponseRate {
+            get {
+                return ((int)(this["AIResponseRate"]));
+            }
+            set {
+                this["AIResponseRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("40")]
+        public int AIReplyRate {
+            get {
+                return ((int)(this["AIReplyRate"]));
+            }
+            set {
+                this["AIReplyRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AI")]
+        public string ChatType {
+            get {
+                return ((string)(this["ChatType"]));
+            }
+            set {
+                this["ChatType"] = value;
+            }
+        }
     }
 }

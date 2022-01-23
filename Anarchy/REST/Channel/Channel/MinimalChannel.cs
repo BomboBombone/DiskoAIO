@@ -7,7 +7,8 @@ namespace Discord
     {
         [JsonProperty("id")]
         public ulong Id { get; private set; }
-
+        [JsonProperty("rate_limit_per_user")]
+        public int RateLimit { get; private set; }
         public MinimalChannel()
         { }
 

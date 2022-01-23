@@ -15,14 +15,16 @@ namespace DiskoAIO.MVVM.ViewModel
         public RelayCommand TasksViewCommand { get; set; }
         public RelayCommand ProxiesViewCommand { get; set; }
         public RelayCommand AccountsViewCommand { get; set; }
+        public RelayCommand ChatViewCommand { get; set; }
         public RelayCommand SettingsViewCommand { get; set; }
         //Window change commands
-        public JoinerVM JoinerVm { get; set; }
-        public GiveawaysVM GiveawaysVm { get; set; }
-        public ProxiesVM ProxiesVm { get; set; }
-        public AccountsVM AccountsVm { get; set; }
-        public TasksVM TasksVm { get; set; }
-        public SettingsVM SettingsVm { get; set; }
+        public static JoinerVM JoinerVm { get; set; } = new JoinerVM();
+        public static GiveawaysVM GiveawaysVm { get; set; } = new GiveawaysVM();
+        public static ProxiesVM ProxiesVm { get; set; } = new ProxiesVM();
+        public static AccountsVM AccountsVm { get; set; } = new AccountsVM();
+        public static TasksVM TasksVm { get; set; } = new TasksVM();
+        public static ChatVM ChatVm { get; set; } = new ChatVM();
+        public static SettingsVM SettingsVm { get; set; } = new SettingsVM();
 
         private object _currentView;
 
@@ -39,12 +41,6 @@ namespace DiskoAIO.MVVM.ViewModel
         {
             if (App.taskManager == null)
                 App.taskManager = new TasksView();
-            JoinerVm = new JoinerVM();
-            GiveawaysVm = new GiveawaysVM();
-            ProxiesVm = new ProxiesVM();
-            AccountsVm = new AccountsVM();
-            TasksVm = new TasksVM();
-            SettingsVm = new SettingsVM();
 
             CurrentView = JoinerVm;
 
@@ -67,6 +63,9 @@ namespace DiskoAIO.MVVM.ViewModel
             TasksViewCommand = new RelayCommand(o =>
             {
                 CurrentView = TasksVm;
+            });
+            ChatViewCommand = new RelayCommand(o => {
+                CurrentView = ChatVm;
             });
             SettingsViewCommand = new RelayCommand(o =>
             {
