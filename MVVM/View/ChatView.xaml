@@ -37,7 +37,8 @@
                                  Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"/>
                     </StackPanel>
                 </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,0"
+                        Name="ChannelBorder">
                     <StackPanel  Margin="5, 5, 0, 0">
                         <Label Content="Channel ID" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
@@ -94,6 +95,24 @@
                         <ToggleButton Margin="50, 0, 10, 0" Name="AllowLinks"
                                           Style="{StaticResource DiskoToggle}"/>
                     </WrapPanel>
+                </Border>
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,20" Height="80"
+                        Name="LevelChannelBorder">
+                    <StackPanel  Margin="5, 5, 0, 0">
+                        <Label Content="Level channel ID" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="LevelChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#181824" CornerRadius="10" Margin="20 ,20" Height="80"
+                        Name="MaxLvlBorder">
+                    <StackPanel  Margin="5, 5, 0, 0">
+                        <Label Content="Max level" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="MaxLvl" PreviewTextInput="textBox_PreviewTextInput"/>
+                    </StackPanel>
                 </Border>
             </WrapPanel>
             <WrapPanel Margin="0, 20">

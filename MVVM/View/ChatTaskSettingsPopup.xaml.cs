@@ -19,9 +19,45 @@ namespace DiskoAIO.MVVM.View
     /// </summary>
     public partial class ChatTaskSettingsPopup : Window
     {
-        public ChatTaskSettingsPopup()
+        public ChatTaskSettingsPopup(ulong serverID, ulong channelID, ulong userID, ulong lvlChannelID, int maxlvl)
         {
             InitializeComponent();
+
+            ServerID.Text = serverID.ToString();
+            ChannelID.Text = channelID.ToString();
+            UserID.Text = userID.ToString();
+            LvlChannelID.Text = lvlChannelID.ToString();
+            MaxLvl.Text = maxlvl.ToString();
+        }
+
+        private void Confirm_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+                this.DragMove();
+        }
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            ulong result;
+            if (!ulong.TryParse(e.Text, out result))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

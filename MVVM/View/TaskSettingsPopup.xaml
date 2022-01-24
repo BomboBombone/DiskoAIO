@@ -5,8 +5,81 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
         mc:Ignorable="d"
-        Title="TaskSettingsPopup" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        WindowStyle="None" WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" Background="Transparent"
+        Title="Chat task info" Height="430" Width="820"
+        AllowsTransparency="True" MouseDown="Window_MouseDown">
+    <Border Background="#151520" CornerRadius="25"
+            BorderThickness="2" BorderBrush="#443D6B">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Image Source="/Images/Logo.ico" Width="50" HorizontalAlignment="Left" 
+                   Margin="30, 0"/>
+            <Label Content="Task info" FontFamily="/Fonts/#Montserrat"
+                   Foreground="White" FontSize="30" VerticalAlignment="Center"
+                   Margin="100, 5, 100, 0" FontWeight="Black"/>
+            <Button Content="X" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="12" FontStretch="Expanded" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center" Margin="10, 10" FontWeight="Black"
+                    Padding="1,1,0,0" Background="Transparent" Foreground="White"
+                    x:Name="ExitButton" Style="{StaticResource ExitButtonTheme}" Click="ExitButton_Click"/>
+            <Button Content="__" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="9" FontStretch="Expanded" VerticalContentAlignment="Top"
+                    HorizontalContentAlignment="Center" FontWeight="Black" Foreground="White"
+                    Padding="1,-1,0,0" Background="Transparent" Margin="40, 10"
+                    x:Name="MinimizeButton" Style="{StaticResource MinimizeButtonTheme}" Click="MinimizeButton_Click" Grid.RowSpan="2"/>
+            <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
+                <TextBlock Text="GROUPS:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 20, 20, 17"/>
+                <WrapPanel VerticalAlignment="Center">
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Account group" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="AccountGroupBox" PreviewTextInput="textBox_PreviewTextInput"
+                                     IsReadOnly="True"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0"
+                        Name="ChannelBorder">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Proxy group" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="ProxyGroupBox" PreviewTextInput="textBox_PreviewTextInput"
+                                     IsReadOnly="True"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
+            <StackPanel Margin="40, 0, 0, 0" Grid.Row="2" Visibility="Collapsed"
+                        Name="OtherPanel">
+                <TextBlock Text="OTHER:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 20, 20, 20"/>
+                <WrapPanel>
+                    <Border Background="#181824" CornerRadius="10" Margin="20 ,0"
+                        Name="LvlChannelBorder">
+                        <StackPanel  Margin="5, 5, 0, 0">
+                            <Label Content="Other" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White" Name="OtherLabel"/>
+                            <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="OtherTextBox" PreviewTextInput="textBox_PreviewTextInput"
+                                     IsReadOnly="True"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
+            <StackPanel Margin="40, 0, 0, 0" Grid.Row="3">
+                <Button Style="{StaticResource DiskoButton}" Content="Confirm" Margin="0, -10, 40, 0"
+                        Width="100" Height="40" Click="Confirm_Click" IsDefault="True"
+                        HorizontalAlignment="Right"/>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>

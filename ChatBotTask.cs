@@ -22,7 +22,7 @@ namespace DiskoAIO
         }
         public string Type
         {
-            get { return "AI on: " + serverID; }
+            get { return "Chat bot"; }
         }
         private Progress _progress;
         public Progress progress
@@ -92,7 +92,9 @@ namespace DiskoAIO
         ulong chat_id = 0;
         int response_rate = 80;
         int error_count = 0;
-        public ChatBotTask(AccountGroup accounts, ulong userId, ulong serverId, ulong channelId, int aggressivity = 80, int ans_rate = 60, bool allow_links = false)
+        public ulong lvlChannelID = 0;
+        public int maxLvl = 1;
+        public ChatBotTask(AccountGroup accounts, ulong userId, ulong serverId, ulong channelId, int aggressivity = 80, int ans_rate = 60, bool allow_links = false, ulong lvlChanId = 0, int max = 1)
         {
             accountGroup = accounts;
             userID = userId;
@@ -101,6 +103,8 @@ namespace DiskoAIO
             response_rate = aggressivity;
             answerRate = ans_rate;
             send_links = false;
+            lvlChannelID = lvlChanId;
+            maxLvl = max;
         }
         public void Start()
         {
@@ -116,10 +120,12 @@ namespace DiskoAIO
                         AllowEmptyHeaderValues = false
                         //SslProtocols = SslProtocols.Tls12
                     };
-                    var token = accountGroup._accounts.First(o => o.User_id == userID.ToString())._token;
-                    client = new DiscordSocketClient(null, false, serverID, channelID, response_rate);
                     try
                     {
+                        var token = accountGroup._accounts.First(o => o.User_id == userID.ToString())._token;
+
+                        client = new DiscordSocketClient(null, false, serverID, channelID, response_rate, lvlChannelID, maxLvl);
+
                         client.Login(token);
                         while (!client.LoggedIn)
                             Thread.Sleep(100);
@@ -132,11 +138,11 @@ namespace DiskoAIO
                         });
                         Running = false;
                         paused = false;
+                        Debug.Log(ex.Message);
                         return;
                     }
-                    var res = request.Post(endpoint + $"?name={Regex.Replace(client.User.Username, "[^a-zA-Z0-9% ._]", string.Empty)}", "anything", "application/json");
-                    var json = JObject.Parse(res.ToString());
-                    chat_id = json.Value<ulong>("chat_id");
+
+                    chat_id = 0;
                     client.OnMessageReceived += OnMessageReceived;
 
                     while (Running)
@@ -162,26 +168,23 @@ namespace DiskoAIO
             client.answeringToMessage = true;
             HttpRequest request = new HttpRequest()
             {
-                KeepTemporaryHeadersOnRedirect = false,
-                EnableMiddleHeaders = false,
-                AllowEmptyHeaderValues = false
-                //SslProtocols = SslProtocols.Tls12
             };
 
             var json_string = '{' + $"\"chat_id\":{chat_id}, \"text\":\"{args.Message.Content}\"" + '}';
             HttpResponse res = null;
-            try
+            while (true)
             {
-                res = request.Post(endpoint, json_string, "application/json");
+                try
+                {
+                    res = request.Post(endpoint, json_string, "application/json");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                res = request.Post(endpoint + $"?name={Regex.Replace(client.User.Username, "[^a-zA-Z0-9% ._]", string.Empty)}", "anything", "application/json");
-                var json = JObject.Parse(res.ToString());
-                chat_id = json.Value<ulong>("chat_id");
-                json_string = '{' + $"\"chat_id\":{chat_id}, \"text\":\"{args.Message.Content}\"" + '}';
-                res = request.Post(endpoint, json_string, "application/json");
-            }
+
 
             if (res.StatusCode == HttpStatusCode.OK)
             {
@@ -236,6 +239,20 @@ namespace DiskoAIO
                 }
                 catch (Exception ex)
                 {
+                    if (ex.Message.Contains("diskoaio.com"))
+                    {
+                        if (error_count > 2)
+                        {
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                App.mainWindow.ShowNotification("It seems like you had some problems connecting to diskoaio.com, aborting execution");
+                            });
+                            Running = false;
+                            paused = false;
+                        }
+                        else
+                            error_count++;
+                    }
                     Debug.Log("Error during chatBot execution - " + ex.Message);
                 }
             }
@@ -244,18 +261,15 @@ namespace DiskoAIO
         private string CleanString(string input)
         {
             input = input.Replace('<', ' ').Replace('>', ' ').Replace('@', ' ').Trim('.');
-            if (input.Contains("chat_id"))
+            if (input.Contains("chat_id") || input.Contains("GG") || Regex.Replace(input, @"[^\u0000-\u007F]+", string.Empty) == "")
                 return "Ayoo";
-            var output = "";
             foreach (var word in input.Split(' '))
             {
                 try
                 {
-                    if (!ulong.TryParse(word.Trim('!'), out var userId))
+                    if (ulong.TryParse(word.Trim('!', '#'), out var userId))
                     {
-                        if (word.Contains("http") && !send_links)
-                            continue;
-                        output += word + " ";
+                        return "Hi everyone new";
                     }
                 }
                 catch(Exception ex)
@@ -263,7 +277,7 @@ namespace DiskoAIO
                     continue;
                 }
             }
-            return Regex.Replace(output, @"[^\u0000-\u007F]+", string.Empty); ;
+            return Regex.Replace(input, @"[^\u0000-\u007F]+", string.Empty); ;
         }
 
         public void Stop()

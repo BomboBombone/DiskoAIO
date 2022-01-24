@@ -61,7 +61,7 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Task is already running");
                 return;
             }
-            if(tasks[index].progress.completed_tokens == tasks[index].progress.total_tokens)
+            if(tasks[index].progress.completed_tokens == tasks[index].progress.total_tokens && !tasks[index].Running)
             {
                 App.mainWindow.ShowNotification("Task has finished executing, cannot be resumed");
                 return;
@@ -91,6 +91,23 @@ namespace DiskoAIO.MVVM.View
             tasks.Reverse();
             ListTasks.ItemsSource = tasks;
             ListTasks.Items.Refresh();
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTasks.ItemContainerGenerator.IndexFromContainer(lbItem);
+            if (tasks[index].Type == "Chat bot")
+            {
+                var popup = new ChatTaskSettingsPopup(((ChatBotTask)tasks[index]).serverID, ((ChatBotTask)tasks[index]).channelID, ((ChatBotTask)tasks[index]).userID, ((ChatBotTask)tasks[index]).lvlChannelID, ((ChatBotTask)tasks[index]).maxLvl);
+                popup.Show();
+            }
+            else
+            {
+                var currTask = tasks[index];
+                var popup = new TaskSettingsPopup(currTask.accountGroup._name, currTask.proxyGroup == null ? "None" : currTask.proxyGroup._name, true, "Delay (ms)", currTask.delay.ToString());
+                popup.Show();
+            }
         }
     }
 }

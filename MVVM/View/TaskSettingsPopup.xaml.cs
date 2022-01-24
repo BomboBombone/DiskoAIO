@@ -19,9 +19,43 @@ namespace DiskoAIO.MVVM.View
     /// </summary>
     public partial class TaskSettingsPopup : Window
     {
-        public TaskSettingsPopup()
+        public TaskSettingsPopup(string agName, string pgName, bool isOtherEnabled = false, string otherName = "", string otherValue = "")
         {
             InitializeComponent();
+            AccountGroupBox.Text = agName;
+            ProxyGroupBox.Text = pgName;
+            OtherPanel.Visibility = isOtherEnabled ? Visibility.Visible : Visibility.Collapsed;
+            OtherLabel.Content = otherName;
+            OtherTextBox.Text = otherValue;
+        }
+        private void Confirm_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+                this.DragMove();
+        }
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            ulong result;
+            if (!ulong.TryParse(e.Text, out result))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

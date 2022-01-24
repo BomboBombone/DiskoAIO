@@ -298,7 +298,7 @@ namespace Discord
                         request.AddHeader("Authorization", _discordClient.Token);
                         //request.AddHeader("Content-Type", "application/json");
                         request.AddHeader("Content-Length", (ASCIIEncoding.UTF8.GetBytes(json_string).Length).ToString());
-                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
+                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; __stripe_mid=bb9db4c2-e791-41a3-aa16-2cbff76990bc770029");
                         request.AddHeader("origin", "https://discord.com");
                         request.AddHeader("Referer", $"https://discord.com/channels/{guild_id}");
                         request.AddHeader("TE", "Trailers");
@@ -306,7 +306,7 @@ namespace Discord
                         request.AddHeader("X-Debug-Options", "bugReporterEnabled");
                         //request.AddHeader("x-fingerprint", "903995807798296608.8ycsY24VnE7UWwSqpXx2yeE-AfM");
                         request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
-
+                        request.AddHeader("x-discord-locale", "en-US");
                         var response = request.Put(endpoint, json_string, "application/json");
 
                         //var resp1 = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
@@ -319,6 +319,10 @@ namespace Discord
                 {
                     if (ex.Message.EndsWith("429"))
                         throw;
+                    if (ex.Message.EndsWith("410"))
+                    {
+                        Debug.Log("User has already verified rules");
+                    }
                     if (retriesLeft == 0)
                         throw new DiscordConnectionException();
 

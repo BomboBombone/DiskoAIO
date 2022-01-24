@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO.MVVM.ViewModel
 {
-    class TasksVM
+    public class TasksVM
     {
     }
 }

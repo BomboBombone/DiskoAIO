@@ -8,8 +8,7 @@ namespace Discord
     {
         public MessageProperties()
         {
-            var rnd = new Random();
-            _nonce = "9391714539374" + rnd.Next(10000, 99999).ToString();
+            _nonce = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
         }
 
 

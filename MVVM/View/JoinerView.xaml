@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
-             mc:Ignorable="d" 
+             mc:Ignorable="d" DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
              d:DesignHeight="670" d:DesignWidth="1000">
     <Grid>
         <Grid.RowDefinitions>

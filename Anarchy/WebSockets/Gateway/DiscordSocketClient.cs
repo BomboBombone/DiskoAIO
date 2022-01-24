@@ -11,6 +11,8 @@ using Discord.Media;
 using Discord.WebSockets;
 using Anarchy;
 using Newtonsoft.Json;
+using DiskoAIO;
+using DiskoAIO.Properties;
 
 namespace Discord.Gateway
 {
@@ -133,9 +135,10 @@ namespace Discord.Gateway
         private ulong serverID = 0;
         public bool answeringToMessage = false;
         public int response_rate = 80;
-        ulong lvlChannelID = 0;
-        int currentLvl = 0;
-        public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true, ulong guildId = 0, ulong channelId = 0, int rate = 80, ulong lvl_channel_id = 0) : base()
+        public ulong lvlChannelID = 0;
+        public int currentLvl = 0;
+        public int maxLvl = 1;
+        public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true, ulong guildId = 0, ulong channelId = 0, int rate = 80, ulong lvl_channel_id = 0, int max_lvl = 1) : base()
         {
             RequestLock = new object();
 
@@ -162,6 +165,7 @@ namespace Discord.Gateway
 
             WebSocket.OnClosed += (s, args) =>
             {
+                Debug.Log("Websocket was closed for " + this.User.Id);
                 State = GatewayConnectionState.NotConnected;
 
                 Reset();
@@ -173,13 +177,13 @@ namespace Discord.Gateway
 
                 GatewayCloseCode err = (GatewayCloseCode)args.Code;
 
-                if (LoggedIn && (lostConnection || err == GatewayCloseCode.RateLimited || err == GatewayCloseCode.SessionTimedOut || err == GatewayCloseCode.UnknownError))
+                while (LoggedIn && (lostConnection || err == GatewayCloseCode.RateLimited || err == GatewayCloseCode.SessionTimedOut || err == GatewayCloseCode.UnknownError))
                 {
                     LoggedIn = false;
+                    //Debug.Log(this.User.Id + " is trying to reconnect...");
                     Login(Token);
                 }
-                else
-                    OnLoggedOut?.Invoke(this, new LogoutEventArgs(err, args.Reason));
+                Debug.Log("Websocket reconnected for " + this.User.Id);
             };
             if (handleIncomingMessages)
                 WebSocket.OnMessageReceived += WebSocket_OnMessageReceived;
@@ -190,6 +194,10 @@ namespace Discord.Gateway
                 channelID = channelId;
                 response_rate = rate;
                 lvlChannelID = lvl_channel_id;
+                if (lvlChannelID == 0)
+                    maxLvl = 0;
+                else
+                    maxLvl = max_lvl;
                 WebSocket.OnMessageReceived += WebSocket_OnMessageReceivedMinimal;
             }
 
@@ -366,10 +374,24 @@ namespace Discord.Gateway
                                     if (newMessage.Author.User.Type == DiscordUserType.Bot)
                                         return;
                                 }
+                                foreach (var word in newMessage.Content.Split(' '))
+                                {
+                                    try
+                                    {
+                                        if (ulong.TryParse(word.Trim('!', '#'), out var userId))
+                                        {
+                                            return;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        continue;
+                                    }
+                                }
                                 if (OnMessageReceived != null &&
                                     newMessage.GuildId == serverID && newMessage.Author.User.Id != this.User.Id && newMessage.Channel.Id == channelID)
                                     Task.Run(() => OnMessageReceived.Invoke(this, new MessageEventArgs(newMessage)));
-                                if(newMessage.Channel.Id == lvlChannelID)
+                                if(lvlChannelID != 0 && newMessage.Channel.Id == lvlChannelID)
                                 {
                                     if(newMessage.Mentions != null && newMessage.Mentions.Contains(this.User))
                                     {
@@ -378,6 +400,12 @@ namespace Discord.Gateway
                                             if(word.Length < 8 && int.TryParse(word.Trim('!', '.', ','), out var level))
                                             {
                                                 currentLvl = level;
+
+                                                if (currentLvl >= maxLvl)
+                                                {
+                                                    if (Settings.Default.Webhook != "")
+                                                        App.SendToWebhook(Settings.Default.Webhook, $"<@{this.User.Id}> has reached level {currentLvl} on server: {serverID}");
+                                                }
                                                 break;
                                             }
                                         }

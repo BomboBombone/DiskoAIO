@@ -46,7 +46,9 @@ namespace DiskoAIO.MVVM.View
                 MaxTokensLabel.Content = "Reply rate (1-100)";
                 TokensSkipLabel.Content = "Response rate (1-100)";
                 GifsBorder.Visibility = Visibility.Visible;
-
+                VerificationChannelBorder.Visibility = Visibility.Visible;
+                LevelChannelBorder.Visibility = Visibility.Visible;
+                MaxLvlBorder.Visibility = Visibility.Visible;
                 MaxTokens.Text = Settings.Default.AIReplyRate.ToString();
                 SkipTokens.Text = Settings.Default.AIResponseRate.ToString();
             }
@@ -58,6 +60,9 @@ namespace DiskoAIO.MVVM.View
                 MaxTokensLabel.Content = "Max tokens";
                 GifsBorder.Visibility = Visibility.Collapsed;
                 TokensSkipLabel.Content = "Tokens to skip";
+                VerificationChannelBorder.Visibility = Visibility.Collapsed;
+                LevelChannelBorder.Visibility = Visibility.Collapsed;
+                MaxLvlBorder.Visibility = Visibility.Collapsed;
             }
         }
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -81,6 +86,9 @@ namespace DiskoAIO.MVVM.View
                 MaxTokensLabel.Content = "Reply rate (1-100)";
                 GifsBorder.Visibility = Visibility.Visible;
                 TokensSkipLabel.Content = "Response rate (1-100)";
+                VerificationChannelBorder.Visibility = Visibility.Visible;
+                LevelChannelBorder.Visibility = Visibility.Visible;
+                MaxLvlBorder.Visibility = Visibility.Visible;
             }
             else
             {
@@ -90,6 +98,9 @@ namespace DiskoAIO.MVVM.View
                 MaxTokensLabel.Content = "Max tokens";
                 GifsBorder.Visibility = Visibility.Collapsed;
                 TokensSkipLabel.Content = "Tokens to skip";
+                VerificationChannelBorder.Visibility = Visibility.Collapsed;
+                LevelChannelBorder.Visibility = Visibility.Collapsed;
+                MaxLvlBorder.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -139,12 +150,13 @@ namespace DiskoAIO.MVVM.View
             }
             if (ChannelID.Text.Length != 18 || !ulong.TryParse(ChannelID.Text, out var channelId))
             {
-                App.mainWindow.ShowNotification("Please input a valid server ID");
+                App.mainWindow.ShowNotification("Please input a valid channel ID");
                 return;
             }
-            if (!File.Exists(MessagePath.Text) && ChatTypeGroup.SelectedItem.ToString() != "AI")
+            ulong lvlChannelId = 0;
+            if ((LevelChannelID.Text.Length != 18 || !ulong.TryParse(LevelChannelID.Text, out lvlChannelId)) && LevelChannelID.Text != "")
             {
-                App.mainWindow.ShowNotification("Specified text file does not exist");
+                App.mainWindow.ShowNotification("Please input a valid level channel ID");
                 return;
             }
             if (ChatTypeGroup.SelectedItem == null)
@@ -154,17 +166,31 @@ namespace DiskoAIO.MVVM.View
             }
             else if (ChatTypeGroup.SelectedItem.ToString() == "AI")
             {
-                if(skip > 100 || skip < 1)
+                if (skip > 100 || skip < 1)
                 {
                     App.mainWindow.ShowNotification("Invalid response rate, choose between 1% and 100%");
                     return;
                 }
-                var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked);
-                task.Start();
-                App.taskManager.AddTask(task);
+                try
+                {
+                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, lvlChannelId, int.Parse(MaxLvl.Text));
+                    task.Start();
+                    App.taskManager.AddTask(task);
+                }
+                catch
+                {
+                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked);
+                    task.Start();
+                    App.taskManager.AddTask(task);
+                }
             }
             else
             {
+                if (!File.Exists(MessagePath.Text))
+                {
+                    App.mainWindow.ShowNotification("Specified text file does not exist");
+                    return;
+                }
                 var task = new ChatTask(accounts, serverId, userId, MessagePath.Text, delay);
                 task.Start();
                 App.taskManager.AddTask(task);

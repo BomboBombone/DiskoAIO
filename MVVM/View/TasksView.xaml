@@ -38,7 +38,7 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="75"/>
+                            <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
                         <Ellipse x:Name="StateCheckmark"  Margin="45, 0, 0, 0" Visibility="Visible"  Grid.Column="0"
                         Width="10" Height="10">
@@ -57,14 +57,15 @@
                         <Label Content="{Binding Account}"  Grid.Column="2" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="185"/>
                         <Label Content="{Binding Proxy}" Grid.Column="3" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
-                               VerticalAlignment="Center" Width="180"/>
-                        <WrapPanel Grid.Column="4">
+                               VerticalAlignment="Center" Width="170"/>
+                        <WrapPanel Grid.Column="4" Width="100">
                             <Button Style="{StaticResource PauseButton}" x:Name="PauseButton" Click="Pause_Click" IsEnabled="{Binding Running}"
                                     Width="25"/>
                             <Button Style="{StaticResource PlayButton}" x:Name="PlayButton" Click="Play_Click"
                                     Width="25"/>
                             <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton" Click="Delete_Click"
                                     Width="25"/>
+                            <Button Style="{StaticResource PencilButton}" x:Name="PencilButton" Width="25" Click="Settings_Click"/>
                         </WrapPanel>
                     </Grid>
                 </DataTemplate>

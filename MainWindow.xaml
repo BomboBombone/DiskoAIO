@@ -3,14 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DiskoAIO" xmlns:viewmodel="clr-namespace:DiskoAIO.MVVM.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
+        xmlns:local="clr-namespace:DiskoAIO" xmlns:viewmodel="clr-namespace:DiskoAIO.MVVM.ViewModel"
         mc:Ignorable="d"
         xmlns:viewModel="clr-namespace:DiskoAIO.MVVM.ViewModel" xmlns:system="clr-namespace:System;assembly=mscorlib"
         Title="Disko" Height="720" Width="1280"
         WindowStyle="None"
         ResizeMode="NoResize"
         Background="Transparent"
-        AllowsTransparency="True" UseLayoutRounding="True">
+        AllowsTransparency="True">
     <Window.DataContext>
         <viewModel:MainViewModel/>
     </Window.DataContext>
