@@ -43,7 +43,7 @@ namespace DiskoAIO.MVVM.View
                             ProxiesGroup.SelectedItem = Settings.Default.ProxyGroup;
                             Webhook.Text = Settings.Default.Webhook;
                             UseProxies.IsChecked = Settings.Default.UseProxies;
-                            SendInfoWebhook.IsChecked = Settings.Default.SendWebhook;
+                            //SendInfoWebhook.IsChecked = Settings.Default.SendWebhook;
                             BypassCaptcha.IsChecked = Settings.Default.BypassCaptcha;
                             Anti_Captcha_Key.Text = Settings.Default.Anti_Captcha;
                             ResponseRate.Text = Settings.Default.AIResponseRate.ToString();

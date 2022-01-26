@@ -18,13 +18,13 @@ namespace DiskoAIO.MVVM.ViewModel
         public RelayCommand ChatViewCommand { get; set; }
         public RelayCommand SettingsViewCommand { get; set; }
         //Window change commands
-        public JoinerVM JoinerVm { get; set; } = new JoinerVM();
-        public GiveawaysVM GiveawaysVm { get; set; } = new GiveawaysVM();
-        public ProxiesVM ProxiesVm { get; set; } = new ProxiesVM();
-        public AccountsVM AccountsVm { get; set; } = new AccountsVM();
-        public TasksVM TasksVm { get; set; } = new TasksVM();
-        public ChatVM ChatVm { get; set; } = new ChatVM();
-        public SettingsVM SettingsVm { get; set; } = new SettingsVM();
+        public JoinerView JoinerView { get; set; } = new JoinerView();
+        public GiveawayView GiveawaysView { get; set; } = new GiveawayView();
+        public ProxiesView ProxiesView { get; set; } = new ProxiesView();
+        public AccountsView AccountsView { get; set; } = new AccountsView();
+        public TasksView TasksView { get; set; } = new TasksView();
+        public ChatView ChatView { get; set; } = new ChatView();
+        public SettingsView SettingsView { get; set; } = new SettingsView();
 
         private object _currentView;
 
@@ -42,34 +42,34 @@ namespace DiskoAIO.MVVM.ViewModel
             if (App.taskManager == null)
                 App.taskManager = new TasksView();
 
-            CurrentView = JoinerVm;
+            CurrentView = JoinerView;
 
             JoinerViewCommand = new RelayCommand(o =>
             {
-                CurrentView = JoinerVm;
+                CurrentView = JoinerView;
             });
             GiveawaysViewCommand = new RelayCommand(o =>
             {
-                CurrentView = GiveawaysVm;
+                CurrentView = GiveawaysView;
             });
             ProxiesViewCommand = new RelayCommand(o =>
             {
-                CurrentView = ProxiesVm;
+                CurrentView = ProxiesView;
             });
             AccountsViewCommand = new RelayCommand(o =>
             {
-                CurrentView = AccountsVm;
+                CurrentView = AccountsView;
             });
             TasksViewCommand = new RelayCommand(o =>
             {
-                CurrentView = TasksVm;
+                CurrentView = TasksView;
             });
             ChatViewCommand = new RelayCommand(o => {
-                CurrentView = ChatVm;
+                CurrentView = ChatView;
             });
             SettingsViewCommand = new RelayCommand(o =>
             {
-                CurrentView = SettingsVm;
+                CurrentView = SettingsView;
             });
         }
     }

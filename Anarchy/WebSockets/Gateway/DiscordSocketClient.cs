@@ -138,7 +138,8 @@ namespace Discord.Gateway
         public ulong lvlChannelID = 0;
         public int currentLvl = 0;
         public int maxLvl = 1;
-        public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true, ulong guildId = 0, ulong channelId = 0, int rate = 80, ulong lvl_channel_id = 0, int max_lvl = 1) : base()
+        public BobbyAPI _bobby = null;
+        public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true, ulong guildId = 0, ulong channelId = 0, int rate = 80, ulong lvl_channel_id = 0, int max_lvl = 1, BobbyAPI bobby = null) : base()
         {
             RequestLock = new object();
 
@@ -198,6 +199,7 @@ namespace Discord.Gateway
                     maxLvl = 0;
                 else
                     maxLvl = max_lvl;
+                _bobby = bobby;
                 WebSocket.OnMessageReceived += WebSocket_OnMessageReceivedMinimal;
             }
 
@@ -362,7 +364,60 @@ namespace Discord.Gateway
                                     }
                                     catch (DiscordHttpException) { }
                                 }
-
+                                if(newMessage.MessageReference != null &&
+                                    newMessage.GuildId == serverID && newMessage.Author.User.Id != this.User.Id && newMessage.Channel.Id == channelID &&
+                                    newMessage.Author.User.Type == DiscordUserType.User)
+                                {
+                                    Task.Run(() =>
+                                    {
+                                        try
+                                        {
+                                            foreach (var word in newMessage.Content.Split(' '))
+                                            {
+                                                try
+                                                {
+                                                    if (ulong.TryParse(word.Trim('!', '#'), out var userId))
+                                                    {
+                                                        return;
+                                                    }
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    continue;
+                                                }
+                                            }
+                                            var statement = newMessage.Content;
+                                            var mes = this.GetChannelMessages(newMessage.Channel.Id, new MessageFilters()
+                                            {
+                                                Limit = 1,
+                                                BeforeId = newMessage.MessageReference.MessageId
+                                            });
+                                            mes = this.GetChannelMessages(newMessage.Channel.Id, new MessageFilters()
+                                            {
+                                                Limit = 1,
+                                                AfterId = mes[0].Id
+                                            });
+                                            string prev_statement = mes[0].Content;
+                                            foreach (var word in prev_statement.Split(' '))
+                                            {
+                                                try
+                                                {
+                                                    if (ulong.TryParse(word.Trim('!', '#'), out var userId))
+                                                    {
+                                                        return;
+                                                    }
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    continue;
+                                                }
+                                            }
+                                            if (mes[0].Author.User.Type == DiscordUserType.User)
+                                                _bobby.Train(statement, prev_statement);
+                                        }
+                                        catch(Exception ex) { }
+                                    });
+                                }
                                 if (!(newMessage.Mentions != null && newMessage.Mentions.Contains(this.User)))
                                 {
                                     var rnd = new Random();
@@ -374,6 +429,7 @@ namespace Discord.Gateway
                                     if (newMessage.Author.User.Type == DiscordUserType.Bot)
                                         return;
                                 }
+                                
                                 foreach (var word in newMessage.Content.Split(' '))
                                 {
                                     try
@@ -400,7 +456,11 @@ namespace Discord.Gateway
                                             if(word.Length < 8 && int.TryParse(word.Trim('!', '.', ','), out var level))
                                             {
                                                 currentLvl = level;
-
+                                                Task.Run(() =>
+                                                {
+                                                    if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
+                                                        App.SendToWebhook(Settings.Default.Webhook, $"{this.User.Username} advanced to level {currentLvl} in server {serverID}");
+                                                });
                                                 if (currentLvl >= maxLvl)
                                                 {
                                                     if (Settings.Default.Webhook != "")

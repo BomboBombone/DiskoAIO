@@ -317,6 +317,8 @@ namespace Discord
                 }
                 catch (Exception ex) when (ex is HttpException || ex is HttpRequestException || ex is TaskCanceledException)
                 {
+                    if (ex.Message.Contains("403"))
+                        throw new DiscordHttpException(new DiscordHttpError());
                     if (ex.Message.EndsWith("429"))
                         throw;
                     if (ex.Message.EndsWith("410"))

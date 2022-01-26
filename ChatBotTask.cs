@@ -88,12 +88,13 @@ namespace DiskoAIO
         private int answerRate { get; set; }
         private bool send_links { get; set; }
         public DiscordSocketClient client { get; set; }
-        string endpoint = "https://diskoaio.com/api/chat";
+        string endpoint = "https://diskoaio.com/api/bobby";
         ulong chat_id = 0;
         int response_rate = 80;
         int error_count = 0;
         public ulong lvlChannelID = 0;
         public int maxLvl = 1;
+        public BobbyAPI bobby = null;
         public ChatBotTask(AccountGroup accounts, ulong userId, ulong serverId, ulong channelId, int aggressivity = 80, int ans_rate = 60, bool allow_links = false, ulong lvlChanId = 0, int max = 1)
         {
             accountGroup = accounts;
@@ -123,8 +124,8 @@ namespace DiskoAIO
                     try
                     {
                         var token = accountGroup._accounts.First(o => o.User_id == userID.ToString())._token;
-
-                        client = new DiscordSocketClient(null, false, serverID, channelID, response_rate, lvlChannelID, maxLvl);
+                        bobby = new BobbyAPI(serverID);
+                        client = new DiscordSocketClient(null, false, serverID, channelID, response_rate, lvlChannelID, maxLvl, bobby);
 
                         client.Login(token);
                         while (!client.LoggedIn)
@@ -164,36 +165,29 @@ namespace DiskoAIO
             {
                 return;
             }
-
+            var start = DateTime.Now;
             client.answeringToMessage = true;
-            HttpRequest request = new HttpRequest()
+            var res = bobby.GetResponse(args.Message.Content);
+            try
             {
-            };
-
-            var json_string = '{' + $"\"chat_id\":{chat_id}, \"text\":\"{args.Message.Content}\"" + '}';
-            HttpResponse res = null;
-            while (true)
-            {
-                try
+                if (args.Message.Channel.RateLimit != 0)
+                    Thread.Sleep(args.Message.Channel.RateLimit);
+                DiscordMessage msg = null;
+                var end = DateTime.Now;
+                if ((end - start).TotalSeconds < 2)
+                    Thread.Sleep(2000 - (int)(end - start).TotalMilliseconds);
+                if (args.Message.Mentions != null && args.Message.Mentions.Contains(client.User))
                 {
-                    res = request.Post(endpoint, json_string, "application/json");
-                    break;
+                    msg = MessageExtensions.SendMessage(client, args.Message.Channel.Id, new MessageProperties()
+                    {
+                        ReplyTo = new MessageReference(serverID, args.Message.Id),
+                        Content = CleanString(res.ToString())
+                    });
                 }
-                catch (Exception ex)
+                else
                 {
-                    Debug.Log(ex.Message);
-                }
-            }
-
-
-            if (res.StatusCode == HttpStatusCode.OK)
-            {
-                try
-                {
-                    if (args.Message.Channel.RateLimit != 0)
-                        Thread.Sleep(args.Message.Channel.RateLimit);
-                    DiscordMessage msg = null;
-                    if (args.Message.Mentions != null && args.Message.Mentions.Contains(client.User))
+                    var rnd = new Random();
+                    if (rnd.Next(0, 100) < answerRate)
                     {
                         msg = MessageExtensions.SendMessage(client, args.Message.Channel.Id, new MessageProperties()
                         {
@@ -201,60 +195,47 @@ namespace DiskoAIO
                             Content = CleanString(res.ToString())
                         });
                     }
-
                     else
                     {
-                        var rnd = new Random();
-                        if(rnd.Next(0, 100) > response_rate)
+                        msg = MessageExtensions.SendMessage(client, args.Message.Channel.Id, new MessageProperties()
                         {
-                            msg = MessageExtensions.SendMessage(client, args.Message.Channel.Id, new MessageProperties()
-                            {
-                                ReplyTo = new MessageReference(serverID, args.Message.Id),
-                                Content = CleanString(res.ToString())
-                            });
-                        }
-                        else
-                        {
-                            msg = MessageExtensions.SendMessage(client, args.Message.Channel.Id, new MessageProperties()
-                            {
-                                Content = CleanString(res.ToString())
-                            });
-                        }
+                            Content = CleanString(res.ToString())
+                        });
                     }
-                    if (msg == null)
-                        error_count++;
-                    else
-                        error_count = 0;
+                }
+                if (msg == null)
+                    error_count++;
+                else
+                    error_count = 0;
 
-                    if(error_count > 2)
+                if (error_count > 2)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        App.mainWindow.ShowNotification($"Account {client.User.Username} seems to have been banned or restricted from server {args.Message.Guild.Id}");
+                    });
+                    Running = false;
+                    paused = false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("diskoaio.com"))
+                {
+                    if (error_count > 2)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            App.mainWindow.ShowNotification($"Account {client.User.Username} seems to have been banned or restricted from server {args.Message.Guild.Id}");
+                            App.mainWindow.ShowNotification("It seems like you had some problems connecting to diskoaio.com, aborting execution");
                         });
                         Running = false;
                         paused = false;
                     }
-
+                    else
+                        error_count++;
                 }
-                catch (Exception ex)
-                {
-                    if (ex.Message.Contains("diskoaio.com"))
-                    {
-                        if (error_count > 2)
-                        {
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                App.mainWindow.ShowNotification("It seems like you had some problems connecting to diskoaio.com, aborting execution");
-                            });
-                            Running = false;
-                            paused = false;
-                        }
-                        else
-                            error_count++;
-                    }
-                    Debug.Log("Error during chatBot execution - " + ex.Message);
-                }
+                Debug.Log("Error during chatBot execution - " + ex.Message);
             }
             client.answeringToMessage = false;
         }
@@ -263,6 +244,10 @@ namespace DiskoAIO
             input = input.Replace('<', ' ').Replace('>', ' ').Replace('@', ' ').Trim('.');
             if (input.Contains("chat_id") || input.Contains("GG") || Regex.Replace(input, @"[^\u0000-\u007F]+", string.Empty) == "")
                 return "Ayoo";
+            if (input.ToLower().Contains("i'm from") || input.ToLower().Contains("im from") || input.ToLower().Contains("i am from"))
+                return "I'm from Asia man";
+            if (input.Contains("http") && !send_links)
+                return "hm";
             foreach (var word in input.Split(' '))
             {
                 try

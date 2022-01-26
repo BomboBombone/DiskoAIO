@@ -158,16 +158,26 @@ namespace DiskoAIO
                                                 }
                                                 catch
                                                 {
-                                                    messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                    try
                                                     {
-                                                        Limit = 1,
-                                                        BeforeId = messageID
-                                                    });
-                                                    messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                        messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                        {
+                                                            Limit = 1,
+                                                            BeforeId = messageID
+                                                        });
+                                                        messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                        {
+                                                            Limit = 2,
+                                                            AfterId = messages.First().Id
+                                                        });
+                                                    }
+                                                    catch
                                                     {
-                                                        Limit = 2,
-                                                        AfterId = messages.First().Id
-                                                    });
+                                                        messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                        {
+                                                            Limit = 50
+                                                        });
+                                                    }
                                                 }
                                                 foreach (var message in messages)
                                                 {
