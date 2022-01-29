@@ -412,8 +412,19 @@ namespace Discord.Gateway
                                                     continue;
                                                 }
                                             }
-                                            if (mes[0].Author.User.Type == DiscordUserType.User)
-                                                _bobby.Train(statement, prev_statement);
+                                            try
+                                            {
+                                                if (mes[0].Author.User.Type == DiscordUserType.User)
+                                                    _bobby.Train(statement, prev_statement);
+                                            }
+                                            catch(Exception ex)
+                                            {
+                                                if (ex.Message.Contains("404"))
+                                                {
+                                                    _bobby = new BobbyAPI(serverID);
+                                                    _bobby.Train(statement, prev_statement);
+                                                }
+                                            }
                                         }
                                         catch(Exception ex) { }
                                     });
@@ -471,6 +482,80 @@ namespace Discord.Gateway
                                         }
                                     }
                                 }
+                            }
+                            break;
+                        case "GUILD_MEMBER_UPDATE":
+                            if (Config.Cache || OnGuildMemberUpdated != null)
+                            {
+                                GuildMember member = message.Data.ToObject<GuildMember>().SetClient(this);
+
+                                if (Config.Cache && member.User.Id == User.Id)
+                                {
+                                    SocketGuild guild = this.GetCachedGuild(member.GuildId);
+                                    if (guild == null)
+                                    {
+                                        if (member.JoinedAt != null)
+                                        {
+                                            ClientMembers[member.GuildId] = member;
+                                            break;
+                                        }
+                                    }
+
+                                    // Discord doesn't send us the user's JoinedAt on updates
+                                    member.JoinedAt = guild.ClientMember.JoinedAt;
+                                    ClientMembers[guild.Id] = member;
+                                    var curr_roles = this.GetCachedGuild(message.Data.ToObject<GuildMember>().Guild.Id).ClientMember.Roles;
+                                    if (curr_roles !=
+                                        message.Data.ToObject<GuildMember>().Roles)
+                                    {
+                                        Task.Run(() =>
+                                        {
+                                            var roles = message.Data.ToObject<GuildMember>().Roles.ToList().Except(curr_roles).ToList();
+                                            foreach (ulong role_id in roles)
+                                            {
+                                                var role = this.GetGuildRole(role_id);
+                                                if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
+                                                    App.SendToWebhook(Settings.Default.Webhook, $"You just obtained a new role: {role.Name}!");
+                                            }
+                                        });
+
+                                    }
+                                    break;
+                                }
+
+                                if (OnGuildMemberUpdated != null)
+                                    Task.Run(() => OnGuildMemberUpdated.Invoke(this, new GuildMemberEventArgs(member)));
+                            }
+                            break;
+                        case "GUILD_DELETE":
+                            {
+                                UnavailableGuild guild = message.Data.ToObject<UnavailableGuild>();
+
+                                if (Lurking.HasValue && Lurking.Value == guild.Id)
+                                    Lurking = null;
+
+                                if (Config.Cache)
+                                {
+                                    if (guild.Unavailable)
+                                        GuildCache[guild.Id].Unavailable = true;
+                                    else
+                                    {
+                                        GuildCache.Remove(guild.Id);
+                                        GuildSettings.Remove(guild.Id);
+                                    }
+                                }
+                                if(guild.Id == serverID)
+                                {
+                                    Task.Run(() =>
+                                    {
+                                        this.Logout();
+                                        App.mainWindow.ShowNotification($"AI task stopped for {guild.Id}, account banned");
+                                        if(Settings.Default.Webhook != "")
+                                            App.SendToWebhook(Settings.Default.Webhook, $"{this.User.Username} has been banned from server {guild.Id}");
+                                    });
+                                }
+                                if (OnLeftGuild != null)
+                                    Task.Run(() => OnLeftGuild.Invoke(this, new GuildUnavailableEventArgs(guild)));
                             }
                             break;
                     }

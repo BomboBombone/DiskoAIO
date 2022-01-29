@@ -25,6 +25,7 @@ using System.Net;
 using System.Security.Principal;
 using System.Net.Http;
 using System.Threading;
+using System.Net.Sockets;
 
 namespace DiskoAIO
 {
@@ -46,6 +47,7 @@ namespace DiskoAIO
         public static ProxiesView proxiesView { get; set; } = null;
         public static AccountsView accountsView { get; set; } = null;
         public static TasksView taskManager { get; set; } = null;
+        public static string localIP { get; set; }
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
@@ -101,6 +103,17 @@ namespace DiskoAIO
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
 
             connected_to_internet = IsConnectedToInternet();
+            if (!connected_to_internet)
+            {
+                MessageBox.Show("Make sure to be connected to internet before attempting to open this application");
+                return;
+            }
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+            {
+                socket.Connect("8.8.8.8", 65530);
+                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                localIP = endPoint.Address.ToString();
+            }
             SetAccountGroups();
 
             AppDomain currentDomain = AppDomain.CurrentDomain;

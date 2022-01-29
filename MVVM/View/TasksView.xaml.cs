@@ -39,7 +39,7 @@ namespace DiskoAIO.MVVM.View
             {
                 refreshUI = new System.Timers.Timer();
                 refreshUI.Elapsed += new ElapsedEventHandler(OnElapsedTime);
-                refreshUI.Interval = 500;
+                refreshUI.Interval = 1000;
                 refreshUI.Enabled = true;
             }
         }

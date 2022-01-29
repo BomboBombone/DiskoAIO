@@ -88,7 +88,7 @@ namespace DiskoAIO
         private int answerRate { get; set; }
         private bool send_links { get; set; }
         public DiscordSocketClient client { get; set; }
-        string endpoint = "https://diskoaio.com/api/bobby";
+
         ulong chat_id = 0;
         int response_rate = 80;
         int error_count = 0;
@@ -170,11 +170,12 @@ namespace DiskoAIO
             var res = bobby.GetResponse(args.Message.Content);
             try
             {
-                if (args.Message.Channel.RateLimit != 0)
-                    Thread.Sleep(args.Message.Channel.RateLimit);
+
                 DiscordMessage msg = null;
                 var end = DateTime.Now;
-                if ((end - start).TotalSeconds < 2)
+                if (args.Message.Channel.RateLimit != 0)
+                    Thread.Sleep(args.Message.Channel.RateLimit * 1000 - (int)(end - start).TotalMilliseconds);
+                else if ((end - start).TotalSeconds < 2)
                     Thread.Sleep(2000 - (int)(end - start).TotalMilliseconds);
                 if (args.Message.Mentions != null && args.Message.Mentions.Contains(client.User))
                 {

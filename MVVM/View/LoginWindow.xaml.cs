@@ -68,7 +68,7 @@ namespace DiskoAIO.MVVM.View
         {
             if (mac_addr == null || mac_addr == "")
                 mac_addr = GetMacAddress();
-            string address = "https://diskoaio.com/api/accounts?mac=" + mac_addr;
+            string address = "http://diskoaio.com/api/accounts?mac=" + mac_addr;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + App.api_key);
             var response = client.SendAsync(new HttpRequestMessage()
