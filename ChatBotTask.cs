@@ -208,17 +208,6 @@ namespace DiskoAIO
                     error_count++;
                 else
                     error_count = 0;
-
-                if (error_count > 2)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        App.mainWindow.ShowNotification($"Account {client.User.Username} seems to have been banned or restricted from server {args.Message.Guild.Id}");
-                    });
-                    Running = false;
-                    paused = false;
-                }
-
             }
             catch (Exception ex)
             {

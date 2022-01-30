@@ -158,29 +158,33 @@ namespace Discord
                     }
                     else if (_discordClient.Proxy == null || _discordClient.Proxy.Type == ProxyType.HTTP)
                     {
-                        HttpClient client = new HttpClient(new HttpClientHandler() { Proxy = _discordClient.Proxy == null ? null : new WebProxy(_discordClient.Proxy.Host, _discordClient.Proxy.Port) });
-                        if (_discordClient.Proxy != null && _discordClient.Proxy.Username != null)
+                        HttpRequest request = new HttpRequest()
                         {
-                            ICredentials credentials = new NetworkCredential(_discordClient.Proxy.Username, _discordClient.Proxy.Password);
-                            var proxyURI = new Uri(string.Format("{0}:{1}", "http://" + _discordClient.Proxy.Host, _discordClient.Proxy.Port));
-                            client = new HttpClient(new HttpClientHandler() { Proxy = _discordClient.Proxy == null ? null : new WebProxy(proxyURI, true, null, credentials)});
-                        }
+                            KeepTemporaryHeadersOnRedirect = false,
+                            EnableMiddleHeaders = false,
+                            AllowEmptyHeaderValues = false
+                            //SslProtocols = SslProtocols.Tls12
+                        };
+                        request.Proxy = _discordClient.Proxy;
+                        request.ClearAllHeaders();
+                        request.AddHeader("Accept", "*/*");
+                        request.AddHeader("Accept-Encoding", "gzip, deflate");
+                        request.AddHeader("Accept-Language", "it");
                         var token = _discordClient.Token == null ? null : _discordClient.Token;
 
                         if (_discordClient.Token != null)
-                            client.DefaultRequestHeaders.Add("Authorization", _discordClient.Token);
-                        client.DefaultRequestHeaders.Add("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
-                        client.DefaultRequestHeaders.Add("Accept-Language", "it");
-                        client.DefaultRequestHeaders.Add("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
-                        var response = client.SendAsync(new HttpRequestMessage()
+                            request.AddHeader("Authorization", _discordClient.Token);
+                        request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
+                        request.AddHeader("Accept-Language", "it");
+                        request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
+                        var jsonContent = new Leaf.xNet.StringContent(json)
                         {
-                            Content = hasData ? new System.Net.Http.StringContent(json, Encoding.UTF8, "application/json") : null,
-                            Method = new System.Net.Http.HttpMethod(method.ToString()),
-                            RequestUri = new Uri(endpoint)
-                        }).GetAwaiter().GetResult();
-                        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                            ContentType = "application/json"
+                        };
+                        var response = request.Raw(method, endpoint, jsonContent);
+                        if (response.StatusCode == Leaf.xNet.HttpStatusCode.BadRequest)
                             throw new Exception();
-                        resp = new DiscordHttpResponse((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
+                        resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }
                     else
                     {

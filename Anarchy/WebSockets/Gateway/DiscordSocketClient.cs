@@ -419,11 +419,11 @@ namespace Discord.Gateway
                                             }
                                             catch(Exception ex)
                                             {
-                                                if (ex.Message.Contains("404"))
-                                                {
-                                                    _bobby = new BobbyAPI(serverID);
-                                                    _bobby.Train(statement, prev_statement);
-                                                }
+                                                //if (ex.Message.Contains("404"))
+                                                //{
+                                                //    _bobby = new BobbyAPI(serverID);
+                                                //    _bobby.Train(statement, prev_statement);
+                                                //}
                                             }
                                         }
                                         catch(Exception ex) { }
