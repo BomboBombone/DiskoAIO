@@ -61,7 +61,14 @@ namespace DiskoAIO
                             try
                             {
                                 if (App.IsConnectedToInternet())
+                                {
                                     client = new DiscordClient(part);
+
+                                    client.QueryGuilds(new GuildQueryOptions()
+                                    {
+                                        Limit = 1
+                                    });
+                                }
                                 else
                                     throw new InvalidTokenException("");
                                 return new DiscordToken(client.User.Id, part, client.User.PhoneNumber == null ? false : true, client.User.EmailVerified);

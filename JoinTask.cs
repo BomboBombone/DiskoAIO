@@ -200,7 +200,7 @@ namespace DiskoAIO
                                                         var accepted = client.GetGuildVerificationForm(serverID, invite);
                                                         break;
                                                     }
-                                                    catch (Exception ex) { z++; Debug.Log("Couldn't accept TOS - " + ex.Message); }
+                                                    catch (Exception ex) { z++; Debug.Log("Couldn't accept TOS - " + ex.StackTrace); }
                                                 }
                                             }
                                             if (bypassReaction)
@@ -234,13 +234,13 @@ namespace DiskoAIO
                                                             }
                                                             catch (Exception ex)
                                                             {
-                                                                Debug.Log(ex.Message);
+                                                                Debug.Log(ex.StackTrace);
                                                             }
                                                         }
                                                     }
                                                     catch(Exception ex)
                                                     {
-                                                        Debug.Log(ex.Message);
+                                                        Debug.Log(ex.StackTrace);
                                                     }
                                                 }
                                             }
@@ -364,7 +364,7 @@ namespace DiskoAIO
                                                 }
                                                 catch (Exception ex)
                                                 {
-                                                    Debug.Log(ex.Message);
+                                                    Debug.Log(ex.StackTrace);
                                                 }
                                             }
                                             verifyingCount--;
@@ -374,7 +374,7 @@ namespace DiskoAIO
                                     catch (Exception ex)
                                     {
                                         _progress.completed_tokens += 1;
-                                        Debug.Log("Error during join - " + ex.Message);
+                                        Debug.Log("Error during join - " + ex.StackTrace);
                                         c++;
                                         continue;
                                     }

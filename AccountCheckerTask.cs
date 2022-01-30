@@ -101,7 +101,10 @@ namespace DiskoAIO
                     try
                     {
                         var client = new DiscordClient(token._token);
-                        client.GetActiveSubscription();
+                        client.QueryGuilds(new GuildQueryOptions()
+                        {
+                            Limit = 1
+                        });
                         validTokens.Add(token);
                     }
                     catch (Exception ex)
