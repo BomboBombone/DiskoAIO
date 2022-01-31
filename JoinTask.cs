@@ -222,7 +222,7 @@ namespace DiskoAIO
                                                                     reaction = react;
                                                                 else
                                                                 {
-                                                                    if (react.Count > reaction.Count)
+                                                                    if (react.Count < reaction.Count)
                                                                         reaction = react;
                                                                 }
 

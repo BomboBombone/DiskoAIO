@@ -106,6 +106,7 @@ namespace DiskoAIO
             send_links = false;
             lvlChannelID = lvlChanId;
             maxLvl = max;
+            _progress.total_tokens = max;
         }
         public void Start()
         {
@@ -148,7 +149,9 @@ namespace DiskoAIO
 
                     while (Running)
                     {
-                        Thread.Sleep(100);
+                        if (progress.completed_tokens < client.currentLvl)
+                            _progress.Add(1);
+                        Thread.Sleep(1000);
                     }
                     client.Dispose();
                 }

@@ -157,6 +157,8 @@ namespace DiskoAIO
                         return;
                     while (paused)
                         Thread.Sleep(500);
+                    if (found)
+                        break;
                     if (message.Id != messageID)
                         continue;
                     found = true;
@@ -171,6 +173,42 @@ namespace DiskoAIO
                             }
                         }
                         catch { continue; }
+                    }
+                    if(message.Embed != null)
+                    {
+                        if(message.Embed.Description != null)
+                        {
+                            mes_arr = message.Embed.Description.Split('@');
+                            foreach (var piece in mes_arr)
+                            {
+                                try
+                                {
+                                    if (ulong.TryParse(piece.Substring(0, 19).Trim('!').Trim('>'), out var user_id))
+                                    {
+                                        user_ids = user_ids.Append(user_id).ToArray();
+                                    }
+                                }
+                                catch { continue; }
+                            }
+                        }
+                        if(message.Embed.Fields != null && message.Embed.Fields.Count > 0)
+                        {
+                            foreach(var field in message.Embed.Fields)
+                            {
+                                mes_arr = field.Content.Split('@');
+                                foreach (var piece in mes_arr)
+                                {
+                                    try
+                                    {
+                                        if (ulong.TryParse(piece.Substring(0, 19).Trim('!').Trim('>'), out var user_id))
+                                        {
+                                            user_ids = user_ids.Append(user_id).ToArray();
+                                        }
+                                    }
+                                    catch { continue; }
+                                }
+                            }
+                        }
                     }
                 }
                 while (!found)
@@ -204,7 +242,8 @@ namespace DiskoAIO
                     }
                 }
                 string win = "\n";
-
+                var wins = new List<string>();
+                int i = 0;
                 foreach (var user_id in user_ids)
                 {
                     if (!checking)
@@ -216,15 +255,27 @@ namespace DiskoAIO
                         if (account._user_id == user_id)
                         {
                             Science.SendStatistic(ScienceTypes.win);
-
+                            if(i == 8)
+                            {
+                                wins.Add(win);
+                                win = "\n";
+                                i = 0;
+                            }
                             win += $"<@!{account._user_id}>\n||{account._token}||\n";
+                            i++;
                         }
+
                     }
                 }
+                if (wins.Count < 1 || win != "\n")
+                    wins.Add(win);
                 if (Settings.Default.Webhook != null)
                 {
-                    if (win != "\n")
-                        App.SendToWebhook(Settings.Default.Webhook, win, "https://discord.com/channels/" + serverID + '/' + channelID + '/' + messageID);
+                    if (wins[0] != "\n")
+                    {
+                        foreach(string win_mes in wins)
+                            App.SendToWebhook(Settings.Default.Webhook, win_mes, "https://discord.com/channels/" + serverID + '/' + channelID + '/' + messageID);
+                    }
                     else
                         App.SendToWebhook(Settings.Default.Webhook, "No winners for this giveaway, you'll be lucky next time", "https://discord.com/channels/" + serverID + '/' + channelID + '/' + messageID);
                 }

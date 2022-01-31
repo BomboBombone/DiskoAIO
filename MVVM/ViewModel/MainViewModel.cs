@@ -1,5 +1,6 @@
 ﻿using DiskoAIO.Core;
 using DiskoAIO.MVVM.View;
+using DiskoAIO.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,18 +48,60 @@ namespace DiskoAIO.MVVM.ViewModel
             JoinerViewCommand = new RelayCommand(o =>
             {
                 CurrentView = JoinerView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                JoinerView.ProxiesGroup.ItemsSource = source;
+                source = new string[] { };
+                foreach (var group in App.accountsGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                JoinerView.TokenGroup.ItemsSource = source;
             });
             GiveawaysViewCommand = new RelayCommand(o =>
             {
                 CurrentView = GiveawaysView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                GiveawaysView.ProxiesGroup.ItemsSource = source;
+                source = new string[] { };
+                foreach (var group in App.accountsGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                GiveawaysView.TokenGroup.ItemsSource = source;
             });
             ProxiesViewCommand = new RelayCommand(o =>
             {
                 CurrentView = ProxiesView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                ProxiesView.GroupComboBox.ItemsSource = source;
+                if (App.proxyGroups.Count > 0)
+                    ProxiesView.ListProxies.SelectedItem = App.proxyGroups.First()._name;
+                ProxiesView.ListProxies.SelectedItem = Settings.Default.ProxyGroup;
             });
             AccountsViewCommand = new RelayCommand(o =>
             {
                 CurrentView = AccountsView;
+                var source = new string[] { };
+                foreach (var group in App.accountsGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                AccountsView.GroupComboBox.ItemsSource = source;
+                if (App.accountsGroups.Count > 0)
+                    AccountsView.ListTokens.SelectedItem = App.accountsGroups.First()._name;
+                AccountsView.ListTokens.SelectedItem = Settings.Default.TokenGroup;
             });
             TasksViewCommand = new RelayCommand(o =>
             {
@@ -66,10 +109,28 @@ namespace DiskoAIO.MVVM.ViewModel
             });
             ChatViewCommand = new RelayCommand(o => {
                 CurrentView = ChatView;
+                var source = new string[] { };
+                foreach (var group in App.accountsGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                ChatView.TokenGroup.ItemsSource = source;
             });
             SettingsViewCommand = new RelayCommand(o =>
             {
                 CurrentView = SettingsView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                SettingsView.ProxiesGroup.ItemsSource = source;
+                source = new string[] { };
+                foreach (var group in App.accountsGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                SettingsView.TokenGroup.ItemsSource = source;
             });
         }
     }

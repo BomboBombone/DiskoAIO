@@ -344,6 +344,19 @@ namespace DiskoAIO.MVVM.View
 
         private void Note_Double_Click(object sender, MouseButtonEventArgs e)
         {
+            var source = new List<DiscordToken>();
+            foreach (var o in _currentGroup._accounts)
+            {
+                if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                    o.Note != "Double click to add note..." &&
+                    to_search != "")
+                {
+                    source.Add(o);
+                }
+                else if (o.User_id.Contains(to_search))
+                    source.Add(o);
+            }
+
             var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
             var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
             var input = new InputPopupView("Add your note here", 64, false, _currentGroup._accounts[index].Note);
@@ -356,9 +369,11 @@ namespace DiskoAIO.MVVM.View
             if (input.answer == "")
                 input.answer = "Double tap to add note...";
 
-            _currentGroup._accounts[index].Note = input.answer;
+            source[index].Note = input.answer;
+            ListTokens.ItemsSource = source;
             App.mainWindow.ShowNotification("Successfully saved note");
             ListTokens.Items.Refresh();
+            TokenCounter.Content = ListTokens.Items.Count.ToString() + " accounts";
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e)

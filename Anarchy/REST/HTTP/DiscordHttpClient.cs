@@ -321,6 +321,7 @@ namespace Discord
                 }
                 catch (Exception ex) when (ex is HttpException || ex is HttpRequestException || ex is TaskCanceledException)
                 {
+                    Debug.Log(ex.StackTrace);
                     if (ex.Message.Contains("403"))
                         throw new DiscordHttpException(new DiscordHttpError());
                     if (ex.Message.EndsWith("429"))
@@ -336,6 +337,8 @@ namespace Discord
                 }
                 catch (RateLimitException ex)
                 {
+                    Debug.Log("Rate limited");
+
                     if (_discordClient.Config.RetryOnRateLimit)
                         Thread.Sleep(ex.RetryAfter);
                     else
