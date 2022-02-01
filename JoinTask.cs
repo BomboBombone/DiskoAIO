@@ -215,6 +215,7 @@ namespace DiskoAIO
                                                         });
                                                         foreach (var message in messages)
                                                         {
+                                                            reaction = null;
                                                             var reactions = message.Reactions;
                                                             foreach (var react in reactions)
                                                             {
@@ -222,7 +223,7 @@ namespace DiskoAIO
                                                                     reaction = react;
                                                                 else
                                                                 {
-                                                                    if (react.Count < reaction.Count)
+                                                                    if (react.Count > reaction.Count)
                                                                         reaction = react;
                                                                 }
 

@@ -10,8 +10,8 @@ namespace DiskoAIO
 {
     public class BobbyAPI
     {
-        public static string endpoint = "http://164.68.112.164:9000/chat";
-        private ulong chat_id = 0;
+        public static string endpoint = "http://164.68.112.164/chat";
+        public ulong chat_id = 0;
         //public HttpRequest request { get; set; } = null;
         public BobbyAPI(ulong server_id)
         {

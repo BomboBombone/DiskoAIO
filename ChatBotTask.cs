@@ -126,6 +126,17 @@ namespace DiskoAIO
                     {
                         var token = accountGroup._accounts.First(o => o.User_id == userID.ToString())._token;
                         bobby = new BobbyAPI(serverID);
+                        if(bobby.chat_id == 0)
+                        {
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                App.mainWindow.ShowNotification("Couldn't get chats for Bobby, servers may be down...");
+                            });
+                            Running = false;
+                            paused = false;
+                            Debug.Log("Couldn't fetch a valid Bobby chat");
+                            return;
+                        }
                         client = new DiscordSocketClient(null, false, serverID, channelID, response_rate, lvlChannelID, maxLvl, bobby);
 
                         client.Login(token);
