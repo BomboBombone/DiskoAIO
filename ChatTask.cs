@@ -93,7 +93,7 @@ namespace DiskoAIO
             accountGroup = accounts;
             serverID = serverId;
             channelID = channelId;
-            delay = _delay;
+            delay = _delay * 1000;
             persist = _persist;
             using (var reader = new StreamReader(mes_path))
             {
@@ -109,7 +109,10 @@ namespace DiskoAIO
             if (max_tokens == 0)
                 max_tokens = accountGroup._accounts.Count;
             skip = skip_tokens;
-            _progress = new Progress(accountGroup._accounts.Count);
+            if (!_persist)
+                _progress = new Progress(max);
+            else
+                _progress = new Progress(0);
         }
         public void Start()
         {
@@ -139,98 +142,97 @@ namespace DiskoAIO
                     }
                     catch (Exception ex) { }
                     int i = 0;
-                    try
+                    do
                     {
-                        var clients1 = new DiscordClient[clients.Count + 10];
-                        clients.CopyTo(clients1);
-                        foreach (var client in clients1)
+                        try
                         {
-                            if (!chatting)
-                                break;
-                            if (client == null)
-                                continue;
-                            while (paused)
-                                Thread.Sleep(500);
-                            try
+                            var clients1 = new DiscordClient[clients.Count + 10];
+                            clients.CopyTo(clients1);
+                            foreach (var client in clients1)
                             {
-                                bool hasJoined = false;
-                                int c = 0;
-                                while (!hasJoined && c < 1)
+                                if (!chatting)
+                                    break;
+                                if (client == null)
+                                    continue;
+                                while (paused)
+                                    Thread.Sleep(500);
+                                try
                                 {
-                                    try
+                                    bool hasJoined = false;
+                                    int c = 0;
+                                    while (!hasJoined && c < 1)
                                     {
-                                        joined_time = DateTime.Now;
-                                        var rnd = new Random();
-                                        var message = message_list[rnd.Next(0, message_list.Length - 1)];
-                                        var sent = MessageExtensions.SendMessage(client, channelID, new MessageProperties()
+                                        try
                                         {
-                                            Content = message
-                                        });
-                                        if (sent == null)
-                                        {
-                                            try
+                                            joined_time = DateTime.Now;
+                                            var rnd = new Random();
+                                            var message = message_list[rnd.Next(0, message_list.Length - 1)];
+                                            var sent = MessageExtensions.SendMessage(client, channelID, new MessageProperties()
                                             {
-                                                var socketClient = new DiscordSocketClient();
-                                                socketClient.Login(client.Token);
-                                                while (!socketClient.LoggedIn)
-                                                    Thread.Sleep(10);
-                                                socketClient.Logout();
-                                                joined_time = DateTime.Now;
-                                                rnd = new Random();
-                                                message = message_list[rnd.Next(0, message_list.Length - 1)];
-                                                MessageExtensions.SendMessage(client, channelID, new MessageProperties()
+                                                Content = message
+                                            });
+                                            if (sent == null)
+                                            {
+                                                try
                                                 {
-                                                    Content = message
-                                                });
-                                            }
-                                            catch (Exception ex1)
-                                            {
-                                                Debug.Log(ex1.Message);
+                                                    var socketClient = new DiscordSocketClient();
+                                                    socketClient.Login(client.Token);
+                                                    while (!socketClient.LoggedIn)
+                                                        Thread.Sleep(10);
+                                                    socketClient.Logout();
+                                                    joined_time = DateTime.Now;
+                                                    rnd = new Random();
+                                                    message = message_list[rnd.Next(0, message_list.Length - 1)];
+                                                    MessageExtensions.SendMessage(client, channelID, new MessageProperties()
+                                                    {
+                                                        Content = message
+                                                    });
+                                                }
+                                                catch (Exception ex1)
+                                                {
+                                                    Debug.Log(ex1.Message);
+                                                }
                                             }
                                         }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Debug.Log(ex.Message);
+                                        catch (Exception ex)
+                                        {
+                                            Debug.Log(ex.Message);
 
+                                            hasJoined = true;
+
+                                            progress.Add(1);
+
+                                            c++;
+                                            continue;
+                                        }
+                                        if (!hasJoined)
+                                            progress.Add(1);
+
+                                        joined++;
                                         hasJoined = true;
+                                    }
+                                    if (c >= 1)
+                                    {
+                                        if (!hasJoined)
+                                            progress.Add(1);
 
-                                        _progress.completed_tokens += 1;
-
-                                        c++;
                                         continue;
                                     }
-                                    if(!hasJoined)
-                                        _progress.completed_tokens += 1;
-
-                                    joined++;
-                                    hasJoined = true;
-                                    clients1[i] = null;
-                                    clients[clients.IndexOf(client)] = null;
                                 }
-                                if (c >= 1)
+                                catch (Exception ex)
                                 {
-                                    if (!hasJoined)
-                                        _progress.completed_tokens += 1;
-
-                                    clients1[i] = null;
-                                    clients[clients.IndexOf(client)] = null;
-                                    token_list.Remove(client.Token);
-                                    continue;
+                                    Debug.Log(ex.Message);
                                 }
+                                i++;
+                                var to_sleep = delay - (DateTime.Now - joined_time).TotalMilliseconds;
+                                if (to_sleep < 0)
+                                    to_sleep = 0;
+                                Thread.Sleep((int)to_sleep);
                             }
-                            catch (Exception ex)
-                            {
-                                Debug.Log(ex.Message);
-                            }
-                            i++;
-                            var to_sleep = delay - (DateTime.Now - joined_time).TotalMilliseconds;
-                            if (to_sleep < 0)
-                                to_sleep = 0;
-                            Thread.Sleep((int)to_sleep);
                         }
+                        catch (InvalidOperationException ex) { Thread.Sleep(100); }
                     }
-                    catch (InvalidOperationException ex) { Thread.Sleep(100); }
+                    while (persist);
                 }
                 if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
                     App.SendToWebhook(Settings.Default.Webhook, "Chat task completed successfully\n**Server ID:** " + serverID);

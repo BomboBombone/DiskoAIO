@@ -95,9 +95,12 @@ namespace DiskoAIO
         public ulong lvlChannelID = 0;
         public int maxLvl = 1;
         public BobbyAPI bobby = null;
-        public ChatBotTask(AccountGroup accounts, ulong userId, ulong serverId, ulong channelId, int aggressivity = 80, int ans_rate = 60, bool allow_links = false, ulong lvlChanId = 0, int max = 1)
+        public bool _rotate = false;
+
+        public ChatBotTask(AccountGroup accounts, ulong userId, ulong serverId, ulong channelId, int aggressivity = 80, int ans_rate = 60, bool allow_links = false, ulong lvlChanId = 0, int max = 1, bool rotate = false, ProxyGroup proxies = null)
         {
             accountGroup = accounts;
+            proxyGroup = proxies;
             userID = userId;
             serverID = serverId;
             channelID = channelId;
@@ -107,6 +110,7 @@ namespace DiskoAIO
             lvlChannelID = lvlChanId;
             maxLvl = max;
             _progress.total_tokens = max;
+            _rotate = rotate;
         }
         public void Start()
         {
@@ -137,7 +141,8 @@ namespace DiskoAIO
                             Debug.Log("Couldn't fetch a valid Bobby chat");
                             return;
                         }
-                        client = new DiscordSocketClient(null, false, serverID, channelID, response_rate, lvlChannelID, maxLvl, bobby);
+
+                        client = new DiscordSocketClient(null, false, serverID, channelID, response_rate, lvlChannelID, maxLvl, bobby, _rotate, _rotate == true ? _accountGroup : null, _rotate == true ? _proxyGroup : null);
 
                         client.Login(token);
                         while (!client.LoggedIn)
@@ -157,9 +162,18 @@ namespace DiskoAIO
 
                     chat_id = 0;
                     client.OnMessageReceived += OnMessageReceived;
+                    if (client.GetCachedGuild(serverID) == null)
+                        client.GuildCache.Add(serverID, (SocketGuild)client.GetGuild(serverID));
 
-                    while (Running)
+                    while (Running || paused)
                     {
+                        while (paused)
+                            Thread.Sleep(10);
+                        if (!client.isRunning)
+                        {
+                            Running = false;
+                            paused = false;
+                        }
                         if (progress.completed_tokens < client.currentLvl)
                             _progress.Add(1);
                         Thread.Sleep(1000);

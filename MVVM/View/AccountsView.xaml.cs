@@ -1,4 +1,5 @@
-﻿using DiskoAIO.Properties;
+﻿using Discord.Gateway;
+using DiskoAIO.Properties;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -683,6 +684,73 @@ namespace DiskoAIO.MVVM.View
             }
             Clipboard.SetText(source[index].User_id);
             App.mainWindow.ShowNotification("Successfully copied Discord ID");
+        }
+
+        private void Clean_Click(object sender, RoutedEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            var source = new List<DiscordToken>();
+
+            foreach (var o in _currentGroup._accounts)
+            {
+                if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                    o.Note != "Double click to add note..." &&
+                    to_search != "")
+                {
+                    source.Add(o);
+                }
+                else if (o.User_id.Contains(to_search))
+                    source.Add(o);
+            }
+            var popup = new WarningPopupView("Are you sure you want to leave all servers for account " + source[index].User_id + '?');
+            popup.ShowDialog();
+            if (popup.hasConfirmed)
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var client = new DiscordSocketClient();
+                        client.Login(source[index]._token);
+                        while (!client.LoggedIn)
+                            Thread.Sleep(10);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            App.mainWindow.ShowNotification("Started leaving all servers for " + client.User.Username);
+                        });
+                        var guilds = client.GetCachedGuilds();
+                        int tries = 0;
+                        while (guilds.Count == 0 && tries < 3)
+                        {
+                            Thread.Sleep(2000);
+                            guilds = client.GetCachedGuilds();
+                            tries++;
+                        }
+                        foreach (var guild in guilds)
+                        {
+                            try
+                            {
+                                guild.Leave();
+                            }
+                            catch (Exception ex)
+                            {
+                                continue;
+                            }
+                        }
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            App.mainWindow.ShowNotification("All servers have been wiped for " + client.User.Username);
+                        });
+                    }
+                    catch (Exception ex1)
+                    {
+                        Debug.Log(ex1.StackTrace);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            App.mainWindow.ShowNotification("There was an error wiping servers, please check that the account is not locked");
+                        });
+                    }
+                });
         }
     }
 }

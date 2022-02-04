@@ -13,6 +13,8 @@ using Anarchy;
 using Newtonsoft.Json;
 using DiskoAIO;
 using DiskoAIO.Properties;
+using System.Windows;
+using Leaf.xNet;
 
 namespace Discord.Gateway
 {
@@ -139,7 +141,12 @@ namespace Discord.Gateway
         public int currentLvl = 0;
         public int maxLvl = 1;
         public BobbyAPI _bobby = null;
-        public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true, ulong guildId = 0, ulong channelId = 0, int rate = 80, ulong lvl_channel_id = 0, int max_lvl = 1, BobbyAPI bobby = null) : base()
+        public bool _rotate = false;
+        AccountGroup _accounts = null;
+        ProxyGroup _proxies = null;
+        public bool isRunning = true;
+
+        public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true, ulong guildId = 0, ulong channelId = 0, int rate = 80, ulong lvl_channel_id = 0, int max_lvl = 1, BobbyAPI bobby = null, bool rotate = false, AccountGroup accounts = null, ProxyGroup proxies = null) : base()
         {
             RequestLock = new object();
 
@@ -163,7 +170,7 @@ namespace Discord.Gateway
             }
 
             WebSocket = new DiscordWebSocket<GatewayOpcode>($"wss://gateway.discord.gg/?v={Config.ApiVersion}&encoding=json");
-
+            WebSocket.OnError += WebSocket_OnError;
             WebSocket.OnClosed += (s, args) =>
             {
                 Debug.Log("Websocket was closed for " + this.User.Id);
@@ -200,6 +207,9 @@ namespace Discord.Gateway
                 else
                     maxLvl = max_lvl;
                 _bobby = bobby;
+                _rotate = rotate;
+                _accounts = accounts;
+                _proxies = proxies;
                 WebSocket.OnMessageReceived += WebSocket_OnMessageReceivedMinimal;
             }
 
@@ -218,6 +228,11 @@ namespace Discord.Gateway
                     VoiceClients[key.GuildId].Livestream.SetSessionServer(key.UserId, e);
                 }
             };
+        }
+
+        private void WebSocket_OnError(object sender, WebSocketSharp.ErrorEventArgs args)
+        {
+            Debug.Log("Error during websocket execution: " + args.Message);
         }
 
         ~DiscordSocketClient()
@@ -516,6 +531,7 @@ namespace Discord.Gateway
                                                 var role = this.GetGuildRole(role_id);
                                                 if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
                                                     App.SendToWebhook(Settings.Default.Webhook, $"You just obtained a new role: {role.Name}!");
+
                                             }
                                         });
 
@@ -548,14 +564,93 @@ namespace Discord.Gateway
                                 {
                                     Task.Run(() =>
                                     {
-                                        this.Logout();
-                                        App.mainWindow.ShowNotification($"AI task stopped for {guild.Id}, account banned");
                                         if(Settings.Default.Webhook != "")
                                             App.SendToWebhook(Settings.Default.Webhook, $"{this.User.Username} has been banned from server {guild.Id}");
+                                        if (_rotate)
+                                        {
+                                            while (true)
+                                            {
+                                                try
+                                                {
+                                                    if(_accounts._accounts.Count == 0)
+                                                    {
+                                                        Application.Current.Dispatcher.Invoke(() =>
+                                                        {
+                                                            App.mainWindow.ShowNotification($"AI task stopped for {guild.Id}, all accounts in the group banned");
+                                                        });
+                                                        isRunning = false;
+                                                        this.Reset();
+                                                        this.Logout();
+                                                        return;
+                                                    }
+                                                    _accounts._accounts = _accounts._accounts.Where(o => o._token != this.token).ToList();
+                                                    this.Reset();
+                                                    this.Logout();
+                                                    var rnd = new Random();
+                                                    var proxy = _proxies._proxies[rnd.Next(0, _proxies._proxies.Count - 1)];
+                                                    var Proxy = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
+                                                    this.Login(_accounts._accounts[rnd.Next(0, _accounts._accounts.Count - 1)]._token);
+                                                    
+                                                    var guild1 = this.GetGuild(serverID, Proxy);
+                                                    if (guild1 != null && !guild.Unavailable)
+                                                        return;
+                                                }
+                                                catch(Exception ex)
+                                                {
+                                                    Debug.Log(ex.StackTrace);
+                                                    continue;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.Logout();
+
+                                            isRunning = false;
+                                            App.mainWindow.ShowNotification($"AI task stopped for {guild.Id}, account banned");
+                                        }
                                     });
                                 }
                                 if (OnLeftGuild != null)
                                     Task.Run(() => OnLeftGuild.Invoke(this, new GuildUnavailableEventArgs(guild)));
+                            }
+                            break;
+
+                        case "CHANNEL_UPDATE":
+                            if (Config.Cache || OnChannelUpdated != null)
+                            {
+                                var channel = ((JObject)message.Data).ParseDeterministic<DiscordChannel>();
+
+                                if (Config.Cache)
+                                {
+                                    if (channel.Type == ChannelType.DM || channel.Type == ChannelType.Group)
+                                        PrivateChannels.ReplaceFirst(c => c.Id == channel.Id, (PrivateChannel)channel);
+                                    else
+                                    {
+                                        GuildChannel guildChannel = (GuildChannel)channel;
+                                        GuildCache[guildChannel.GuildId].ChannelsConcurrent.ReplaceFirst(c => c.Id == guildChannel.Id, guildChannel);
+                                    }
+                                }
+
+                                if (OnChannelUpdated != null)
+                                    Task.Run(() => OnChannelUpdated.Invoke(this, new ChannelEventArgs(channel)));
+                            }
+                            break;
+                        case "CHANNEL_DELETE":
+                            if (Config.Cache || OnChannelDeleted != null)
+                            {
+                                var channel = ((JObject)message.Data).ParseDeterministic<DiscordChannel>();
+
+                                if (Config.Cache)
+                                {
+                                    if (channel.Type == ChannelType.DM || channel.Type == ChannelType.Group)
+                                        PrivateChannels.RemoveFirst(c => c.Id == channel.Id);
+                                    else
+                                        GuildCache[((GuildChannel)channel).GuildId].ChannelsConcurrent.RemoveFirst(c => c.Id == channel.Id);
+                                }
+
+                                if (OnChannelDeleted != null)
+                                    Task.Run(() => OnChannelDeleted.Invoke(this, new ChannelEventArgs(channel)));
                             }
                             break;
                     }

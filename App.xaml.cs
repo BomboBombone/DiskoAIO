@@ -101,6 +101,8 @@ namespace DiskoAIO
 
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
+            if (File.Exists(strWorkPath + "\\logs\\log.txt"))
+                File.Delete(strWorkPath + "\\logs\\log.txt");
 
             connected_to_internet = IsConnectedToInternet();
             if (!connected_to_internet)

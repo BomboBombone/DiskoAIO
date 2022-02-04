@@ -34,7 +34,7 @@ namespace DiskoAIO
                 catch (Exception ex)
                 {
                     tries++;
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10);
                 }
             }
         }

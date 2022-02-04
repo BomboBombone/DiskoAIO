@@ -839,6 +839,7 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\clean.ico" />
     <Resource Include="Images\folder_explorer.ico" />
     <Resource Include="Images\bot_purple.ico" />
     <Resource Include="Images\bot_white.ico" />

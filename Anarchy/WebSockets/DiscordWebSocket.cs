@@ -9,6 +9,7 @@ namespace Discord.WebSockets
 {
     public class DiscordWebSocket<TOpcode> : IDisposable where TOpcode : Enum
     {
+        private object _socketLock;
         private WebSocket _socket;
 
         public delegate void MessageHandler(object sender, DiscordWebSocketMessage<TOpcode> message);
@@ -17,14 +18,19 @@ namespace Discord.WebSockets
         public delegate void CloseHandler(object sender, CloseEventArgs args);
         public event CloseHandler OnClosed;
 
+        public delegate void ErrorHandler(object sender, ErrorEventArgs args);
+        public event ErrorHandler OnError;
+
         public DiscordWebSocket(string url)
         {
+            _socketLock = new object();
             _socket = new WebSocket(url)
             {
                 Origin = "https://discordapp.com"
             };
             _socket.OnMessage += OnMessage;
             _socket.OnClose += OnClose;
+            //_socket.Compression = CompressionMethod.Deflate;
         }
 
         public void SetProxy(ProxyClient client)
@@ -35,24 +41,27 @@ namespace Discord.WebSockets
 
         public void Connect()
         {
-            try
+            lock (_socketLock)
             {
                 _socket.Connect();
-            }
-            catch
-            {
-                ;
             }
         }
 
         public void Close(ushort error, string reason)
         {
-            _socket.Close(error, reason);
+            lock (_socketLock)
+            {
+                _socket.Close(error, reason);
+            }
         }
 
         public void Send<T>(TOpcode op, T data)
         {
-            _socket.Send(JsonConvert.SerializeObject(new DiscordWebSocketRequest<T, TOpcode>(op, data)));
+            lock (_socketLock)
+            {
+                if (_socket != null) _socket.Send(JsonConvert.SerializeObject(new DiscordWebSocketRequest<T, TOpcode>(op, data)));
+                else throw new InvalidOperationException("Socket is disposed of");
+            }
         }
 
         private void OnClose(object sender, CloseEventArgs e)
@@ -67,7 +76,10 @@ namespace Discord.WebSockets
 
         public void Dispose()
         {
-            _socket = null;
+            lock (_socketLock)
+            {
+                _socket = null;
+            }
         }
     }
 }

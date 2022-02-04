@@ -33,8 +33,15 @@ namespace DiskoAIO.MVVM.View
             {
                 source1 = source1.Append(group._name).ToArray();
             }
+            var source = new string[] { };
+            foreach (var group in App.proxyGroups)
+            {
+                source = source.Append(group._name).ToArray();
+            }
             TokenGroup.ItemsSource = source1;
             TokenGroup.SelectedItem = Settings.Default.TokenGroup;
+            ProxyGroup.ItemsSource = source;
+            ProxyGroup.SelectedItem = Settings.Default.ProxyGroup;
             MinimumDelay.Text = Settings.Default.Delay.ToString();
             ChatTypeGroup.SelectedItem = chatTypes[0];
             ChatTypeGroup.SelectedItem = Settings.Default.ChatType;
@@ -49,6 +56,18 @@ namespace DiskoAIO.MVVM.View
                 VerificationChannelBorder.Visibility = Visibility.Visible;
                 LevelChannelBorder.Visibility = Visibility.Visible;
                 MaxLvlBorder.Visibility = Visibility.Visible;
+                InfiniteChatBorder.Visibility = Visibility.Collapsed;
+                RotateBorder.Visibility = Visibility.Visible;
+                if (RotateAccounts.IsChecked == true)
+                {
+                    ProxyLabel.Visibility = Visibility.Visible;
+                    ProxyGroup.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ProxyLabel.Visibility = Visibility.Collapsed;
+                    ProxyGroup.Visibility = Visibility.Collapsed;
+                }
                 MaxTokens.Text = Settings.Default.AIReplyRate.ToString();
                 SkipTokens.Text = Settings.Default.AIResponseRate.ToString();
             }
@@ -63,6 +82,8 @@ namespace DiskoAIO.MVVM.View
                 VerificationChannelBorder.Visibility = Visibility.Collapsed;
                 LevelChannelBorder.Visibility = Visibility.Collapsed;
                 MaxLvlBorder.Visibility = Visibility.Collapsed;
+                InfiniteChatBorder.Visibility = Visibility.Visible;
+                RotateBorder.Visibility = Visibility.Collapsed;
             }
         }
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -89,6 +110,9 @@ namespace DiskoAIO.MVVM.View
                 VerificationChannelBorder.Visibility = Visibility.Visible;
                 LevelChannelBorder.Visibility = Visibility.Visible;
                 MaxLvlBorder.Visibility = Visibility.Visible;
+                InfiniteChatBorder.Visibility = Visibility.Collapsed;
+                RotateBorder.Visibility = Visibility.Visible;
+
             }
             else
             {
@@ -101,6 +125,10 @@ namespace DiskoAIO.MVVM.View
                 VerificationChannelBorder.Visibility = Visibility.Collapsed;
                 LevelChannelBorder.Visibility = Visibility.Collapsed;
                 MaxLvlBorder.Visibility = Visibility.Collapsed;
+                InfiniteChatBorder.Visibility = Visibility.Visible;
+                RotateBorder.Visibility = Visibility.Collapsed;
+
+
             }
         }
 
@@ -123,6 +151,20 @@ namespace DiskoAIO.MVVM.View
             if (accounts == null)
             {
                 App.mainWindow.ShowNotification("Couldn't get specified account group, try again later");
+                return;
+            }
+            ProxyGroup proxies = null;
+            foreach (var group in App.proxyGroups)
+            {
+                if (group._name == ProxyGroup.SelectedItem.ToString())
+                {
+                    proxies = group;
+                    break;
+                }
+            }
+            if (proxies == null && (bool)RotateAccounts.IsChecked)
+            {
+                App.mainWindow.ShowNotification("Couldn't get specified proxy group, try again later");
                 return;
             }
             int skip = 0;
@@ -173,13 +215,13 @@ namespace DiskoAIO.MVVM.View
                 }
                 try
                 {
-                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, lvlChannelId, int.Parse(MaxLvl.Text));
+                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, lvlChannelId, int.Parse(MaxLvl.Text), (bool)RotateAccounts.IsChecked, (bool)RotateAccounts.IsChecked ? proxies : null);
                     task.Start();
                     App.taskManager.AddTask(task);
                 }
-                catch
+                catch(Exception ex)
                 {
-                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked);
+                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, 0, 0, (bool)RotateAccounts.IsChecked, (bool)RotateAccounts.IsChecked ? proxies : null);
                     task.Start();
                     App.taskManager.AddTask(task);
                 }
@@ -191,7 +233,7 @@ namespace DiskoAIO.MVVM.View
                     App.mainWindow.ShowNotification("Specified text file does not exist");
                     return;
                 }
-                var task = new ChatTask(accounts, serverId, userId, MessagePath.Text, delay);
+                var task = new ChatTask(accounts, serverId, channelId, MessagePath.Text, delay, max, skip, (bool)Perpetual.IsChecked);
                 task.Start();
                 App.taskManager.AddTask(task);
             }
@@ -217,6 +259,20 @@ namespace DiskoAIO.MVVM.View
                     return;
                 }
                 MessagePath.Text = path;
+            }
+        }
+
+        private void RotateAccounts_Click(object sender, RoutedEventArgs e)
+        {
+            if(RotateAccounts.IsChecked == true)
+            {
+                ProxyLabel.Visibility = Visibility.Visible;
+                ProxyGroup.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ProxyLabel.Visibility = Visibility.Collapsed;
+                ProxyGroup.Visibility = Visibility.Collapsed;
             }
         }
     }

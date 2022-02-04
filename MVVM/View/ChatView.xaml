@@ -20,6 +20,10 @@
                 <Label Content="Accounts:" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Margin="20, 0"/>
                 <ComboBox Name="TokenGroup"/>
+                <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White" Margin="20, 0"
+                       Name="ProxyLabel"/>
+                <ComboBox Name="ProxyGroup"/>
                 <Label Content="Chat type:" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Margin="20, 0"/>
                 <ComboBox Name="ChatTypeGroup" DropDownClosed="ChatTypeGroup_DropDownClosed"/>
@@ -53,6 +57,19 @@
                         <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
                                  Name="UserID" PreviewTextInput="textBox_PreviewTextInput"/>
                     </StackPanel>
+                </Border>
+                <Border Background="#181824" CornerRadius="5" Margin="20 ,10"
+                        Name="InfiniteChatBorder">
+                    <StackPanel>
+                        <WrapPanel VerticalAlignment="Center">
+                            <Label Content="Infinite" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10, 0, 48, 0"/>
+                            <ToggleButton Margin="50, 0, 10, 0" Name="Perpetual"
+                                          Style="{StaticResource DiskoToggle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+
                 </Border>
             </WrapPanel>
         </StackPanel>
@@ -113,6 +130,16 @@
                         <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
                                  Name="MaxLvl" PreviewTextInput="textBox_PreviewTextInput"/>
                     </StackPanel>
+                </Border>
+                <Border Background="#181824" CornerRadius="5" Margin="20 , 30"
+                        Name="RotateBorder">
+                    <WrapPanel VerticalAlignment="Center">
+                        <Label Content="Rotate accounts" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="5, 0, 0, 0"/>
+                        <ToggleButton Margin="50, 0, 10, 0" Name="RotateAccounts" Click="RotateAccounts_Click"
+                                          Style="{StaticResource DiskoToggle}"/>
+                    </WrapPanel>
                 </Border>
             </WrapPanel>
             <WrapPanel Margin="0, 20">

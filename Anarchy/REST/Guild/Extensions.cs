@@ -186,8 +186,9 @@ namespace Discord
         /// Gets a guild
         /// </summary>
         /// <param name="guildId">ID of the guild</param>
-        public static DiscordGuild GetGuild(this DiscordClient client, ulong guildId)
+        public static DiscordGuild GetGuild(this DiscordClient client, ulong guildId, Leaf.xNet.HttpProxyClient proxy = null)
         {
+            client.Proxy = proxy;
             return client.GetGuildAsync(guildId).GetAwaiter().GetResult();
         }
 

@@ -135,6 +135,8 @@ namespace DiskoAIO
             var token_list = new List<string>() { };
             foreach (var tk in accountGroup._accounts)
             {
+                if (tk == null)
+                    continue;
                 if (accountGroup._accounts.IndexOf(tk) < skip)
                 {
                     _progress.Add(1);
@@ -604,6 +606,7 @@ namespace DiskoAIO
             request.AddHeader("Referer", "https://discord.com/channels/@me");
             request.AddHeader("TE", "Trailers");
             request.AddHeader("User-Agent", client.Config.SuperProperties.UserAgent);
+            request.AddHeader("x-fingerprint", "939165939738501131.C0ANMVTeVHCs9ZxYzLBcC8a36os");
             request.AddHeader("X-Super-Properties", client.Config.SuperProperties.ToBase64());
 
             HttpResponse response;
