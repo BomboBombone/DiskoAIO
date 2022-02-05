@@ -36,7 +36,7 @@ namespace DiskoAIO
                 _progress = value;
             }
         }
-        private AccountGroup _accountGroup;
+        private AccountGroup _accountGroup = null;
         public AccountGroup accountGroup
         {
             get
@@ -48,7 +48,7 @@ namespace DiskoAIO
                 _accountGroup = value;
             }
         }
-        private ProxyGroup _proxyGroup;
+        private ProxyGroup _proxyGroup = null;
         public ProxyGroup proxyGroup
         {
             get { return _proxyGroup; }
@@ -99,14 +99,14 @@ namespace DiskoAIO
 
         public ChatBotTask(AccountGroup accounts, ulong userId, ulong serverId, ulong channelId, int aggressivity = 80, int ans_rate = 60, bool allow_links = false, ulong lvlChanId = 0, int max = 1, bool rotate = false, ProxyGroup proxies = null)
         {
-            accountGroup = accounts;
-            proxyGroup = proxies;
+            _accountGroup = accounts;
+            _proxyGroup = proxies;
             userID = userId;
             serverID = serverId;
             channelID = channelId;
             response_rate = aggressivity;
             answerRate = ans_rate;
-            send_links = false;
+            send_links = allow_links;
             lvlChannelID = lvlChanId;
             maxLvl = max;
             _progress.total_tokens = max;

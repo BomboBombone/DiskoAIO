@@ -1,4 +1,6 @@
-﻿using DiskoAIO.Properties;
+﻿using Discord;
+using DiskoAIO.Properties;
+using Leaf.xNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,6 +122,38 @@ namespace DiskoAIO.MVVM.View
             Settings.Default.Reload();
             App.SaveSettings();
             App.mainWindow.ShowNotification("Successfully saved current settings");
+        }
+
+        private void CheckRateLimit_Click(object sender, RoutedEventArgs e)
+        {
+            string request_url = $"https://discord.com/api/v9/invites/chill";
+            HttpRequest request = new HttpRequest()
+            {
+                KeepTemporaryHeadersOnRedirect = false,
+                EnableMiddleHeaders = false,
+                AllowEmptyHeaderValues = false
+                //SslProtocols = SslProtocols.Tls12
+            };
+            request.ClearAllHeaders();
+            request.AddHeader("Accept", "*/*");
+            request.AddHeader("Accept-Encoding", "gzip, deflate");
+            request.AddHeader("Accept-Language", "it");
+            request.AddHeader("Connection", "keep-alive");
+            request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
+            request.AddHeader("DNT", "1");
+            request.AddHeader("origin", "https://discord.com");
+            request.AddHeader("Referer", "https://discord.com/channels/@me");
+            request.AddHeader("TE", "Trailers");
+            var response = request.Get(request_url);
+            var resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+            if (((int)response.StatusCode) != 429)
+            {
+                App.mainWindow.ShowNotification("You are not rate limited with your current IP!");
+            }
+            else
+            {
+                App.mainWindow.ShowNotification("You are rate limited with your current IP, please try to use a vpn!");
+            }
         }
     }
 }

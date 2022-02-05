@@ -262,8 +262,17 @@ namespace Discord
                             request.Proxy = _discordClient.Proxy;
 
                             var form = JsonConvert.DeserializeObject<GuildVerificationForm>(JsonConvert.SerializeObject(resp.Body));
+                            int time_zone = 0;
+                            Debug.Log("Fetched time zone for TOS: " + form.Version);
+                            try
+                            {
+                                time_zone = int.Parse(form.Version.Split('+')[1].Split(':')[0]);
 
-                            var time_zone = int.Parse(form.Version.Split('+')[1].Split(':')[0]);
+                            }
+                            catch(Exception ex)
+                            {
+                                time_zone = int.Parse(form.Version.Split('-')[1].Split(':')[0]);
+                            }
                             StringBuilder sb = new StringBuilder(form.Version);
                             int h = int.Parse(sb[11].ToString() + sb[12].ToString());
                             h = h - time_zone;

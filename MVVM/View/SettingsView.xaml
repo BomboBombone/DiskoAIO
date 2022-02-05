@@ -149,6 +149,9 @@
                         </Border>
                     </WrapPanel>
                 </StackPanel>
+                <Button Style="{StaticResource DiskoButton}" Content="Check rate limit"
+                    HorizontalAlignment="Left" Height="40" Width="100"
+                    Margin="60, 0, 100, 0" Click="CheckRateLimit_Click"/>
             </StackPanel>
         </ScrollViewer>
 

@@ -156,16 +156,11 @@ namespace DiskoAIO.MVVM.View
             ProxyGroup proxies = null;
             foreach (var group in App.proxyGroups)
             {
-                if (group._name == ProxyGroup.SelectedItem.ToString())
+                if (ProxyGroup.SelectedItem != null && group._name == ProxyGroup.SelectedItem.ToString())
                 {
                     proxies = group;
                     break;
                 }
-            }
-            if (proxies == null && (bool)RotateAccounts.IsChecked)
-            {
-                App.mainWindow.ShowNotification("Couldn't get specified proxy group, try again later");
-                return;
             }
             int skip = 0;
             int max = 0;
@@ -215,13 +210,13 @@ namespace DiskoAIO.MVVM.View
                 }
                 try
                 {
-                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, lvlChannelId, int.Parse(MaxLvl.Text), (bool)RotateAccounts.IsChecked, (bool)RotateAccounts.IsChecked ? proxies : null);
+                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, lvlChannelId, int.Parse(MaxLvl.Text), (bool)RotateAccounts.IsChecked, proxies);
                     task.Start();
                     App.taskManager.AddTask(task);
                 }
                 catch(Exception ex)
                 {
-                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, 0, 0, (bool)RotateAccounts.IsChecked, (bool)RotateAccounts.IsChecked ? proxies : null);
+                    var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, 0, 0, (bool)RotateAccounts.IsChecked, proxies);
                     task.Start();
                     App.taskManager.AddTask(task);
                 }

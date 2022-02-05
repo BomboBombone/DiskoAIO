@@ -587,11 +587,16 @@ namespace Discord.Gateway
                                                     this.Reset();
                                                     this.Logout();
                                                     var rnd = new Random();
-                                                    var proxy = _proxies._proxies[rnd.Next(0, _proxies._proxies.Count - 1)];
-                                                    var Proxy = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
+                                                    HttpProxyClient Proxy = null;
+                                                    if(_proxies != null)
+                                                    {
+                                                        var proxy = _proxies._proxies[rnd.Next(0, _proxies._proxies.Count - 1)];
+                                                        Proxy = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
+                                                    }
+
                                                     this.Login(_accounts._accounts[rnd.Next(0, _accounts._accounts.Count - 1)]._token);
                                                     
-                                                    var guild1 = this.GetGuild(serverID, Proxy);
+                                                    var guild1 = this.GetGuild(serverID, _proxies == null ? null : Proxy);
                                                     if (guild1 != null && !guild.Unavailable)
                                                         return;
                                                 }
