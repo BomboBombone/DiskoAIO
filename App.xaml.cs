@@ -26,6 +26,8 @@ using System.Security.Principal;
 using System.Net.Http;
 using System.Threading;
 using System.Net.Sockets;
+using DiscordGameSDK;
+using System.Reflection;
 
 namespace DiskoAIO
 {
@@ -47,7 +49,9 @@ namespace DiskoAIO
         public static ProxiesView proxiesView { get; set; } = null;
         public static AccountsView accountsView { get; set; } = null;
         public static TasksView taskManager { get; set; } = null;
+        public static long userID { get; set; }
         public static string localIP { get; set; }
+        public static DiscordGameSDK.Discord.Discord discord = null;
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             if (Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
@@ -98,6 +102,61 @@ namespace DiskoAIO
                 }
                 return;
             }
+
+            Task.Run(() =>
+            {
+                while (discord == null)
+                {
+                    try
+                    {
+                        discord = new DiscordGameSDK.Discord.Discord(938098652885450792, (UInt64)DiscordGameSDK.Discord.CreateFlags.NoRequireDiscord);
+                    }
+                    catch(Exception ex)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                }
+                var start = DateTime.Now.Ticks;
+                start = start - DateTime.ParseExact("1970/01/01", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture).Ticks;
+                start = start / TimeSpan.TicksPerSecond;
+                while (true)
+                {
+                    try
+                    {
+                        var activity = new DiscordGameSDK.Discord.Activity
+                        {
+                            Details = $"Running {taskManager.ListTasks.Items.Count} tasks",
+                            State = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                            Assets =
+                            {
+                                LargeImage = "logo",
+                                LargeText = "DiskoAIO"
+                            },
+                            Timestamps =
+                            {
+                                Start = start - 3750
+                            }
+                        };
+                        App.discord.GetActivityManager().UpdateActivity(activity, (result) =>
+                        {
+                            if (result != DiscordGameSDK.Discord.Result.Ok)
+                            {
+                                Debug.Log("Could not update Discord status");
+                            }
+                        });
+                        discord.RunCallbacks();
+                        
+                        userID = App.discord.GetUserManager().GetCurrentUser().Id;
+                    }
+                    catch(Exception ex)
+                    {
+                        
+                    }
+
+                    Thread.Sleep(15000);
+                }
+
+            });
 
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);

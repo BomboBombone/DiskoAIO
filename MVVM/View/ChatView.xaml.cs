@@ -62,11 +62,13 @@ namespace DiskoAIO.MVVM.View
                 {
                     ProxyLabel.Visibility = Visibility.Visible;
                     ProxyGroup.Visibility = Visibility.Visible;
+
                 }
                 else
                 {
                     ProxyLabel.Visibility = Visibility.Collapsed;
                     ProxyGroup.Visibility = Visibility.Collapsed;
+
                 }
                 MaxTokens.Text = Settings.Default.AIReplyRate.ToString();
                 SkipTokens.Text = Settings.Default.AIResponseRate.ToString();
@@ -84,6 +86,15 @@ namespace DiskoAIO.MVVM.View
                 MaxLvlBorder.Visibility = Visibility.Collapsed;
                 InfiniteChatBorder.Visibility = Visibility.Visible;
                 RotateBorder.Visibility = Visibility.Collapsed;
+            }
+            if (Perpetual.IsChecked == true)
+            {
+                RepeatBorder.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                RepeatBorder.Visibility = Visibility.Collapsed;
+
             }
         }
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -128,7 +139,15 @@ namespace DiskoAIO.MVVM.View
                 InfiniteChatBorder.Visibility = Visibility.Visible;
                 RotateBorder.Visibility = Visibility.Collapsed;
 
+                if (Perpetual.IsChecked == true)
+                {
+                    RepeatBorder.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    RepeatBorder.Visibility = Visibility.Collapsed;
 
+                }
             }
         }
 
@@ -208,6 +227,7 @@ namespace DiskoAIO.MVVM.View
                     App.mainWindow.ShowNotification("Invalid response rate, choose between 1% and 100%");
                     return;
                 }
+
                 try
                 {
                     var task = new ChatBotTask(accounts, userId, serverId, channelId, skip, max, (bool)AllowLinks.IsChecked, lvlChannelId, int.Parse(MaxLvl.Text), (bool)RotateAccounts.IsChecked, proxies);
@@ -228,7 +248,12 @@ namespace DiskoAIO.MVVM.View
                     App.mainWindow.ShowNotification("Specified text file does not exist");
                     return;
                 }
-                var task = new ChatTask(accounts, serverId, channelId, MessagePath.Text, delay, max, skip, (bool)Perpetual.IsChecked);
+                int repeat = 0;
+                if (RepeatAmount.Text != "")
+                {
+                    repeat = int.Parse(RepeatAmount.Text);
+                }
+                var task = new ChatTask(accounts, serverId, channelId, MessagePath.Text, delay, max, skip, (bool)Perpetual.IsChecked, repeat);
                 task.Start();
                 App.taskManager.AddTask(task);
             }
@@ -263,11 +288,26 @@ namespace DiskoAIO.MVVM.View
             {
                 ProxyLabel.Visibility = Visibility.Visible;
                 ProxyGroup.Visibility = Visibility.Visible;
+
             }
             else
             {
                 ProxyLabel.Visibility = Visibility.Collapsed;
                 ProxyGroup.Visibility = Visibility.Collapsed;
+
+            }
+        }
+
+        private void Perpetual_Click(object sender, RoutedEventArgs e)
+        {
+            if(Perpetual.IsChecked == true)
+            {
+                RepeatBorder.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                RepeatBorder.Visibility = Visibility.Collapsed;
+
             }
         }
     }

@@ -8,159 +8,173 @@
              d:DesignHeight="670" d:DesignWidth="1000">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="300"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1"/>
         </Grid.RowDefinitions>
-        <StackPanel Margin="40 ,0 ,0 ,0">
-            <TextBlock Text="GROUPS:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 40, 20, 30"/>
-            <WrapPanel>
-                <Label Content="Accounts:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0"/>
-                <ComboBox Name="TokenGroup"/>
-                <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0"
-                       Name="ProxyLabel"/>
-                <ComboBox Name="ProxyGroup"/>
-                <Label Content="Chat type:" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Margin="20, 0"/>
-                <ComboBox Name="ChatTypeGroup" DropDownClosed="ChatTypeGroup_DropDownClosed"/>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
-            <TextBlock Text="SERVER INFO:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 0, 20, 30"/>
-            <WrapPanel VerticalAlignment="Center">
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Server ID" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0"
-                        Name="ChannelBorder">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Channel ID" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="ChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Name="VerificationChannelBorder">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="User ID" FontFamily="/Fonts/#Montserrat" Name="ChatLabel"
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="UserID" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="5" Margin="20 ,10"
-                        Name="InfiniteChatBorder">
-                    <StackPanel>
-                        <WrapPanel VerticalAlignment="Center">
-                            <Label Content="Infinite" FontFamily="/Fonts/#Montserrat"
-                                   Foreground="White" FontSize="12"
-                                   Margin="10, 0, 48, 0"/>
-                            <ToggleButton Margin="50, 0, 10, 0" Name="Perpetual"
-                                          Style="{StaticResource DiskoToggle}"/>
-                        </WrapPanel>
-                    </StackPanel>
-
-                </Border>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40, 0, 0, 0" Grid.Row="2" Name="SettingsPanel">
-            <TextBlock Text="SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 20, 20, 30"/>
-            <WrapPanel>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Tokens to skip" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Name="TokensSkipLabel"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80"
-                        Name="MaxTokensBorder">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Max tokens" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White" Name="MaxTokensLabel"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="MaxTokens" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80"
-                        Name="DelayBorder">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="5" Margin="20 ,10"
-                        Name="GifsBorder">
-                    <WrapPanel VerticalAlignment="Center">
-                        <Label Content="Allow gifs" FontFamily="/Fonts/#Montserrat"
-                                   Foreground="White" FontSize="12"
-                                   Margin="10, 0, 35, 0"/>
-                        <ToggleButton Margin="50, 0, 10, 0" Name="AllowLinks"
-                                          Style="{StaticResource DiskoToggle}"/>
-                    </WrapPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,20" Height="80"
-                        Name="LevelChannelBorder">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Level channel ID" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="LevelChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,20" Height="80"
-                        Name="MaxLvlBorder">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Max level" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="MaxLvl" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="5" Margin="20 , 30"
-                        Name="RotateBorder">
-                    <WrapPanel VerticalAlignment="Center">
-                        <Label Content="Rotate accounts" FontFamily="/Fonts/#Montserrat"
-                                   Foreground="White" FontSize="12"
-                                   Margin="5, 0, 0, 0"/>
-                        <ToggleButton Margin="50, 0, 10, 0" Name="RotateAccounts" Click="RotateAccounts_Click"
-                                          Style="{StaticResource DiskoToggle}"/>
-                    </WrapPanel>
-                </Border>
-            </WrapPanel>
-            <WrapPanel Margin="0, 20">
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80"
-                        Name="MessagePathBorder">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Message file path" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
+        <ScrollViewer Grid.Row="0">
+            <StackPanel>
+                <StackPanel Margin="40 ,0 ,0 ,0">
+                        <TextBlock Text="GROUPS:" Style="{StaticResource DiskoLabelTitle}"
+                                   Margin="20, 40, 20, 30"/>
                         <WrapPanel>
-                            <TextBox Style="{StaticResource ModernTextBox}" Width="614" Height="50"
-                                 Name="MessagePath"/>
-                            <Button Style="{StaticResource ExploreButton}" Margin="25, 0"
-                                    Width="25" Height="25" Click="Explore_Click"/>
+                            <Label Content="Accounts:" FontFamily="/Fonts/#Montserrat" 
+                                   FontSize="12" Foreground="White" Margin="20, 0"/>
+                            <ComboBox Name="TokenGroup"/>
+                            <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
+                                   FontSize="12" Foreground="White" Margin="20, 0"
+                                   Name="ProxyLabel"/>
+                            <ComboBox Name="ProxyGroup"/>
+                            <Label Content="Chat type:" FontFamily="/Fonts/#Montserrat" 
+                                   FontSize="12" Foreground="White" Margin="20, 0"/>
+                            <ComboBox Name="ChatTypeGroup" DropDownClosed="ChatTypeGroup_DropDownClosed"/>
                         </WrapPanel>
-                    </StackPanel>
-                </Border>
-            </WrapPanel>
-        </StackPanel>
+                </StackPanel>
+                <StackPanel Margin="40, 40, 0, 0" Grid.Row="1">
+                    <TextBlock Text="SERVER INFO:" Style="{StaticResource DiskoLabelTitle}"
+                                Margin="20, 0, 20, 30"/>
+                    <WrapPanel VerticalAlignment="Center">
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Server ID" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0"
+                                Name="ChannelBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Channel ID" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="ChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Name="VerificationChannelBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="User ID" FontFamily="/Fonts/#Montserrat" Name="ChatLabel"
+                                FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="UserID" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="5" Margin="20 ,10"
+                                Name="InfiniteChatBorder">
+                            <StackPanel VerticalAlignment="Center">
+                                <WrapPanel VerticalAlignment="Center">
+                                    <Label Content="Infinite" FontFamily="/Fonts/#Montserrat"
+                                            Foreground="White" FontSize="12"
+                                            Margin="10, 0, 48, 0"/>
+                                    <ToggleButton Margin="50, 0, 10, 0" Name="Perpetual" Click="Perpetual_Click"
+                                                    Style="{StaticResource DiskoToggle}"/>
+                                </WrapPanel>
+                            </StackPanel>
+
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="40, 25, 0, 0" Grid.Row="2" Name="SettingsPanel">
+                    <TextBlock Text="SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+                                Margin="20, 20, 20, 30"/>
+                    <WrapPanel>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Tokens to skip" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White" Name="TokensSkipLabel"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80"
+                                Name="MaxTokensBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Max tokens" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White" Name="MaxTokensLabel"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="MaxTokens" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80"
+                                Name="DelayBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="5" Margin="20 ,10"
+                                Name="GifsBorder">
+                            <WrapPanel VerticalAlignment="Center">
+                                <Label Content="Allow gifs" FontFamily="/Fonts/#Montserrat"
+                                            Foreground="White" FontSize="12"
+                                            Margin="10, 0, 35, 0"/>
+                                <ToggleButton Margin="50, 0, 10, 0" Name="AllowLinks"
+                                                    Style="{StaticResource DiskoToggle}"/>
+                            </WrapPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,20" Height="80"
+                                Name="LevelChannelBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Level channel ID" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="LevelChannelID" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,20" Height="80"
+                                Name="MaxLvlBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Max level" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                            Name="MaxLvl" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="5" Margin="20 , 30"
+                                Name="RotateBorder">
+                            <WrapPanel VerticalAlignment="Center">
+                                <Label Content="Rotate accounts" FontFamily="/Fonts/#Montserrat"
+                                            Foreground="White" FontSize="12"
+                                            Margin="5, 0, 0, 0"/>
+                                <ToggleButton Margin="50, 0, 10, 0" Name="RotateAccounts" Click="RotateAccounts_Click"
+                                                    Style="{StaticResource DiskoToggle}"/>
+                            </WrapPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,20" Height="80"
+                        Name="RepeatBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Times to repeat for" FontFamily="/Fonts/#Montserrat" 
+                        FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                    Name="RepeatAmount" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="0, 20">
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80"
+                                Name="MessagePathBorder">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Message file path" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White"/>
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource ModernTextBox}" Width="614" Height="50"
+                                            Name="MessagePath"/>
+                                    <Button Style="{StaticResource ExploreButton}" Margin="25, 0"
+                                            Width="25" Height="25" Click="Explore_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+            </StackPanel>
+
+
+        </ScrollViewer>
         <Button Style="{StaticResource DiskoButton}" Content="Start task"
                         Width="100" Height="40" Click="Start_Task"
-                Grid.Row="3" HorizontalAlignment="Right" 
-                Margin="0,-100,131,0"/>
-    </Grid>
+                Grid.Row="1" HorizontalAlignment="Right" 
+                Margin="0,-175,131,0"/>
+        </Grid>
 </UserControl>

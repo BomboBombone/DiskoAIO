@@ -88,7 +88,8 @@ namespace DiskoAIO
         string[] message_list { get; set; } = new string[] { };
         public int max_tokens { get; set; } = 0;
         public int skip { get; set; } = 0;
-        public ChatTask(AccountGroup accounts, ulong serverId, ulong channelId, string mes_path, int _delay = 2, int max = 0, int skip_tokens = 0, bool _persist = false)
+        public int _repeat_for;
+        public ChatTask(AccountGroup accounts, ulong serverId, ulong channelId, string mes_path, int _delay = 2, int max = 0, int skip_tokens = 0, bool _persist = false, int repeat_for = 0)
         {
             accountGroup = accounts;
             serverID = serverId;
@@ -113,6 +114,7 @@ namespace DiskoAIO
                 _progress = new Progress(max);
             else
                 _progress = new Progress(0);
+            _repeat_for = repeat_for;
         }
         public void Start()
         {
@@ -127,10 +129,85 @@ namespace DiskoAIO
                     break;
                 token_list.Add(tk._token);
             }
+            var thread_pool = new List<Thread>() { };
+            Thread join = new Thread(() =>
+            {
+                int i = 0;
+                var threads = 0;
+                while (paused)
+                {
+                    Thread.Sleep(1000);
+                }
+                var tk_list = token_list.ToArray();
+                var rnd = new Random();
+                foreach (var token in tk_list)
+                {
+                    if (!chatting || thread_pool.Count >= 20)
+                        return;
+                    Thread join1 = new Thread(() =>
+                    {
+                        if (!chatting)
+                            return;
+                        DiscordClient client;
+                        try
+                        {
+                            client = new DiscordClient(token);
+                            threads++;
+                        }
+                        catch (Exception ex) { return; }
+                        int tries = 0;
+                        if (proxyGroup != null && proxyGroup._proxies.Count > 0)
+                        {
+                            while (tries <= 5)
+                            {
+                                var proxy = proxyGroup._proxies[rnd.Next(0, proxyGroup._proxies.Count)];
+                                if (proxy.Host != "" && proxy != null)
+                                {
+                                    HttpProxyClient proxies = new HttpProxyClient(proxy.Host, proxy.Port);
+                                    if (proxy.Username != null && proxy.Username != "")
+                                        proxies = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
+                                    client.Proxy = proxies;
+                                }
+                                break;
+                            }
+                        }
+                        if (!chatting)
+                            return;
+                        while (paused)
+                            Thread.Sleep(500);
+                        if (IsInGuild(client, serverID) == false)
+                        {
+                            joined++;
+                            _progress.completed_tokens++;
+                            return;
+                        }
+                        else
+                        {
+                            clients.Add(client);
+                        }
+                    });
+                    thread_pool.Add(join1);
+                    join1.Priority = ThreadPriority.AboveNormal;
+                    join1.Start();
+                    while (thread_pool.Count >= 5)
+                    {
+                        foreach (var thread in thread_pool)
+                        {
+                            if (!thread.IsAlive)
+                            {
+                                thread_pool.Remove(thread);
+                                break;
+                            }
+                        }
+                        Thread.Sleep(500);
+                    }
+                }
+            });
             Thread joiner = new Thread(() =>
             {
                 var joined_time = DateTime.Now;
                 var messages = new List<DiscordMessage>();
+                int amount = 0;
                 while (chatting)
                 {
                     while (paused)
@@ -224,6 +301,8 @@ namespace DiskoAIO
                                     Debug.Log(ex.Message);
                                 }
                                 i++;
+                                clients.Remove(client);
+                                token_list.Remove(client.Token);
                                 var to_sleep = delay - (DateTime.Now - joined_time).TotalMilliseconds;
                                 if (to_sleep < 0)
                                     to_sleep = 0;
@@ -231,8 +310,100 @@ namespace DiskoAIO
                             }
                         }
                         catch (InvalidOperationException ex) { Thread.Sleep(100); }
+                        if(clients.Count == token_list.Count && clients.Where(o => o != null).ToList().Count == 0)
+                        {
+                            amount++;
+                            joined = 0;
+                            thread_pool = new List<Thread>() { };
+                            token_list = new List<string>() { };
+                            foreach (var tk in accountGroup._accounts)
+                            {
+                                if (accountGroup._accounts.IndexOf(tk) < skip)
+                                    continue;
+                                if (token_list.Count >= max_tokens)
+                                    break;
+                                token_list.Add(tk._token);
+                            }
+                            clients = new List<DiscordClient>();
+                            join = new Thread(() =>
+                            {
+                                i = 0;
+                                var threads = 0;
+                                while (paused)
+                                {
+                                    Thread.Sleep(1000);
+                                }
+                                var tk_list = token_list.ToArray();
+                                var rnd = new Random();
+                                foreach (var token in tk_list)
+                                {
+                                    if (!chatting || thread_pool.Count >= 20)
+                                        return;
+                                    Thread join1 = new Thread(() =>
+                                    {
+                                        if (!chatting)
+                                            return;
+                                        DiscordClient client;
+                                        try
+                                        {
+                                            client = new DiscordClient(token);
+                                            threads++;
+                                        }
+                                        catch (Exception ex) { return; }
+                                        int tries = 0;
+                                        if (proxyGroup != null && proxyGroup._proxies.Count > 0)
+                                        {
+                                            while (tries <= 5)
+                                            {
+                                                var proxy = proxyGroup._proxies[rnd.Next(0, proxyGroup._proxies.Count)];
+                                                if (proxy.Host != "" && proxy != null)
+                                                {
+                                                    HttpProxyClient proxies = new HttpProxyClient(proxy.Host, proxy.Port);
+                                                    if (proxy.Username != null && proxy.Username != "")
+                                                        proxies = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
+                                                    client.Proxy = proxies;
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        if (!chatting)
+                                            return;
+                                        while (paused)
+                                            Thread.Sleep(500);
+                                        if (IsInGuild(client, serverID) == false)
+                                        {
+                                            joined++;
+                                            _progress.completed_tokens++;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            clients.Add(client);
+                                        }
+                                    });
+                                    thread_pool.Add(join1);
+                                    join1.Priority = ThreadPriority.AboveNormal;
+                                    join1.Start();
+                                    while (thread_pool.Count >= 5)
+                                    {
+                                        foreach (var thread in thread_pool)
+                                        {
+                                            if (!thread.IsAlive)
+                                            {
+                                                thread_pool.Remove(thread);
+                                                break;
+                                            }
+                                        }
+                                        Thread.Sleep(500);
+                                    }
+                                }
+                            });
+                            join.Start();
+                        }
+                        if (amount == _repeat_for)
+                            chatting = false;
                     }
-                    while (persist);
+                    while (persist && chatting);
                 }
                 if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
                     App.SendToWebhook(Settings.Default.Webhook, "Chat task completed successfully\n**Server ID:** " + serverID);
@@ -245,80 +416,7 @@ namespace DiskoAIO
             joiner.Priority = ThreadPriority.AboveNormal;
             joiner.Start();
 
-            var thread_pool = new List<Thread>() { };
-            Thread join = new Thread(() =>
-            {
-                int i = 0;
-                var threads = 0;
-                while (paused)
-                {
-                    Thread.Sleep(1000);
-                }
-                var tk_list = token_list.ToArray();
-                var rnd = new Random();
-                foreach (var token in tk_list)
-                {
-                    if (!chatting || thread_pool.Count >= 20)
-                        return;
-                    Thread join1 = new Thread(() =>
-                    {
-                        if (!chatting)
-                            return;
-                        DiscordClient client;
-                        try
-                        {
-                            client = new DiscordClient(token);
-                            threads++;
-                        }
-                        catch (Exception ex) { return; }
-                        int tries = 0;
-                        if (proxyGroup != null && proxyGroup._proxies.Count > 0)
-                        {
-                            while (tries <= 5)
-                            {
-                                var proxy = proxyGroup._proxies[rnd.Next(0, proxyGroup._proxies.Count)];
-                                if (proxy.Host != "" && proxy != null)
-                                {
-                                    HttpProxyClient proxies = new HttpProxyClient(proxy.Host, proxy.Port);
-                                    if (proxy.Username != null && proxy.Username != "")
-                                        proxies = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
-                                    client.Proxy = proxies;
-                                }
-                                break;
-                            }
-                        }
-                        if (!chatting)
-                            return;
-                        while (paused)
-                            Thread.Sleep(500);
-                        if (IsInGuild(client, serverID) == false)
-                        {
-                            joined++;
-                            _progress.completed_tokens++;
-                            return;
-                        }
-                        else
-                        {
-                            clients.Add(client);
-                        }
-                    });
-                    thread_pool.Add(join1);
-                    join1.Priority = ThreadPriority.AboveNormal;
-                    join1.Start();
-                    while (thread_pool.Count >= 5)
-                    {
-                        foreach (var thread in thread_pool)
-                        {
-                            if (!thread.IsAlive)
-                            {
-                                thread_pool.Remove(thread);
-                                break;
-                            }
-                        }
-                        Thread.Sleep(500);
-                    }
-                }
-            });
+
             join.Start();
         }
         public bool? IsInGuild(DiscordClient Client, ulong guildId)

@@ -148,7 +148,7 @@ namespace DiskoAIO.MVVM.View
             var resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
             if (((int)response.StatusCode) != 429)
             {
-                App.mainWindow.ShowNotification("You are not rate limited with your current IP!");
+                App.mainWindow.ShowNotification("You are not rate limited with your current IP");
             }
             else
             {

@@ -274,7 +274,6 @@ namespace Discord
                             {
                                 h = 24 - h;
                                 date = date.AddDays(-1);
-
                             }
                             else if (h > 24)
                             {

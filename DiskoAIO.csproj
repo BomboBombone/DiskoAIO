@@ -564,6 +564,13 @@
     <Compile Include="CheckerTask.cs" />
     <Compile Include="ChatBotTask.cs" />
     <Compile Include="DiscordDriver.cs" />
+    <Compile Include="DiscordGameSDK\ActivityManager.cs" />
+    <Compile Include="DiscordGameSDK\Constants.cs" />
+    <Compile Include="DiscordGameSDK\Core.cs" />
+    <Compile Include="DiscordGameSDK\ImageManager.cs" />
+    <Compile Include="DiscordGameSDK\LobbyManager.cs" />
+    <Compile Include="DiscordGameSDK\StorageManager.cs" />
+    <Compile Include="DiscordGameSDK\StoreManager.cs" />
     <Compile Include="GiveawayTask.cs" />
     <Compile Include="ImageChangerTask.cs" />
     <Compile Include="JoinTask.cs" />
@@ -846,6 +853,9 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <None Include="discord_game_sdk.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Resource Include="Images\clean.ico" />
     <Resource Include="Images\folder_explorer.ico" />
     <Resource Include="Images\bot_purple.ico" />

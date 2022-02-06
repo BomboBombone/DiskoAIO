@@ -260,7 +260,7 @@ namespace DiskoAIO
         private string CleanString(string input)
         {
             input = input.Replace('<', ' ').Replace('>', ' ').Replace('@', ' ').Trim('.');
-            if (input.Contains("chat_id") || input.Contains("GG") || Regex.Replace(input, @"[^\u0000-\u007F]+", string.Empty) == "")
+            if (input.Contains("chat_id") || input.Contains("everyone") || Regex.Replace(input, @"[^\u0000-\u007F]+", string.Empty) == "")
                 return "Ayoo";
             if (input.ToLower().Contains("i'm from") || input.ToLower().Contains("im from") || input.ToLower().Contains("i am from"))
                 return "I'm from Asia man";

@@ -159,6 +159,4 @@
                 HorizontalAlignment="Right" Width="70"
                 Margin="100, 0, 100, 30" Click="Save_Click"/>
     </Grid>
-
-    
 </UserControl>
