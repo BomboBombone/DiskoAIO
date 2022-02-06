@@ -162,22 +162,18 @@ namespace Discord
                     {
                         HttpRequest request = new HttpRequest()
                         {
-                            KeepTemporaryHeadersOnRedirect = false,
-                            EnableMiddleHeaders = false,
-                            AllowEmptyHeaderValues = false
                             //SslProtocols = SslProtocols.Tls12
                         };
                         request.Proxy = _discordClient.Proxy;
                         request.ClearAllHeaders();
                         request.AddHeader("Accept", "*/*");
                         request.AddHeader("Accept-Encoding", "gzip, deflate");
-                        request.AddHeader("Accept-Language", "it");
                         var token = _discordClient.Token == null ? null : _discordClient.Token;
 
                         if (_discordClient.Token != null)
                             request.AddHeader("Authorization", _discordClient.Token);
                         request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
-                        request.AddHeader("Accept-Language", "it");
+                        request.AddHeader("Accept-Language", "en-US");
                         request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
                         var jsonContent = new Leaf.xNet.StringContent(json)
                         {
@@ -228,7 +224,7 @@ namespace Discord
                             }
                             msg.AddHeader("origin", "https://discord.com");
                             msg.AddHeader("Accept", "*/*");
-                            msg.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=it");
+                            msg.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=en-US");
                             msg.AddHeader(HttpHeader.Referer, "https://discord.com/channels/@me/" + guild_id);
                         }
 
@@ -254,9 +250,6 @@ namespace Discord
 
                             HttpRequest request = new HttpRequest()
                             {
-                                KeepTemporaryHeadersOnRedirect = false,
-                                EnableMiddleHeaders = false,
-                                AllowEmptyHeaderValues = false
                             };
 
                             request.Proxy = _discordClient.Proxy;
@@ -267,17 +260,29 @@ namespace Discord
                             try
                             {
                                 time_zone = int.Parse(form.Version.Split('+')[1].Split(':')[0]);
-
                             }
                             catch(Exception ex)
                             {
-                                time_zone = int.Parse(form.Version.Split('-')[1].Split(':')[0]);
+                                time_zone = 0 - int.Parse(form.Version.Split('-')[3].Split(':')[0]);
                             }
                             StringBuilder sb = new StringBuilder(form.Version);
                             int h = int.Parse(sb[11].ToString() + sb[12].ToString());
                             h = h - time_zone;
+                            DateTime date = DateTime.ParseExact(form.Version.Split('.')[0].Replace("T", " "), "yyyy-MM-dd HH:mm:ss",
+                                   System.Globalization.CultureInfo.InvariantCulture);
                             if (h < 1)
+                            {
                                 h = 24 - h;
+                                date = date.AddDays(-1);
+
+                            }
+                            else if (h > 24)
+                            {
+                                h = h - 24;
+                                date = date.AddDays(1);
+
+                            }
+                            form.Version = date.ToString("yyyy-MM-dd") + "T" + form.Version.Split('T')[1];
                             //sb.Replace("+02:00", "000+00:00");
                             //form.Version = sb.ToString();
                             var hString = h.ToString();
@@ -288,7 +293,7 @@ namespace Discord
                                     hString = "0" + hString;
                                 }
                             }
-                            var time_zone_string = time_zone.ToString();
+                            var time_zone_string = time_zone.ToString().Trim('-');
                             if (time_zone_string.Length < 2)
                             {
                                 while (time_zone_string.Length < 2)
@@ -298,6 +303,8 @@ namespace Discord
                             }
                             string buf1 = form.Version.Substring(0, 11) + hString + form.Version.Substring(13);
                             form.Version = buf1.Replace("+" + time_zone_string + ":00", "000+00:00");
+                            form.Version = form.Version.Replace("-" + time_zone_string + ":00", "000+00:00");
+
                             string json_string = "";
                             try
                             {

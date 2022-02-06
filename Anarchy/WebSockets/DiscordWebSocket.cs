@@ -4,6 +4,11 @@ using System;
 using DiskoAIO;
 using WebSocketSharp;
 using DiskoAIO.Properties;
+using System.IO;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System.Text;
+using System.Linq;
+using DiskoAIO.Anarchy.WebSockets.Gateway;
 
 namespace Discord.WebSockets
 {
@@ -11,15 +16,15 @@ namespace Discord.WebSockets
     {
         private object _socketLock;
         private WebSocket _socket;
+        public string ZLIB_SUFFIX = "\x00\x00\xff\xff";
+        private byte[] ZLIB_HEADER = null;
+        private ZlibStreamContext libStreamContext = new ZlibStreamContext();
 
         public delegate void MessageHandler(object sender, DiscordWebSocketMessage<TOpcode> message);
         public event MessageHandler OnMessageReceived;
 
         public delegate void CloseHandler(object sender, CloseEventArgs args);
         public event CloseHandler OnClosed;
-
-        public delegate void ErrorHandler(object sender, ErrorEventArgs args);
-        public event ErrorHandler OnError;
 
         public DiscordWebSocket(string url)
         {
@@ -68,12 +73,22 @@ namespace Discord.WebSockets
         {
             OnClosed?.Invoke(this, e);
         }
-
         private void OnMessage(object sender, MessageEventArgs e)
         {
-            OnMessageReceived?.Invoke(this, JsonConvert.DeserializeObject<DiscordWebSocketMessage<TOpcode>>(e.Data));
+            if (ZLIB_HEADER == null)
+                ZLIB_HEADER = e.RawData.SubArray(0, 2);
+            byte[] output = libStreamContext.InflateByteArray(e.RawData.SubArray(0, 2).SequenceEqual(ZLIB_HEADER) ? e.RawData.SubArray(2, e.RawData.Length - 2) : e.RawData);
+            OnMessageReceived?.Invoke(this, JsonConvert.DeserializeObject<DiscordWebSocketMessage<TOpcode>>(Encoding.UTF8.GetString(output, 0, output.Length)));
         }
-
+        static byte[] Concat(byte[] a, byte[] b)
+        {
+            byte[] output = new byte[a.Length + b.Length];
+            for (int i = 0; i < a.Length; i++)
+                output[i] = a[i];
+            for (int j = 0; j < b.Length; j++)
+                output[a.Length + j] = b[j];
+            return output;
+        }
         public void Dispose()
         {
             lock (_socketLock)

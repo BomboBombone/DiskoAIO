@@ -12,7 +12,8 @@
                 Token = client.Token,
                 Properties = client.Config.SuperProperties,
                 Intents = client.User.Type == DiscordUserType.Bot ? client.Config.Intents : null,
-                Shard = client.Config.Shard
+                Shard = client.Config.Shard,
+                Compress = true
             });
         }
 

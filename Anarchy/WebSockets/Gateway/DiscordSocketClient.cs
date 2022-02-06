@@ -169,8 +169,8 @@ namespace Discord.Gateway
                 ClientMembers = new ConcurrentDictionary<ulong, GuildMember>();
             }
 
-            WebSocket = new DiscordWebSocket<GatewayOpcode>($"wss://gateway.discord.gg/?v={Config.ApiVersion}&encoding=json");
-            WebSocket.OnError += WebSocket_OnError;
+            WebSocket = new DiscordWebSocket<GatewayOpcode>($"wss://gateway.discord.gg/?v={Config.ApiVersion}&encoding=json&compress=zlib-stream");
+            //WebSocket.OnError += WebSocket_OnError;
             WebSocket.OnClosed += (s, args) =>
             {
                 Debug.Log("Websocket was closed for " + this.User.Id);

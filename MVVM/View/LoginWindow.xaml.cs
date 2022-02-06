@@ -68,7 +68,7 @@ namespace DiskoAIO.MVVM.View
         {
             if (mac_addr == null || mac_addr == "")
                 mac_addr = GetMacAddress();
-            string address = "http://diskoaio.com/api/accounts?mac=" + mac_addr;
+            string address = "https://diskoaio.com/api/accounts?mac=" + mac_addr;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + App.api_key);
             var response = client.SendAsync(new HttpRequestMessage()
@@ -95,7 +95,7 @@ namespace DiskoAIO.MVVM.View
                     return;
                 else
                 {
-                    Debug.Log("Mac address found is invalid: " + mac_addr);
+                    Debug.Log("Binding found is invalid: " + mac_addr);
                     var popup = new WarningPopupView("Your licence key seems to be invalid, please try again or contact support");
                     popup.ShowDialog();
 

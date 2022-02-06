@@ -449,7 +449,7 @@ namespace DiskoAIO
         public static bool CheckUpdate()
         {
             var xml = new List<string> { };
-            foreach (XElement level1Element in XElement.Load(@"http://diskoaio.com/disko_update.xml").Elements("Binaries"))
+            foreach (XElement level1Element in XElement.Load(@"https://diskoaio.com/disko_update.xml").Elements("Binaries"))
             {
                 foreach (XElement level2Element in level1Element.Elements("Binary"))
                 {
@@ -472,7 +472,7 @@ namespace DiskoAIO
             var update_version = xml[0].Split(':')[1].Replace(".", string.Empty);
             if (int.Parse(version) < int.Parse(update_version))
             {
-                string myWebUrlFile = "http://diskoaio.com/DiskoUpdater.exe";
+                string myWebUrlFile = "https://diskoaio.com/DiskoUpdater.exe";
                 string myLocalFilePath = strWorkPath + @"\DiskoUpdater.exe";
 
                 ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
