@@ -23,6 +23,7 @@ namespace DiskoAIO.MVVM.View
     {
         public static List<DiskoTask> tasks { get; set; } = new List<DiskoTask>();
         public Timer refreshUI { get; set; } = null;
+
         public TasksView()
         {
             InitializeComponent();

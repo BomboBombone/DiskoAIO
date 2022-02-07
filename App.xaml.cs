@@ -125,7 +125,7 @@ namespace DiskoAIO
                     {
                         var activity = new DiscordGameSDK.Discord.Activity
                         {
-                            Details = $"Running {taskManager.ListTasks.Items.Count} tasks",
+                            Details = $"Running {TasksView.tasks.Count} tasks",
                             State = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                             Assets =
                             {

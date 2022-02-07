@@ -253,7 +253,11 @@ namespace Discord
                             };
 
                             request.Proxy = _discordClient.Proxy;
-
+                            if(resp == null)
+                            {
+                                Debug.Log("Could not get TOS info, resp was null");
+                                throw new Exception();
+                            }
                             var form = JsonConvert.DeserializeObject<GuildVerificationForm>(JsonConvert.SerializeObject(resp.Body));
                             int time_zone = 0;
                             Debug.Log("Fetched time zone for TOS: " + form.Version);
@@ -272,10 +276,10 @@ namespace Discord
                                    System.Globalization.CultureInfo.InvariantCulture);
                             if (h < 1)
                             {
-                                h = 24 - h;
+                                h = 24 + h;
                                 date = date.AddDays(-1);
                             }
-                            else if (h > 24)
+                            else if (h > 23)
                             {
                                 h = h - 24;
                                 date = date.AddDays(1);
