@@ -347,7 +347,7 @@ namespace Discord.Gateway
 
                                 foreach (var guild in login.Guilds)
                                 {
-                                    ApplyGuild(GuildCache[guild.Id] = (SocketGuild)guild);
+                                    //ApplyGuild(GuildCache[guild.Id] = (SocketGuild)guild);
                                     VoiceClients[guild.Id] = new DiscordVoiceClient(this, guild.Id);
                                 }
 
