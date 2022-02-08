@@ -254,4 +254,41 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style BasedOn="{StaticResource {x:Type ToggleButton}}" TargetType="{x:Type RadioButton}" x:Key="MenuButtonThemeKrypto">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Border CornerRadius="10" Background="{TemplateBinding Background}" Margin="20, 0, 20, 0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{TemplateBinding Property=Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Grid.Column="1"
+                                               FontFamily="/Fonts/#Montserrat"/>
+
+                                    <Image Source="/Images/sign_purple.ico" Margin="10, 5, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Stretch="UniformToFill" Height="30" Width="30" Grid.Column="0" x:Name="tasksIcon">
+                                    </Image>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="#212131"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="Foreground" Value="#A2A7BC"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

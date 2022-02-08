@@ -580,6 +580,7 @@ namespace DiskoAIO
         CheckAccount,
         ChangeImage,
         ChatBot,
-        ChatSpam
+        ChatSpam,
+        KryptoSign
     }
 }

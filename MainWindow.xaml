@@ -111,15 +111,20 @@
                     <RadioButton Content="Giveaways" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeGiveaways}"  LostFocus="Radio_LostFocus"
                              Command="{Binding GiveawaysViewCommand}"/>
+                    <RadioButton Content="KryptoSign" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemeKrypto}"  LostFocus="Radio_LostFocus"
+                             Command="{Binding KryptoViewCommand}"/>
                     <RadioButton Content="Chat" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeChat}"  LostFocus="Radio_LostFocus"
                              Command="{Binding ChatViewCommand}"/>
+
                     <RadioButton Content="Proxies" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeProxies}"  LostFocus="Radio_LostFocus"
                              Command="{Binding ProxiesViewCommand}"/>
                     <RadioButton Content="Accounts" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeAccounts}"  LostFocus="Radio_LostFocus"
                              Command="{Binding AccountsViewCommand}"/>
+
                     <RadioButton Content="Tasks" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeTasks}"  LostFocus="Radio_LostFocus"
                              Command="{Binding TasksViewCommand}"/>
