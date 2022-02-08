@@ -14,7 +14,7 @@ namespace DiskoAIO
         public const string win_action = "win";
         public const string giveaway_task_finished = "giveaway";
         public const string join_task_finished = "join";
-        public const string endpoint = "https://diskoaio.com/api/science";
+        public const string endpoint = "https://diskoaio.com/api/v2/science";
         public static void SendStatistic(ScienceTypes type)
         {
             string action = "login";

@@ -113,7 +113,7 @@
                              Command="{Binding GiveawaysViewCommand}"/>
                     <RadioButton Content="KryptoSign" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeKrypto}"  LostFocus="Radio_LostFocus"
-                             Command="{Binding KryptoViewCommand}"/>
+                             Command="{Binding KryptoViewCommand}" Visibility="Collapsed"/>
                     <RadioButton Content="Chat" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeChat}"  LostFocus="Radio_LostFocus"
                              Command="{Binding ChatViewCommand}"/>

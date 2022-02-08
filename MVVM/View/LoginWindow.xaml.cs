@@ -1,4 +1,5 @@
-﻿using DiskoAIO.Properties;
+﻿using DeviceId;
+using DiskoAIO.Properties;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace DiskoAIO.MVVM.View
         }
         public static string login(string username, string password)
         {
-            var request_url = $"https://diskoaio.com/api/accounts?email={username}&password={password}";
+            var request_url = $"https://diskoaio.com/api/v2/accounts?email={username}&password={password}";
             HttpClient client = new HttpClient();
             HttpResponseMessage response = null;
             try
@@ -68,7 +69,7 @@ namespace DiskoAIO.MVVM.View
         {
             if (mac_addr == null || mac_addr == "")
                 mac_addr = GetMacAddress();
-            string address = "https://diskoaio.com/api/accounts?mac=" + mac_addr;
+            string address = "https://diskoaio.com/api/v2/accounts?mac=" + mac_addr;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + App.api_key);
             var response = client.SendAsync(new HttpRequestMessage()
@@ -78,7 +79,7 @@ namespace DiskoAIO.MVVM.View
             }).GetAwaiter().GetResult();
             if (response.StatusCode == System.Net.HttpStatusCode.NotAcceptable)
             {
-                var request_url = $"https://diskoaio.com/api/accounts?email={Settings.Default.tk1}&password={Settings.Default.tk2}";
+                var request_url = $"https://diskoaio.com/api/v2/accounts?email={Settings.Default.tk1}&password={Settings.Default.tk2}";
                 response = client.SendAsync(new HttpRequestMessage()
                 {
                     Method = new System.Net.Http.HttpMethod("GET"),
@@ -122,23 +123,8 @@ namespace DiskoAIO.MVVM.View
         }
         private static string GetMacAddress()
         {
-            const int MIN_MAC_ADDR_LENGTH = 12;
-            string macAddress = string.Empty;
-            long maxSpeed = -1;
-
-            foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                string tempMac = nic.GetPhysicalAddress().ToString();
-                if (nic.Speed > maxSpeed &&
-                    !string.IsNullOrEmpty(tempMac) &&
-                    tempMac.Length >= MIN_MAC_ADDR_LENGTH)
-                {
-                    maxSpeed = nic.Speed;
-                    macAddress = tempMac;
-                }
-            }
-
-            return macAddress;
+            string deviceId = new DeviceIdBuilder().AddMachineName().AddMacAddress().AddUserName().ToString();
+            return deviceId;
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
