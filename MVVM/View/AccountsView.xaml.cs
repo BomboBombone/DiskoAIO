@@ -682,7 +682,7 @@ namespace DiskoAIO.MVVM.View
                 else if (o.User_id.Contains(to_search))
                     source.Add(o);
             }
-            Clipboard.SetText(source[index].User_id);
+            Clipboard.SetDataObject(source[index].User_id);
             App.mainWindow.ShowNotification("Successfully copied Discord ID");
         }
 

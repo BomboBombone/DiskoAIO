@@ -36,13 +36,28 @@ namespace DiskoAIO
                 throw new Exception("404, conversation not found");
             }
         }
+        public static void Forget(string statement, string chat_id)
+        {
+            var request = new HttpRequest()
+            {
+
+            };
+            try
+            {
+                string payload = '{' + $"\"chat_id\":{chat_id},\"text\":\"{statement}\", \"delete\": 1" + '}';
+                request.Post(endpoint, payload, "application/json");
+            }
+            catch(Exception ex)
+            {
+                Debug.Log(ex.Message);
+            }
+        }
         public string GetResponse(string statement)
         {
             try
             {
                 var request = new HttpRequest()
                 {
-
                 };
                 request.AddHeader("X-Forwarded-For", App.localIP);
                 string payload = '{' + $"\"chat_id\":{chat_id},\"text\":\"{statement}\"" + '}';

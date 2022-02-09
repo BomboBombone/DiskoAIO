@@ -310,5 +310,11 @@ namespace DiskoAIO.MVVM.View
 
             }
         }
+
+        private void Delete_Task(object sender, RoutedEventArgs e)
+        {
+            var popup = new ChatDeleteWindow();
+            popup.Show();
+        }
     }
 }

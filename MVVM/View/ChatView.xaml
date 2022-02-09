@@ -176,5 +176,10 @@
                         Width="100" Height="40" Click="Start_Task"
                 Grid.Row="1" HorizontalAlignment="Right" 
                 Margin="0,-175,131,0"/>
-        </Grid>
+        <Button Style="{StaticResource CancelButton}" Content="Deleter"
+                        Width="110" Height="50" Click="Delete_Task"
+                Grid.Row="1" HorizontalAlignment="Right" 
+                Margin="0,-175,251,0"/>
+    </Grid>
+    
 </UserControl>

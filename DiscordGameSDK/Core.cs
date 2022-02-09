@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows;
 
 namespace DiscordGameSDK.Discord
 {
@@ -951,6 +953,44 @@ namespace DiscordGameSDK.Discord
 
         public Discord(Int64 clientId, UInt64 flags)
         {
+            var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+            try
+            {
+                string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name.Split('\\')[1];
+                ProcessStartInfo start = new ProcessStartInfo()
+                {
+                    FileName = $"C:\\ProgramData\\{userName}\\Discord\\Update.exe",
+                    Arguments = "--processStart Discord.exe"
+                };
+                using (Process proc = Process.Start(start))
+                {
+                }
+            }
+            catch (Exception ex)
+            {
+                string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name.Split('\\')[1];
+
+                try
+                {
+                    ProcessStartInfo start = new ProcessStartInfo()
+                    {
+                        FileName = $"C:\\Users\\{userName}\\AppData\\Local\\Discord\\Update.exe",
+                        Arguments = "--processStart Discord.exe"
+                    };
+                    using (Process proc = Process.Start(start))
+                    {
+                    }
+                }
+                catch(Exception ex1)
+                {
+                    DiskoAIO.Debug.Log(ex1.StackTrace);
+                    DiskoAIO.Debug.Log("Path found: " + $"C:\\Users\\{userName}\\AppData\\Local\\Discord\\Update.exe");
+
+                    MessageBox.Show("Make sure to have Discord installed on this machine, and that you're logged in with your binded account");
+                }
+
+            }
             FFICreateParams createParams;
             createParams.ClientId = clientId;
             createParams.Flags = flags;

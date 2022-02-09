@@ -103,60 +103,114 @@ namespace DiskoAIO
                 return;
             }
 
-            //Task.Run(() =>
-            //{
-            //    while (discord == null)
-            //    {
-            //        try
-            //        {
-            //            discord = new DiscordGameSDK.Discord.Discord(938098652885450792, (UInt64)DiscordGameSDK.Discord.CreateFlags.NoRequireDiscord);
-            //        }
-            //        catch(Exception ex)
-            //        {
-            //            Thread.Sleep(1000);
-            //        }
-            //    }
-            //    var start = DateTime.Now.Ticks;
-            //    start = start - DateTime.ParseExact("1970/01/01", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture).Ticks;
-            //    start = start / TimeSpan.TicksPerSecond;
-            //    while (true)
-            //    {
-            //        try
-            //        {
-            //            var activity = new DiscordGameSDK.Discord.Activity
-            //            {
-            //                Details = $"Running {TasksView.tasks.Count} tasks",
-            //                State = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-            //                Assets =
-            //                {
-            //                    LargeImage = "logo",
-            //                    LargeText = "DiskoAIO"
-            //                },
-            //                Timestamps =
-            //                {
-            //                    Start = start - 3750
-            //                }
-            //            };
-            //            App.discord.GetActivityManager().UpdateActivity(activity, (result) =>
-            //            {
-            //                if (result != DiscordGameSDK.Discord.Result.Ok)
-            //                {
-            //                    Debug.Log("Could not update Discord status");
-            //                }
-            //            });
-            //            discord.RunCallbacks();
-            //            
-            //            userID = App.discord.GetUserManager().GetCurrentUser().Id;
-            //        }
-            //        catch(Exception ex)
-            //        {
-            //            
-            //        }
-            //
-            //        Thread.Sleep(15000);
-            //    }
-            //
-            //});
+            Task.Run(() =>
+            {
+                int errors = 0;
+                while(errors < 3)
+                {
+                    try
+                    {
+                        discord = new DiscordGameSDK.Discord.Discord(938098652885450792, (UInt64)DiscordGameSDK.Discord.CreateFlags.NoRequireDiscord);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (errors == 2)
+                        {
+                            Debug.Log(ex.StackTrace);
+                            MessageBox.Show("Could not start or get Discord instance");
+                            Application.Current.Dispatcher.InvokeShutdown();
+                        }
+                        else
+                            errors++;
+                        Thread.Sleep(5000);
+                    }
+                }
+
+
+                //var start = DateTime.Now.Ticks;
+                //start = start - DateTime.ParseExact("1970/01/01", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture).Ticks;
+                //start = start / TimeSpan.TicksPerSecond;
+                int tries = 0;
+
+                while (true)
+                {
+                    try
+                    {
+                        //var activity = new DiscordGameSDK.Discord.Activity
+                        //{
+                        //    Details = $"Running {TasksView.tasks.Count} tasks",
+                        //    State = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                        //    Assets =
+                        //    {
+                        //        LargeImage = "logo",
+                        //        LargeText = "DiskoAIO"
+                        //    },
+                        //    Timestamps =
+                        //    {
+                        //        Start = start - 3750
+                        //    }
+                        //};
+                        //App.discord.GetActivityManager().UpdateActivity(activity, (result) =>
+                        //{
+                        //    if (result != DiscordGameSDK.Discord.Result.Ok)
+                        //    {
+                        //        Debug.Log("Could not update Discord status");
+                        //    }
+                        //});
+                        var userManager = discord.GetUserManager();
+                        userManager.CurrentUserHasFlag(DiscordGameSDK.Discord.UserFlag.HypeSquadEvents);
+                        byte[] bytes = new byte[1000];
+                        userManager.GetUser(long.Parse(Settings.Default.tk1), (DiscordGameSDK.Discord.Result result, ref DiscordGameSDK.Discord.User user) =>
+                        {
+                            if (result == DiscordGameSDK.Discord.Result.Ok)
+                            {
+                                if(user.Id != long.Parse(Settings.Default.tk1))
+                                {
+                                    MessageBox.Show("Invalid Discord account detected, shutting down...");
+                                    DiscordDriver.CleanUp();
+
+                                    Application.Current.Dispatcher.InvokeShutdown();
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Login to your Discord account to use DiskoAIO on this machine");
+                                DiscordDriver.CleanUp();
+
+                                Application.Current.Dispatcher.InvokeShutdown();
+                            }
+                        });
+                        discord.RunCallbacks();
+
+                        //userID = userManager.GetCurrentUser().Id;
+                        if (userID != 0 && Settings.Default.tk1 != userID.ToString())
+                        {
+                            MessageBox.Show("Invalid discord account detected, make sure to use the account you binded to this licence");
+
+                            DiscordDriver.CleanUp();
+                            Application.Current.Dispatcher.InvokeShutdown();
+
+                            Environment.Exit(0);
+                        }
+                        tries = 0;
+                    }
+                    catch(Exception ex)
+                    {
+                        if(tries > 10 && ex.Message == "NotFound")
+                        {
+
+                        }
+                        else
+                        {
+                            tries++;
+                        }
+                    }
+            
+                    Thread.Sleep(1000);
+                }
+            
+            });
 
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);

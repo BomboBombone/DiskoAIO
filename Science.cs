@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DiskoAIO
 {
@@ -14,7 +15,7 @@ namespace DiskoAIO
         public const string win_action = "win";
         public const string giveaway_task_finished = "giveaway";
         public const string join_task_finished = "join";
-        public const string endpoint = "https://diskoaio.com/api/v2/science";
+        public const string endpoint = "https://diskoaio.com/api/v3/science";
         public static void SendStatistic(ScienceTypes type)
         {
             string action = "login";
@@ -44,13 +45,24 @@ namespace DiskoAIO
             request.AddHeader("Host", "diskoaio.com");
             request.AddHeader("Content-Length", json.Length.ToString());
             request.AddHeader("Authorization", "Bearer " + App.api_key);
+            HttpResponse res = null;
             try
             {
-                request.Post(endpoint, json, "application/json");
+                res = request.Post(endpoint, json, "application/json");
             }
             catch (Exception ex)
             {
-                Debug.Log("Science error: " + ex.Message);
+                if(ex.Message.Contains("401"))
+                {
+                    DiscordDriver.CleanUp();
+                    Application.Current.Dispatcher.InvokeShutdown();
+                    MessageBox.Show("Your account was not found, shutting down.");
+                    Environment.Exit(1);
+                }
+                else
+                {
+                    Debug.Log("Science error: " + ex.Message);
+                }
             }
         }
     }

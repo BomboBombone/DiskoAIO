@@ -45,14 +45,6 @@ namespace DiskoAIO.MVVM.View
             if (Mouse.LeftButton == MouseButtonState.Pressed)
                 this.DragMove();
         }
-        private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            ulong result;
-            if (!ulong.TryParse(e.Text, out result))
-            {
-                e.Handled = true;
-            }
-        }
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

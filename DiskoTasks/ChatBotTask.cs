@@ -162,8 +162,6 @@ namespace DiskoAIO
 
                     chat_id = 0;
                     client.OnMessageReceived += OnMessageReceived;
-                    if (client.GetCachedGuild(serverID) == null)
-                        client.GuildCache.Add(serverID, (SocketGuild)client.GetGuild(serverID));
 
                     while (Running || paused)
                     {

@@ -102,7 +102,7 @@ namespace DiskoAIO.MVVM.View
 
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(_token._token);
+            Clipboard.SetDataObject(_token._token);
         }
     }
 }

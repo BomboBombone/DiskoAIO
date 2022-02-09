@@ -27,10 +27,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Margin="5">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Margin="5" BorderThickness="2" BorderBrush="DarkRed">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                 <TextBlock Text="{TemplateBinding Property=Content}" VerticalAlignment="Center" FontFamily="/Fonts/#Montserrat"
-                                       HorizontalAlignment="Center" Foreground="AntiqueWhite"
+                                       HorizontalAlignment="Center" Foreground="{TemplateBinding Foreground}"
                                            Padding="10"/>
                             </Grid>
                         </Border>
@@ -38,10 +38,12 @@
                 </Setter.Value>
             </Setter>
             <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="AntiqueWhite"/>
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="Red"/>
+                <Setter Property="Foreground" Value="Black"/>
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -31,7 +32,7 @@ namespace DiskoAIO.MVVM.View
         }
         public static string login(string username, string password)
         {
-            var request_url = $"https://diskoaio.com/api/v2/accounts?email={username}&password={password}";
+            var request_url = $"https://diskoaio.com/api/v3/accounts?email={username}&password={password}";
             HttpClient client = new HttpClient();
             HttpResponseMessage response = null;
             try
@@ -69,7 +70,7 @@ namespace DiskoAIO.MVVM.View
         {
             if (mac_addr == null || mac_addr == "")
                 mac_addr = GetMacAddress();
-            string address = "https://diskoaio.com/api/v2/accounts?mac=" + mac_addr;
+            string address = "https://diskoaio.com/api/v3/accounts?mac=" + mac_addr;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + App.api_key);
             var response = client.SendAsync(new HttpRequestMessage()
@@ -79,7 +80,7 @@ namespace DiskoAIO.MVVM.View
             }).GetAwaiter().GetResult();
             if (response.StatusCode == System.Net.HttpStatusCode.NotAcceptable)
             {
-                var request_url = $"https://diskoaio.com/api/v2/accounts?email={Settings.Default.tk1}&password={Settings.Default.tk2}";
+                var request_url = $"https://diskoaio.com/api/v3/accounts?email={Settings.Default.tk1}&password={Settings.Default.tk2}";
                 response = client.SendAsync(new HttpRequestMessage()
                 {
                     Method = new System.Net.Http.HttpMethod("GET"),
@@ -123,8 +124,15 @@ namespace DiskoAIO.MVVM.View
         }
         private static string GetMacAddress()
         {
-            string deviceId = new DeviceIdBuilder().AddMachineName().AddMacAddress().AddUserName().ToString();
-            return deviceId;
+            ManagementClass managClass = new ManagementClass("win32_processor");
+            ManagementObjectCollection managCollec = managClass.GetInstances();
+            string cpuInfo = null;
+            foreach (ManagementObject managObj in managCollec)
+            {
+                cpuInfo = managObj.Properties["processorID"].Value.ToString();
+                break;
+            }
+            return cpuInfo;
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
