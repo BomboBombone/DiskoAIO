@@ -171,141 +171,148 @@ namespace DiskoAIO.MVVM.View
                 return;
             }
             Task.Run(() => {
-                adding_accounts = true;
-                var dialog = new CommonOpenFileDialog();
-                dialog.Title = "Select tokens file";
-                dialog.DefaultExtension = ".txt";
-                dialog.AddToMostRecentlyUsedList = true;
-                dialog.EnsureFileExists = true;
-                dialog.EnsurePathExists = true;
-                string path = "";
-                var result = CommonFileDialogResult.Ok;
-                Dispatcher.Invoke(() => result = dialog.ShowDialog());
-                if (result == CommonFileDialogResult.Ok)
+                try
                 {
-                    var tokens = _currentGroup._accounts;
-                    int start_count = tokens.Count;
-                    path = dialog.FileName;
-                    if (path.EndsWith(".txt"))
+                    adding_accounts = true;
+                    var dialog = new CommonOpenFileDialog();
+                    dialog.Title = "Select tokens file";
+                    dialog.DefaultExtension = ".txt";
+                    dialog.AddToMostRecentlyUsedList = true;
+                    dialog.EnsureFileExists = true;
+                    dialog.EnsurePathExists = true;
+                    string path = "";
+                    var result = CommonFileDialogResult.Ok;
+                    Dispatcher.Invoke(() => result = dialog.ShowDialog());
+                    if (result == CommonFileDialogResult.Ok)
                     {
-                        Dispatcher.Invoke(() => {
-                            App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
-                        });
-                        int lines = 0;
-                        using (var reader = new StreamReader(path))
+                        var tokens = _currentGroup._accounts;
+                        int start_count = tokens.Count;
+                        path = dialog.FileName;
+                        if (path.EndsWith(".txt"))
                         {
-                            var line = reader.ReadLine();
-                            while (line != null && line != "")
+                            Dispatcher.Invoke(() => {
+                                App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
+                            });
+                            int lines = 0;
+                            using (var reader = new StreamReader(path))
                             {
-                                lines += 1;
-                                line = reader.ReadLine();
-                            }
-                        }
-                        var group_id = _currentGroup._id;
-                        var group_name = _currentGroup._name;
-                        var group_index = App.accountsGroups.IndexOf(_currentGroup);
-
-                        seconds_remaining = (int)(lines / 3);
-                        using (var reader = new StreamReader(path))
-                        {
-                            var line = reader.ReadLine();
-                            while (line != null && line != "")
-                            {
-                                try
+                                var line = reader.ReadLine();
+                                while (line != null && line != "")
                                 {
-                                    line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
-                                    var token_array = line.Split(':');
-                                    DiscordToken token = null;
-                                    var task = Task.Run(() =>
+                                    lines += 1;
+                                    line = reader.ReadLine();
+                                }
+                            }
+                            var group_id = _currentGroup._id;
+                            var group_name = _currentGroup._name;
+                            var group_index = App.accountsGroups.IndexOf(_currentGroup);
+
+                            seconds_remaining = (int)(lines / 3);
+                            using (var reader = new StreamReader(path))
+                            {
+                                var line = reader.ReadLine();
+                                while (line != null && line != "")
+                                {
+                                    try
                                     {
-                                        token = DiscordToken.Load(token_array);
-                                    });
-                                    if (task.Wait(TimeSpan.FromSeconds(3)))
-                                        ;
-                                    else
-                                    {
-                                        lines -= 1;
-                                        seconds_remaining = (int)(lines / 3);
-                                        line = reader.ReadLine();
-                                        continue;
-                                    }
-                                    if (token == null)
-                                    {
+                                        line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                                        var token_array = line.Split(':');
+                                        DiscordToken token = null;
+                                        var task = Task.Run(() =>
+                                        {
+                                            token = DiscordToken.Load(token_array);
+                                        });
+                                        if (task.Wait(TimeSpan.FromSeconds(3)))
+                                            ;
+                                        else
                                         {
                                             lines -= 1;
                                             seconds_remaining = (int)(lines / 3);
                                             line = reader.ReadLine();
+                                            continue;
+                                        }
+                                        if (token == null)
+                                        {
+                                            {
+                                                lines -= 1;
+                                                seconds_remaining = (int)(lines / 3);
+                                                line = reader.ReadLine();
+
+                                                continue;
+                                            }
+                                        }
+                                        if (tokens.Contains(token))
+                                        {
+                                            lines -= 1;
+                                            seconds_remaining = (int)(lines / 3);
 
                                             continue;
                                         }
-                                    }
-                                    if (tokens.Contains(token))
-                                    {
+                                        line = reader.ReadLine();
+                                        tokens.Add(token);
+
                                         lines -= 1;
                                         seconds_remaining = (int)(lines / 3);
 
-                                        continue;
-                                    }
-                                    line = reader.ReadLine();
-                                    tokens.Add(token);
-
-                                    lines -= 1;
-                                    seconds_remaining = (int)(lines / 3);
-
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        if(_currentGroup._name == group_name)
+                                        Dispatcher.Invoke(() =>
                                         {
-                                            App.accountsView.ListTokens.ItemsSource = tokens;
-                                            App.accountsView.ListTokens.Items.Refresh();
-                                        }
-                                        UpdateAccountCount();
+                                            if (_currentGroup._name == group_name)
+                                            {
+                                                App.accountsView.ListTokens.ItemsSource = tokens;
+                                                App.accountsView.ListTokens.Items.Refresh();
+                                            }
+                                            UpdateAccountCount();
 
-                                    });
+                                        });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Dispatcher.Invoke(() => {
+                                            App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
+                                        });
+                                        return;
+                                    }
+                                }
+                            }
+                            Dispatcher.Invoke(() =>
+                            {
+                                ListTokens.ItemsSource = _currentGroup._accounts;
+                                ListTokens.Items.Refresh();
+                                App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
+                                UpdateAccountCount();
+                            });
+
+                            while (true)
+                            {
+                                try
+                                {
+                                    using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
+                                    {
+                                        foreach (var token in tokens)
+                                        {
+                                            if (token == null)
+                                                continue;
+                                            writer.WriteLine(token.ToString());
+                                        }
+                                    }
+                                    break;
                                 }
                                 catch (Exception ex)
                                 {
-                                    Dispatcher.Invoke(() => {
-                                        App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
-                                    });
-                                    return;
+                                    Thread.Sleep(100);
                                 }
                             }
-                        }
-                        Dispatcher.Invoke(() =>
-                        {
-                            ListTokens.ItemsSource = _currentGroup._accounts;
-                            ListTokens.Items.Refresh();
-                            App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
-                            UpdateAccountCount();
-                        });
+                            App.accountsGroups[group_index]._accounts = tokens;
 
-                        while (true)
-                        {
-                            try
-                            {
-                                using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
-                                {
-                                    foreach (var token in tokens)
-                                    {
-                                        if (token == null)
-                                            continue;
-                                        writer.WriteLine(token.ToString());
-                                    }
-                                }
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                Thread.Sleep(100);
-                            }
                         }
-                        App.accountsGroups[group_index]._accounts = tokens;
-
                     }
-                }
 
-                adding_accounts = false;
+                    adding_accounts = false;
+                }
+                catch(Exception ex)
+                {
+                    Debug.Log(ex.StackTrace);
+                }
 
             });
         }
@@ -502,138 +509,145 @@ namespace DiskoAIO.MVVM.View
                 // handling code you have defined.
                 Task.Run(() =>
                 {
-                    foreach (var file in files)
+                    try
                     {
-                        if (!file.EndsWith(".txt"))
-                            continue;
-
-                        adding_accounts = true;
-                        var result = CommonFileDialogResult.Ok;
-                        if (result == CommonFileDialogResult.Ok)
+                        foreach (var file in files)
                         {
-                            var tokens = _currentGroup._accounts;
-                            int start_count = tokens.Count;
-                            if (file.EndsWith(".txt"))
-                            {
-                                Dispatcher.Invoke(() => {
-                                    App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
-                                });
-                                int lines = 0;
-                                using (var reader = new StreamReader(file))
-                                {
-                                    var line = reader.ReadLine();
-                                    while (line != null && line != "")
-                                    {
-                                        lines += 1;
-                                        line = reader.ReadLine();
-                                    }
-                                }
-                                var group_id = _currentGroup._id;
-                                var group_name = _currentGroup._name;
-                                var group_index = App.accountsGroups.IndexOf(_currentGroup);
+                            if (!file.EndsWith(".txt"))
+                                continue;
 
-                                seconds_remaining = (int)(lines / 3);
-                                using (var reader = new StreamReader(file))
+                            adding_accounts = true;
+                            var result = CommonFileDialogResult.Ok;
+                            if (result == CommonFileDialogResult.Ok)
+                            {
+                                var tokens = _currentGroup._accounts;
+                                int start_count = tokens.Count;
+                                if (file.EndsWith(".txt"))
                                 {
-                                    var line = reader.ReadLine();
-                                    while (line != null && line != "")
+                                    Dispatcher.Invoke(() => {
+                                        App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
+                                    });
+                                    int lines = 0;
+                                    using (var reader = new StreamReader(file))
                                     {
-                                        try
+                                        var line = reader.ReadLine();
+                                        while (line != null && line != "")
                                         {
-                                            line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
-                                            var token_array = line.Split(':');
-                                            DiscordToken token = null;
-                                            var task = Task.Run(() =>
+                                            lines += 1;
+                                            line = reader.ReadLine();
+                                        }
+                                    }
+                                    var group_id = _currentGroup._id;
+                                    var group_name = _currentGroup._name;
+                                    var group_index = App.accountsGroups.IndexOf(_currentGroup);
+
+                                    seconds_remaining = (int)(lines / 3);
+                                    using (var reader = new StreamReader(file))
+                                    {
+                                        var line = reader.ReadLine();
+                                        while (line != null && line != "")
+                                        {
+                                            try
                                             {
-                                                token = DiscordToken.Load(token_array);
-                                            });
-                                            if (task.Wait(TimeSpan.FromSeconds(3)))
-                                                ;
-                                            else
-                                            {
-                                                lines -= 1;
-                                                seconds_remaining = (int)(lines / 3);
-                                                line = reader.ReadLine();
-                                                continue;
-                                            }
-                                            if (token == null)
-                                            {
+                                                line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                                                var token_array = line.Split(':');
+                                                DiscordToken token = null;
+                                                var task = Task.Run(() =>
+                                                {
+                                                    token = DiscordToken.Load(token_array);
+                                                });
+                                                if (task.Wait(TimeSpan.FromSeconds(3)))
+                                                    ;
+                                                else
                                                 {
                                                     lines -= 1;
                                                     seconds_remaining = (int)(lines / 3);
                                                     line = reader.ReadLine();
+                                                    continue;
+                                                }
+                                                if (token == null)
+                                                {
+                                                    {
+                                                        lines -= 1;
+                                                        seconds_remaining = (int)(lines / 3);
+                                                        line = reader.ReadLine();
+
+                                                        continue;
+                                                    }
+                                                }
+                                                if (tokens.Contains(token))
+                                                {
+                                                    lines -= 1;
+                                                    seconds_remaining = (int)(lines / 3);
 
                                                     continue;
                                                 }
-                                            }
-                                            if (tokens.Contains(token))
-                                            {
+                                                line = reader.ReadLine();
+                                                tokens.Add(token);
+
                                                 lines -= 1;
                                                 seconds_remaining = (int)(lines / 3);
 
-                                                continue;
-                                            }
-                                            line = reader.ReadLine();
-                                            tokens.Add(token);
-
-                                            lines -= 1;
-                                            seconds_remaining = (int)(lines / 3);
-
-                                            Dispatcher.Invoke(() =>
-                                            {
-                                                if (_currentGroup._name == group_name)
+                                                Dispatcher.Invoke(() =>
                                                 {
-                                                    App.accountsView.ListTokens.ItemsSource = tokens;
-                                                    App.accountsView.ListTokens.Items.Refresh();
-                                                }
-                                                UpdateAccountCount();
+                                                    if (_currentGroup._name == group_name)
+                                                    {
+                                                        App.accountsView.ListTokens.ItemsSource = tokens;
+                                                        App.accountsView.ListTokens.Items.Refresh();
+                                                    }
+                                                    UpdateAccountCount();
 
-                                            });
+                                                });
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Dispatcher.Invoke(() => {
+                                                    App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
+                                                });
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        ListTokens.ItemsSource = _currentGroup._accounts;
+                                        ListTokens.Items.Refresh();
+                                        App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
+                                        UpdateAccountCount();
+                                    });
+
+                                    while (true)
+                                    {
+                                        try
+                                        {
+                                            using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
+                                            {
+                                                foreach (var token in tokens)
+                                                {
+                                                    if (token == null)
+                                                        continue;
+                                                    writer.WriteLine(token.ToString());
+                                                }
+                                            }
+                                            break;
                                         }
                                         catch (Exception ex)
                                         {
-                                            Dispatcher.Invoke(() => {
-                                                App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
-                                            });
-                                            return;
+                                            Thread.Sleep(100);
                                         }
                                     }
-                                }
-                                Dispatcher.Invoke(() =>
-                                {
-                                    ListTokens.ItemsSource = _currentGroup._accounts;
-                                    ListTokens.Items.Refresh();
-                                    App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
-                                    UpdateAccountCount();
-                                });
+                                    App.accountsGroups[group_index]._accounts = tokens;
 
-                                while (true)
-                                {
-                                    try
-                                    {
-                                        using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
-                                        {
-                                            foreach (var token in tokens)
-                                            {
-                                                if (token == null)
-                                                    continue;
-                                                writer.WriteLine(token.ToString());
-                                            }
-                                        }
-                                        break;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Thread.Sleep(100);
-                                    }
                                 }
-                                App.accountsGroups[group_index]._accounts = tokens;
-
                             }
-                        }
 
+                        }
+                        adding_accounts = false;
                     }
-                    adding_accounts = false;
+                    catch(Exception ex)
+                    {
+                        Debug.Log(ex.StackTrace);
+                    }
                 });
 
             }

@@ -347,7 +347,7 @@ namespace Discord.Gateway
 
                                 foreach (var guild in login.Guilds)
                                 {
-                                    //ApplyGuild(GuildCache[guild.Id] = (SocketGuild)guild);
+                                    ApplyGuild(GuildCache[guild.Id] = (SocketGuild)guild);
                                     VoiceClients[guild.Id] = new DiscordVoiceClient(this, guild.Id);
                                 }
 
@@ -391,7 +391,7 @@ namespace Discord.Gateway
                                             {
                                                 try
                                                 {
-                                                    if (ulong.TryParse(word.Trim('!', '#'), out var userId))
+                                                    if (ulong.TryParse(word.Trim('<', '>', '@', '!', '#'), out var userId))
                                                     {
                                                         return;
                                                     }
@@ -417,7 +417,7 @@ namespace Discord.Gateway
                                             {
                                                 try
                                                 {
-                                                    if (ulong.TryParse(word.Trim('!', '#'), out var userId))
+                                                    if (ulong.TryParse(word.Trim('<', '>', '@', '!', '#'), out var userId))
                                                     {
                                                         return;
                                                     }
@@ -448,7 +448,7 @@ namespace Discord.Gateway
                                 {
                                     var rnd = new Random();
 
-                                    if (rnd.Next(0, 100) > response_rate)
+                                    if (rnd.Next(1, 101) > response_rate)
                                         return;
                                     if (answeringToMessage)
                                         return;
@@ -618,44 +618,6 @@ namespace Discord.Gateway
                                 }
                                 if (OnLeftGuild != null)
                                     Task.Run(() => OnLeftGuild.Invoke(this, new GuildUnavailableEventArgs(guild)));
-                            }
-                            break;
-
-                        case "CHANNEL_UPDATE":
-                            if (Config.Cache || OnChannelUpdated != null)
-                            {
-                                var channel = ((JObject)message.Data).ParseDeterministic<DiscordChannel>();
-
-                                if (Config.Cache)
-                                {
-                                    if (channel.Type == ChannelType.DM || channel.Type == ChannelType.Group)
-                                        PrivateChannels.ReplaceFirst(c => c.Id == channel.Id, (PrivateChannel)channel);
-                                    else
-                                    {
-                                        GuildChannel guildChannel = (GuildChannel)channel;
-                                        GuildCache[guildChannel.GuildId].ChannelsConcurrent.ReplaceFirst(c => c.Id == guildChannel.Id, guildChannel);
-                                    }
-                                }
-
-                                if (OnChannelUpdated != null)
-                                    Task.Run(() => OnChannelUpdated.Invoke(this, new ChannelEventArgs(channel)));
-                            }
-                            break;
-                        case "CHANNEL_DELETE":
-                            if (Config.Cache || OnChannelDeleted != null)
-                            {
-                                var channel = ((JObject)message.Data).ParseDeterministic<DiscordChannel>();
-
-                                if (Config.Cache)
-                                {
-                                    if (channel.Type == ChannelType.DM || channel.Type == ChannelType.Group)
-                                        PrivateChannels.RemoveFirst(c => c.Id == channel.Id);
-                                    else
-                                        GuildCache[((GuildChannel)channel).GuildId].ChannelsConcurrent.RemoveFirst(c => c.Id == channel.Id);
-                                }
-
-                                if (OnChannelDeleted != null)
-                                    Task.Run(() => OnChannelDeleted.Invoke(this, new ChannelEventArgs(channel)));
                             }
                             break;
                     }

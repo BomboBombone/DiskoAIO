@@ -637,6 +637,7 @@
     <Compile Include="DiskoTasks\KryptoSignTask.cs" />
     <Compile Include="DiskoTasks\LeaveTask.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="DiskoTasks\PresenceCheckerTask.cs" />
     <Compile Include="MVVM\ViewModel\ChatVM.cs" />
     <Compile Include="MVVM\View\AccountSettingsPopup.xaml.cs">
       <DependentUpon>AccountSettingsPopup.xaml</DependentUpon>
@@ -661,6 +662,9 @@
     </Compile>
     <Compile Include="MVVM\View\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\PresenceView.xaml.cs">
+      <DependentUpon>PresenceView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\TaskSettingsPopup.xaml.cs">
       <DependentUpon>TaskSettingsPopup.xaml</DependentUpon>
@@ -731,6 +735,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\PresenceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -928,6 +936,7 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\presence_purple.ico" />
     <Resource Include="Images\sign_purple.ico" />
     <None Include="discord_game_sdk.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

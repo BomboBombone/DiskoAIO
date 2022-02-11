@@ -38,7 +38,8 @@
                                 <Label Content="Server ID" FontFamily="/Fonts/#Montserrat" 
                                 FontSize="12" Foreground="White"/>
                                 <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                            Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"/>
+                                            Name="ServerID" PreviewTextInput="textBox_PreviewTextInput"
+                                         LostFocus="ServerID_TextChanged" />
                             </StackPanel>
                         </Border>
                         <Border Background="#181824" CornerRadius="10" Margin="20 ,0"
@@ -58,6 +59,8 @@
                                             Name="UserID" PreviewTextInput="textBox_PreviewTextInput"/>
                             </StackPanel>
                         </Border>
+                        <Label Name="SizeLabel" Content="Database capacity: 0%" FontFamily="/Fonts/#Montserrat" FontSize="12"
+                               VerticalAlignment="Center" Foreground="AntiqueWhite"/>
                         <Border Background="#181824" CornerRadius="5" Margin="20 ,10"
                                 Name="InfiniteChatBorder">
                             <StackPanel VerticalAlignment="Center">

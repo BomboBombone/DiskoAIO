@@ -124,7 +124,9 @@
                     <RadioButton Content="Accounts" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeAccounts}"  LostFocus="Radio_LostFocus"
                              Command="{Binding AccountsViewCommand}"/>
-
+                    <RadioButton Content="Presence" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemePresence}"  LostFocus="Radio_LostFocus"
+                             Command="{Binding PresenceViewCommand}"/>
                     <RadioButton Content="Tasks" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeTasks}"  LostFocus="Radio_LostFocus"
                              Command="{Binding TasksViewCommand}"/>

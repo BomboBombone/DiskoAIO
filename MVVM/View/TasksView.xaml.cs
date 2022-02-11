@@ -51,6 +51,9 @@ namespace DiskoAIO.MVVM.View
             {
                 ListTasks.Items.Refresh();
             });
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         private void Play_Click(object sender, RoutedEventArgs e)

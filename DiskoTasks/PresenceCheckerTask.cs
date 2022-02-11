@@ -8,18 +8,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace DiskoAIO
+namespace DiskoAIO.DiskoTasks
 {
-    class AccountCheckerTask : DiskoTask
+    class PresenceCheckerTask : DiskoTask
     {
         public TaskType type
         {
-            get { return TaskType.CheckAccount; }
+            get { return TaskType.CheckPresence; }
             set { }
         }
         public string Type
         {
-            get { return "Account checker"; }
+            get { return "Presence checker"; }
         }
         private Progress _progress;
         public Progress progress
@@ -79,11 +79,12 @@ namespace DiskoAIO
 
         public bool checking = true;
         public bool paused = false;
-
-        public AccountCheckerTask(AccountGroup accounts, ProxyGroup proxies = null)
+        public ulong server_id;
+        public PresenceCheckerTask(AccountGroup accounts, ulong serverID, ProxyGroup proxies = null)
         {
             accountGroup = accounts;
             proxyGroup = proxies;
+            server_id = serverID;
             progress = new Progress(accounts._accounts.Count);
         }
         public void Start()
@@ -102,10 +103,7 @@ namespace DiskoAIO
                     {
                         var client = new DiscordClient(token._token);
 
-                        client.QueryGuilds(new GuildQueryOptions()
-                        {
-                            Limit = 1
-                        });
+                        var guild = client.GetGuild(server_id);
                         validTokens.Add(token);
                     }
                     catch (Exception ex)
@@ -114,36 +112,40 @@ namespace DiskoAIO
                     }
                     _progress.completed_tokens++;
                 }
-
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if(App.accountsView.ListTokens.SelectedItem != null && App.accountsView.ListTokens.SelectedItem.ToString() == accountGroup._name)
+                    App.mainWindow.ShowNotification($"{validTokens.Count} tokens are in the server {server_id}. Check your webhook for the full list (must enable extra webhook notifications in settings)!");
+                    if(Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
                     {
-                        App.accountsView.ListTokens.ItemsSource = validTokens;
-                        App.accountsView.ListTokens.Items.Refresh();
-                    }
-                    else
-                    {
-                        App.accountsGroups[App.accountsGroups.IndexOf(accountGroup)]._accounts = validTokens;
-                    }
-                    if (accountGroup._accounts.Count - validTokens.Count > 0)
-                        App.mainWindow.ShowNotification($"Successfully deleted {accountGroup._accounts.Count - validTokens.Count} invalid or locked accounts, make sure to save to confirm changes");
-                    else
-                        App.mainWindow.ShowNotification($"No invalid or locked accounts were found");
+                        string win = "\n";
+                        var wins = new List<string>();
+                        int i = 0;
+                        foreach (var token in validTokens)
+                        {
+                            if (!checking)
+                                return;
+                            while (paused)
+                                Thread.Sleep(500);
+                            if (i == 8)
+                            {
+                                wins.Add(win);
+                                win = "\n";
+                                i = 0;
+                            }
+                            win += $"<@!{token._user_id}>\n||{token._token}||\n";
+                            i++;
+                        }
+                        if (wins.Count < 1 || win != "\n")
+                            wins.Add(win);
+                        var client = new DiscordClient(validTokens.First()._token);
 
-                });
-                Running = false;
-                paused = false;
-                if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
-                    App.SendToWebhook(Settings.Default.Webhook, "Account checker task completed successfully\n**Group:** " + accountGroup._name);
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    App.mainWindow.ShowNotification("Account checker task completed successfully");
+                        var guild = client.GetGuild(server_id);
+                        foreach (string win_mes in wins)
+                            App.SendToWebhook(Settings.Default.Webhook, $"Accounts inside server {guild.Name}:\n" + win_mes);
+                    }
                 });
             });
         }
-
         public void Stop()
         {
             checking = false;

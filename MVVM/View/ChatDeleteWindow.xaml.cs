@@ -36,13 +36,13 @@ namespace DiskoAIO.MVVM.View
         {
             var statement = MessageText.Text;
             var serverID = ServerID.Text;
-            if(statement == null || statement == "" || !ulong.TryParse(serverID, out var server_id) || serverID.Length != 18)
+            if(statement == null || statement.Remove(' ') == "" || !ulong.TryParse(serverID, out var server_id) || serverID.Length != 18)
             {
                 return;
             }
             Task.Run(() =>
             {
-                BobbyAPI.Forget(statement, serverID);
+                BobbyAPI.Forget(' ' + statement.Trim(' ') + ' ', serverID);
                 Application.Current.Dispatcher.Invoke(() => {
                     App.mainWindow.ShowNotification("Deleted all sentences containing the specified text");
                 });

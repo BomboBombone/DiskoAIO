@@ -202,7 +202,7 @@ namespace DiskoAIO
                 if (args.Message.Channel.RateLimit != 0)
                     Thread.Sleep(args.Message.Channel.RateLimit * 1000 - (int)(end - start).TotalMilliseconds);
                 else if ((end - start).TotalSeconds < 2)
-                    Thread.Sleep(2000 - (int)(end - start).TotalMilliseconds);
+                    Thread.Sleep(5000 - (int)(end - start).TotalMilliseconds);
                 if (args.Message.Mentions != null && args.Message.Mentions.Contains(client.User))
                 {
                     msg = MessageExtensions.SendMessage(client, args.Message.Channel.Id, new MessageProperties()

@@ -18,6 +18,7 @@ namespace DiskoAIO.MVVM.ViewModel
         public RelayCommand AccountsViewCommand { get; set; }
         public RelayCommand ChatViewCommand { get; set; }
         public RelayCommand KryptoViewCommand { get; set; }
+        public RelayCommand PresenceViewCommand { get; set; }
 
         public RelayCommand SettingsViewCommand { get; set; }
         //Window change commands
@@ -28,6 +29,7 @@ namespace DiskoAIO.MVVM.ViewModel
         public TasksView TasksView { get; set; } = new TasksView();
         public ChatView ChatView { get; set; } = new ChatView();
         public KryptoView KryptoView { get; set; } = new KryptoView();
+        public PresenceView PresenceView { get; set; } = new PresenceView();
         public SettingsView SettingsView { get; set; } = new SettingsView();
 
         private object _currentView;
@@ -150,6 +152,22 @@ namespace DiskoAIO.MVVM.ViewModel
                     source = source.Append(group._name).ToArray();
                 }
                 KryptoView.TokenGroup.ItemsSource = source;
+            });
+            PresenceViewCommand = new RelayCommand(o =>
+            {
+                CurrentView = PresenceView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                PresenceView.ProxiesGroup.ItemsSource = source;
+                source = new string[] { };
+                foreach (var group in App.accountsGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                PresenceView.TokenGroup.ItemsSource = source;
             });
         }
     }

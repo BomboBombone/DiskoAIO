@@ -222,9 +222,9 @@ namespace DiskoAIO.MVVM.View
             }
             else if (ChatTypeGroup.SelectedItem.ToString() == "AI")
             {
-                if (skip > 100 || skip < 1)
+                if (skip > 100 || skip < 0)
                 {
-                    App.mainWindow.ShowNotification("Invalid response rate, choose between 1% and 100%");
+                    App.mainWindow.ShowNotification("Invalid response rate, choose between 0% and 100%");
                     return;
                 }
 
@@ -315,6 +315,24 @@ namespace DiskoAIO.MVVM.View
         {
             var popup = new ChatDeleteWindow();
             popup.Show();
+        }
+
+        private void ServerID_TextChanged(object sender, RoutedEventArgs e)
+        {
+            if (ulong.TryParse(ServerID.Text, out var serverID) && ServerID.Text.Length == 18)
+            {
+                var size = BobbyAPI.GetSize(serverID.ToString());
+                if (size != null)
+                {
+                    SizeLabel.Content = $"Database capacity: {float.Parse(size.Substring(0, 4)) / 5.0}%";
+
+                }
+                else
+                {
+                    SizeLabel.Content = $"Database capacity: 0%";
+
+                }
+            }
         }
     }
 }

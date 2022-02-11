@@ -35,6 +35,15 @@ namespace DiskoAIO
         {
             InitializeComponent();
             VersionLabel.Content = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            //TaskScheduler.UnobservedTaskException += (object sender, UnobservedTaskExceptionEventArgs eventArgs) =>
+            //{
+            //    eventArgs.SetObserved();
+            //    ((AggregateException)eventArgs.Exception).Handle(ex =>
+            //    {
+            //        Debug.Log("Exception type: " + ex.GetType());
+            //        return true;
+            //    });
+            //};
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

@@ -113,127 +113,145 @@ namespace DiskoAIO
         }
         public void Start()
         {
-            if (invite.StartsWith("https://discord.gg/"))
-                invite = invite.Remove(0, "https://discord.gg/".Length);
-            if (invite.StartsWith("discord.gg/"))
-                invite = invite.Remove(0, "discord.gg/".Length);
-            if (invite.StartsWith("https://discord.com/invite/"))
-                invite = invite.Remove(0, "https://discord.com/invite/".Length);
-            var (guildId, channelWelcomeId) = Get_GuildID(invite, proxyGroup);
-            if (guildId == "1" || guildId == null)
+            try
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                if (invite.StartsWith("https://discord.gg/"))
+                    invite = invite.Remove(0, "https://discord.gg/".Length);
+                if (invite.StartsWith("discord.gg/"))
+                    invite = invite.Remove(0, "discord.gg/".Length);
+                if (invite.StartsWith("https://discord.com/invite/"))
+                    invite = invite.Remove(0, "https://discord.com/invite/".Length);
+                var (guildId, channelWelcomeId) = Get_GuildID(invite, proxyGroup);
+                if (guildId == "1" || guildId == null)
                 {
-                    App.mainWindow.ShowNotification("IP banned from Discord, try again using proxies or a VPN");
-                });
-                joining = false;
-                return;
-            }
-            serverID = ulong.Parse(guildId);
-            var clients = new List<DiscordClient>() { };
-            var joined = 0;
-            var token_list = new List<string>() { };
-            foreach (var tk in accountGroup._accounts)
-            {
-                if (tk == null)
-                    continue;
-                if (accountGroup._accounts.IndexOf(tk) < skip)
-                {
-                    _progress.Add(1);
-                    continue;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        App.mainWindow.ShowNotification("IP banned from Discord, try again using proxies or a VPN");
+                    });
+                    joining = false;
+                    return;
                 }
-                if (token_list.Count == max_tokens)
-                    break;
-                token_list.Add(tk._token);
-            }
-            Thread joiner = new Thread(() =>
-            {
-                int verifyingCount = 0;
-                var joined_time = DateTime.Now;
-                var messages = new List<DiscordMessage>();
-                var captchaMessages = new List<DiscordMessage>();
-
-                DiscordMessage mes = null;
-                MessageReaction reaction = null;
-                while (joining)
+                serverID = ulong.Parse(guildId);
+                var clients = new List<DiscordClient>() { };
+                var joined = 0;
+                var token_list = new List<string>() { };
+                foreach (var tk in accountGroup._accounts)
                 {
-                    while (paused)
-                        Thread.Sleep(500);
-                    try
+                    if (tk == null)
+                        continue;
+                    if (accountGroup._accounts.IndexOf(tk) < skip)
                     {
-                        if (joined == max_tokens)
-                            joining = false;
+                        _progress.Add(1);
+                        continue;
                     }
-                    catch (Exception ex) { }
-                    int i = 0;
+                    if (token_list.Count == max_tokens)
+                        break;
+                    token_list.Add(tk._token);
+                }
+                Thread joiner = new Thread(() =>
+                {
                     try
                     {
-                        var clients1 = new DiscordClient[clients.Count + 10];
-                        clients.CopyTo(clients1);
-                        foreach (var client in clients1)
+                        int verifyingCount = 0;
+                        var joined_time = DateTime.Now;
+                        var messages = new List<DiscordMessage>();
+                        var captchaMessages = new List<DiscordMessage>();
+
+                        DiscordMessage mes = null;
+                        MessageReaction reaction = null;
+                        while (joining)
                         {
-                            if (!joining)
-                                break;
-                            if (client == null)
-                                continue;
                             while (paused)
                                 Thread.Sleep(500);
                             try
                             {
-                                bool hasJoined = false;
-                                int c = 0;
-                                while (!hasJoined && c < 1)
+                                if (joined == max_tokens)
+                                    joining = false;
+                            }
+                            catch (Exception ex) { }
+                            int i = 0;
+                            try
+                            {
+                                var clients1 = new DiscordClient[clients.Count + 10];
+                                clients.CopyTo(clients1);
+                                foreach (var client in clients1)
                                 {
+                                    if (!joining)
+                                        break;
+                                    if (client == null)
+                                        continue;
+                                    while (paused)
+                                        Thread.Sleep(500);
                                     try
                                     {
-                                        joined_time = DateTime.Now;
-
-                                        client.JoinGuild(invite);
-                                        Task.Run(() =>
+                                        bool hasJoined = false;
+                                        int c = 0;
+                                        while (!hasJoined && c < 1)
                                         {
-                                            verifyingCount++;
-                                            if (acceptRules)
+                                            try
                                             {
-                                                var z = 0;
-                                                while (z < 1)
-                                                {
-                                                    try
-                                                    {
-                                                        var accepted = client.GetGuildVerificationForm(serverID, invite);
-                                                        break;
-                                                    }
-                                                    catch (Exception ex) { z++; Debug.Log("Couldn't accept TOS - " + ex.StackTrace); }
-                                                }
-                                            }
-                                            if (bypassReaction)
-                                            {
-                                                if (messages.Count == 0 || mes == null)
-                                                {
-                                                    try
-                                                    {
-                                                        messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
-                                                        {
-                                                            Limit = 50
-                                                        });
-                                                        foreach (var message in messages)
-                                                        {
-                                                            reaction = null;
-                                                            var reactions = message.Reactions;
-                                                            foreach (var react in reactions)
-                                                            {
-                                                                if (reaction == null)
-                                                                    reaction = react;
-                                                                else
-                                                                {
-                                                                    if (react.Count > reaction.Count)
-                                                                        reaction = react;
-                                                                }
+                                                joined_time = DateTime.Now;
 
-                                                            }
-
+                                                client.JoinGuild(invite);
+                                                Task.Run(() =>
+                                                {
+                                                    verifyingCount++;
+                                                    if (acceptRules)
+                                                    {
+                                                        var z = 0;
+                                                        while (z < 1)
+                                                        {
                                                             try
                                                             {
-                                                                client.AddMessageReaction(channelID, message.Id, reaction.Emoji.Name, reaction.Emoji.Id);
+                                                                var accepted = client.GetGuildVerificationForm(serverID, invite);
+                                                                break;
+                                                            }
+                                                            catch (Exception ex) { z++; Debug.Log("Couldn't accept TOS - " + ex.StackTrace); }
+                                                        }
+                                                    }
+                                                    if (bypassReaction)
+                                                    {
+                                                        if (messages.Count == 0 || mes == null)
+                                                        {
+                                                            try
+                                                            {
+                                                                messages = (List<DiscordMessage>)client.GetChannelMessages(channelID, new MessageFilters()
+                                                                {
+                                                                    Limit = 50
+                                                                });
+                                                                foreach (var message in messages)
+                                                                {
+                                                                    reaction = null;
+                                                                    var reactions = message.Reactions;
+                                                                    foreach (var react in reactions)
+                                                                    {
+                                                                        if (reaction == null)
+                                                                            reaction = react;
+                                                                        else
+                                                                        {
+                                                                            if (react.Count > reaction.Count)
+                                                                                reaction = react;
+                                                                        }
+
+                                                                    }
+                                                                    try
+                                                                    {
+                                                                        if(reaction.ClientHasReacted)
+                                                                            client.RemoveMessageReaction(channelID, message.Id, reaction.Emoji.Name, reaction.Emoji.Id);
+                                                                    }
+                                                                    catch (Exception ex)
+                                                                    {
+
+                                                                    }
+                                                                    try
+                                                                    {
+                                                                        client.AddMessageReaction(channelID, message.Id, reaction.Emoji.Name, reaction.Emoji.Id);
+                                                                    }
+                                                                    catch (Exception ex)
+                                                                    {
+                                                                        Debug.Log(ex.StackTrace);
+                                                                    }
+                                                                }
                                                             }
                                                             catch (Exception ex)
                                                             {
@@ -241,268 +259,282 @@ namespace DiskoAIO
                                                             }
                                                         }
                                                     }
-                                                    catch(Exception ex)
+                                                    if (bypassCaptcha)
                                                     {
-                                                        Debug.Log(ex.StackTrace);
-                                                    }
-                                                }
-                                            }
-                                            if (bypassCaptcha)
-                                            {
-                                                try
-                                                {
-                                                    if (captchaBotType == "Wick")
-                                                    {
-                                                        client.Proxy = null;
-                                                        if (captchaMessages.Count == 0 || mes == null)
+                                                        try
                                                         {
-                                                            captchaMessages = (List<DiscordMessage>)client.GetChannelMessages(captchaChannelID, new MessageFilters()
+                                                            if (captchaBotType == "Wick")
                                                             {
-                                                                Limit = 50
-                                                            });
-                                                        }
-                                                        DateTime clicked = DateTime.Now;
-                                                        foreach (var message in captchaMessages)
-                                                        {
-                                                            if (message.Components.Count < 1 || message.Author.User.Id != 548410451818708993)
-                                                                continue;
-                                                            try
-                                                            {
-                                                                Click_Button(client, message);
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Debug.Log(ex.Message);
-                                                            }
-                                                        }
-                                                        var dm = client.CreateDM(548410451818708993);
-                                                        var dms = new List<DiscordMessage>();
-                                                        int tries = 0;
-                                                        while (true && tries < 20)
-                                                        {
-                                                            try
-                                                            {
-                                                                dms = (List<DiscordMessage>)dm.GetMessages(new MessageFilters()
+                                                                client.Proxy = null;
+                                                                if (captchaMessages.Count == 0 || mes == null)
                                                                 {
-                                                                    Limit = 50
-                                                                });
-                                                                tries++;
-                                                                if (dms.Count < 1)
-                                                                    continue;
-                                                                else
-                                                                {
-                                                                    if (dms.First().SentAt.Subtract(clicked).TotalSeconds >= 0)
-                                                                        break;
+                                                                    captchaMessages = (List<DiscordMessage>)client.GetChannelMessages(captchaChannelID, new MessageFilters()
+                                                                    {
+                                                                        Limit = 50
+                                                                    });
                                                                 }
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Thread.Sleep(1000);
-                                                                tries++;
-
-                                                            }
-                                                        }
-                                                        if (tries == 20)
-                                                            throw new Exception("Token seems to be already verified");
-                                                        string solution = "";
-                                                        foreach (var message in dms)
-                                                        {
-                                                            if (message.Embed.Image != null)
-                                                            {
-                                                                solution = CaptchaSolvers.WickSolver.Solve(message.Embed.Image.Url);
-                                                                while(solution == null)
-                                                                    solution = CaptchaSolvers.WickSolver.Solve(message.Embed.Image.Url);
-
-                                                                break;
-                                                            }
-                                                        }
-                                                        dm.SendMessage(solution, false);
-                                                        tries = 0;
-                                                        while (true && tries < 3)
-                                                        {
-                                                            try
-                                                            {
-                                                                dms = (List<DiscordMessage>)dm.GetMessages(new MessageFilters()
+                                                                DateTime clicked = DateTime.Now;
+                                                                foreach (var message in captchaMessages)
                                                                 {
-                                                                    Limit = 50
-                                                                });
-                                                                tries++;
-                                                                if (dms.Count < 1)
-                                                                    continue;
-                                                                else
-                                                                {
-                                                                    if(dms.First().Embed != null && dms.First().Embed.Title.Contains("You have been verified!"))
+                                                                    if (message.Components.Count < 1 || message.Author.User.Id != 548410451818708993)
+                                                                        continue;
+                                                                    try
                                                                     {
-                                                                        break;
+                                                                        Click_Button(client, message);
                                                                     }
-                                                                    else
+                                                                    catch (Exception ex)
                                                                     {
-                                                                        foreach (var dm1 in dms)
+                                                                        Debug.Log(ex.Message);
+                                                                    }
+                                                                }
+                                                                var dm = client.CreateDM(548410451818708993);
+                                                                var dms = new List<DiscordMessage>();
+                                                                int tries = 0;
+                                                                while (true && tries < 20)
+                                                                {
+                                                                    try
+                                                                    {
+                                                                        dms = (List<DiscordMessage>)dm.GetMessages(new MessageFilters()
                                                                         {
-                                                                            try
-                                                                            {
-                                                                                if (dm1.Embed.Image != null)
-                                                                                {
-                                                                                    solution = CaptchaSolvers.WickSolver.Solve(dm1.Embed.Image.Url);
-                                                                                    if (solution == null)
-                                                                                        continue;
-                                                                                    dm.SendMessage(solution, false);
-
-                                                                                    break;
-                                                                                }
-                                                                            }
-                                                                            catch(Exception ex) { }
+                                                                            Limit = 50
+                                                                        });
+                                                                        tries++;
+                                                                        if (dms.Count < 1)
+                                                                            continue;
+                                                                        else
+                                                                        {
+                                                                            if (dms.First().SentAt.Subtract(clicked).TotalSeconds >= 0)
+                                                                                break;
                                                                         }
                                                                     }
+                                                                    catch (Exception ex)
+                                                                    {
+                                                                        Thread.Sleep(1000);
+                                                                        tries++;
+
+                                                                    }
+                                                                }
+                                                                if (tries == 20)
+                                                                    throw new Exception("Token seems to be already verified");
+                                                                string solution = "";
+                                                                foreach (var message in dms)
+                                                                {
+                                                                    if (message.Embed.Image != null)
+                                                                    {
+                                                                        solution = CaptchaSolvers.WickSolver.Solve(message.Embed.Image.Url);
+                                                                        while (solution == null)
+                                                                            solution = CaptchaSolvers.WickSolver.Solve(message.Embed.Image.Url);
+
+                                                                        break;
+                                                                    }
+                                                                }
+                                                                dm.SendMessage(solution, false);
+                                                                tries = 0;
+                                                                while (true && tries < 3)
+                                                                {
+                                                                    try
+                                                                    {
+                                                                        dms = (List<DiscordMessage>)dm.GetMessages(new MessageFilters()
+                                                                        {
+                                                                            Limit = 50
+                                                                        });
+                                                                        tries++;
+                                                                        if (dms.Count < 1)
+                                                                            continue;
+                                                                        else
+                                                                        {
+                                                                            if (dms.First().Embed != null && dms.First().Embed.Title.Contains("You have been verified!"))
+                                                                            {
+                                                                                break;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                foreach (var dm1 in dms)
+                                                                                {
+                                                                                    try
+                                                                                    {
+                                                                                        if (dm1.Embed.Image != null)
+                                                                                        {
+                                                                                            solution = CaptchaSolvers.WickSolver.Solve(dm1.Embed.Image.Url);
+                                                                                            if (solution == null)
+                                                                                                continue;
+                                                                                            dm.SendMessage(solution, false);
+
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                    catch (Exception ex) { }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    catch (Exception ex)
+                                                                    {
+                                                                        Thread.Sleep(1000);
+                                                                        tries++;
+                                                                    }
                                                                 }
                                                             }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Thread.Sleep(1000);
-                                                                tries++;
-                                                            }
+
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            Debug.Log(ex.StackTrace);
                                                         }
                                                     }
-
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    Debug.Log(ex.StackTrace);
-                                                }
+                                                    verifyingCount--;
+                                                    _progress.completed_tokens += 1;
+                                                });
                                             }
-                                            verifyingCount--;
-                                            _progress.completed_tokens += 1;
-                                        });
+                                            catch (Exception ex)
+                                            {
+                                                _progress.completed_tokens += 1;
+                                                Debug.Log("Error during join - " + ex.StackTrace);
+                                                c++;
+                                                continue;
+                                            }
+
+                                            joined++;
+                                            hasJoined = true;
+                                            clients1[i] = null;
+                                            clients[clients.IndexOf(client)] = null;
+                                        }
+                                        if (c >= 1)
+                                        {
+                                            if (!hasJoined)
+                                                _progress.completed_tokens += 1;
+
+                                            clients1[i] = null;
+                                            clients[clients.IndexOf(client)] = null;
+                                            token_list.Remove(client.Token);
+                                            continue;
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
-                                        _progress.completed_tokens += 1;
-                                        Debug.Log("Error during join - " + ex.StackTrace);
-                                        c++;
-                                        continue;
+                                        Debug.Log(ex.Message);
                                     }
-
-                                    joined++;
-                                    hasJoined = true;
-                                    clients1[i] = null;
-                                    clients[clients.IndexOf(client)] = null;
-                                }
-                                if (c >= 1)
-                                {
-                                    if(!hasJoined)
-                                        _progress.completed_tokens += 1;
-
-                                    clients1[i] = null;
-                                    clients[clients.IndexOf(client)] = null;
-                                    token_list.Remove(client.Token);
-                                    continue;
+                                    i++;
+                                    var to_sleep = delay - (DateTime.Now - joined_time).TotalMilliseconds;
+                                    if (to_sleep < 0)
+                                        to_sleep = 0;
+                                    Thread.Sleep((int)to_sleep);
                                 }
                             }
-                            catch (Exception ex)
-                            {
-                                Debug.Log(ex.Message);
-                            }
-                            i++;
-                            var to_sleep = delay - (DateTime.Now - joined_time).TotalMilliseconds;
-                            if (to_sleep < 0)
-                                to_sleep = 0;
-                            Thread.Sleep((int)to_sleep);
+                            catch (InvalidOperationException ex) { Thread.Sleep(100); }
                         }
-                    }
-                    catch (InvalidOperationException ex) { Thread.Sleep(100); }
-                }
-                while (verifyingCount != 0)
-                    Thread.Sleep(500);
-
-                Science.SendStatistic(ScienceTypes.join);
-                if(Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
-                    App.SendToWebhook(Settings.Default.Webhook, "Join task completed successfully\n**Server:** https://discord.gg/" + invite);
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    App.mainWindow.ShowNotification("Join task completed successfully");
-                });
-            });
-            joiner.Priority = ThreadPriority.AboveNormal;
-            joiner.Start();
-
-            var thread_pool = new List<Thread>() { };
-            Thread join = new Thread(() =>
-            {
-                int i = 0;
-                var threads = 0;
-                while (paused)
-                {
-                    Thread.Sleep(1000);
-                }
-                var tk_list = token_list.ToArray();
-                var rnd = new Random();
-                foreach (var token in tk_list)
-                {
-                    if (!joining || thread_pool.Count >= 20)
-                        return;
-                    Thread join1 = new Thread(() =>
-                    {
-                        if (!joining)
-                            return;
-                        DiscordClient client;
-                        try
-                        {
-                            client = new DiscordClient(token);
-                            threads++;
-                        }
-                        catch (Exception ex) {
-                            joined++;
-                            _progress.completed_tokens++;
-                            Debug.Log(ex.Message + "/// " + token);
-                            return; 
-                        }
-                        if (proxyGroup != null && proxyGroup._proxies.Count > 0)
-                        {
-                            var proxy = proxyGroup._proxies[rnd.Next(0, proxyGroup._proxies.Count)];
-                            if (proxy.Host != "" && proxy != null)
-                            {
-                                HttpProxyClient proxies = new HttpProxyClient(proxy.Host, proxy.Port);
-                                if (proxy.Username != null && proxy.Username != "")
-                                    proxies = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
-                                client.Proxy = proxies;
-                            }
-                        }
-                        if (!joining)
-                            return;
-                        while (paused)
+                        while (verifyingCount != 0)
                             Thread.Sleep(500);
-                        if (IsInGuild(client, serverID) == true && !bypassReaction && !acceptRules && !bypassCaptcha)
-                        {
-                            joined++;
-                            _progress.completed_tokens++;
-                            return;
-                        }
-                        else
-                        {
-                            Debug.Log("Added client n." + tk_list.ToList().IndexOf(token));
 
-                            clients.Add(client);
-                        }
-                    });
-                    thread_pool.Add(join1);
-                    join1.Priority = ThreadPriority.AboveNormal;
-                    join1.Start();
-                    while (thread_pool.Count >= 20)
-                    {
-                        foreach (var thread in thread_pool)
+                        Science.SendStatistic(ScienceTypes.join);
+                        if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
+                            App.SendToWebhook(Settings.Default.Webhook, "Join task completed successfully\n**Server:** https://discord.gg/" + invite);
+
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
-                            if (!thread.IsAlive)
+                            App.mainWindow.ShowNotification("Join task completed successfully");
+                        });
+                    }
+                    catch(Exception ex)
+                    {
+                        Debug.Log("Exception on joiner: " + ex.StackTrace);
+                    }
+                });
+                joiner.Priority = ThreadPriority.AboveNormal;
+                joiner.Start();
+
+                var thread_pool = new List<Thread>() { };
+                Thread join = new Thread(() =>
+                {
+                    try
+                    {
+                        int i = 0;
+                        var threads = 0;
+                        while (paused)
+                        {
+                            Thread.Sleep(1000);
+                        }
+                        var tk_list = token_list.ToArray();
+                        var rnd = new Random();
+                        foreach (var token in tk_list)
+                        {
+                            if (!joining || thread_pool.Count >= 20)
+                                return;
+                            Thread join1 = new Thread(() =>
                             {
-                                thread_pool.Remove(thread);
-                                break;
+                                if (!joining)
+                                    return;
+                                DiscordClient client;
+                                try
+                                {
+                                    client = new DiscordClient(token);
+                                    threads++;
+                                }
+                                catch (Exception ex)
+                                {
+                                    joined++;
+                                    _progress.completed_tokens++;
+                                    Debug.Log(ex.Message + "/// " + token);
+                                    return;
+                                }
+                                if (proxyGroup != null && proxyGroup._proxies.Count > 0)
+                                {
+                                    var proxy = proxyGroup._proxies[rnd.Next(0, proxyGroup._proxies.Count)];
+                                    if (proxy.Host != "" && proxy != null)
+                                    {
+                                        HttpProxyClient proxies = new HttpProxyClient(proxy.Host, proxy.Port);
+                                        if (proxy.Username != null && proxy.Username != "")
+                                            proxies = new HttpProxyClient(proxy.Host, proxy.Port, proxy.Username, proxy.Password);
+                                        client.Proxy = proxies;
+                                    }
+                                }
+                                if (!joining)
+                                    return;
+                                while (paused)
+                                    Thread.Sleep(500);
+                                if (IsInGuild(client, serverID) == true && !bypassReaction && !acceptRules && !bypassCaptcha)
+                                {
+                                    joined++;
+                                    _progress.completed_tokens++;
+                                    return;
+                                }
+                                else
+                                {
+                                    Debug.Log("Added client n." + tk_list.ToList().IndexOf(token));
+
+                                    clients.Add(client);
+                                }
+                            });
+                            thread_pool.Add(join1);
+                            join1.Priority = ThreadPriority.AboveNormal;
+                            join1.Start();
+                            while (thread_pool.Count >= 20)
+                            {
+                                foreach (var thread in thread_pool)
+                                {
+                                    if (!thread.IsAlive)
+                                    {
+                                        thread_pool.Remove(thread);
+                                        break;
+                                    }
+                                }
+                                Thread.Sleep(500);
                             }
                         }
-                        Thread.Sleep(500);
                     }
-                }
-            });
-            join.Start();
+                    catch(Exception ex)
+                    {
+                        Debug.Log("Exception on client adder: " + ex.StackTrace);
+                    }
+                });
+                join.Start();
+            }
+            catch(Exception ex)
+            {
+                Debug.Log(ex.StackTrace);
+                return;
+            }
+
         }
         public static (string, string) Get_GuildID(string invite, ProxyGroup proxies = null)
         {

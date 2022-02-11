@@ -103,235 +103,230 @@ namespace DiskoAIO
                 return;
             }
 
-            Task.Run(() =>
+            //Task.Run(() =>
+            //{
+            //    int errors = 0;
+            //    while(errors < 3)
+            //    {
+            //        try
+            //        {
+            //            discord = new DiscordGameSDK.Discord.Discord(938098652885450792, (UInt64)DiscordGameSDK.Discord.CreateFlags.NoRequireDiscord);
+            //            break;
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            if (errors == 2)
+            //            {
+            //                Debug.Log(ex.StackTrace);
+            //                MessageBox.Show("Could not start or get Discord instance");
+            //                Application.Current.Dispatcher.InvokeShutdown();
+            //            }
+            //            else
+            //                errors++;
+            //            Thread.Sleep(10000);
+            //        }
+            //    }
+            //
+            //
+            //    //var start = DateTime.Now.Ticks;
+            //    //start = start - DateTime.ParseExact("1970/01/01", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture).Ticks;
+            //    //start = start / TimeSpan.TicksPerSecond;
+            //    int tries = 0;
+            //
+            //    while (true)
+            //    {
+            //        try
+            //        {
+            //            //var activity = new DiscordGameSDK.Discord.Activity
+            //            //{
+            //            //    Details = $"Running {TasksView.tasks.Count} tasks",
+            //            //    State = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+            //            //    Assets =
+            //            //    {
+            //            //        LargeImage = "logo",
+            //            //        LargeText = "DiskoAIO"
+            //            //    },
+            //            //    Timestamps =
+            //            //    {
+            //            //        Start = start - 3750
+            //            //    }
+            //            //};
+            //            //App.discord.GetActivityManager().UpdateActivity(activity, (result) =>
+            //            //{
+            //            //    if (result != DiscordGameSDK.Discord.Result.Ok)
+            //            //    {
+            //            //        Debug.Log("Could not update Discord status");
+            //            //    }
+            //            //});
+            //            var userManager = discord.GetUserManager();
+            //            userManager.GetUser(long.Parse(Settings.Default.tk1), (DiscordGameSDK.Discord.Result result, ref DiscordGameSDK.Discord.User user) =>
+            //            {
+            //                if (result == DiscordGameSDK.Discord.Result.Ok)
+            //                {
+            //                    if(user.Id != long.Parse(Settings.Default.tk1))
+            //                    {
+            //                        MessageBox.Show($"Invalid Discord account detected, shutting down...\nYour user ID: {Settings.Default.tk1}\nFound user ID: {user.Id}");
+            //                        DiscordDriver.CleanUp();
+            //
+            //                        Application.Current.Dispatcher.InvokeShutdown();
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    MessageBox.Show("Login to your Discord account to use DiskoAIO on this machine");
+            //                    DiscordDriver.CleanUp();
+            //
+            //                    Application.Current.Dispatcher.InvokeShutdown();
+            //                }
+            //            });
+            //            discord.RunCallbacks();
+            //
+            //            //userID = userManager.GetCurrentUser().Id;
+            //            if (userID != 0 && Settings.Default.tk1 != userID.ToString())
+            //            {
+            //                MessageBox.Show("Invalid discord account detected, make sure to use the account you binded to this licence");
+            //
+            //                DiscordDriver.CleanUp();
+            //                Application.Current.Dispatcher.InvokeShutdown();
+            //            }
+            //            tries = 0;
+            //        }
+            //        catch(Exception ex)
+            //        {
+            //        }
+            //
+            //        Thread.Sleep(1000);
+            //    }
+            //
+            //});
+
+            try
             {
-                int errors = 0;
-                while(errors < 3)
+                strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                strWorkPath = Path.GetDirectoryName(strExeFilePath);
+                if (File.Exists(strWorkPath + "\\logs\\log.txt"))
+                    File.Delete(strWorkPath + "\\logs\\log.txt");
+
+                connected_to_internet = IsConnectedToInternet();
+                if (!connected_to_internet)
                 {
-                    try
-                    {
-                        discord = new DiscordGameSDK.Discord.Discord(938098652885450792, (UInt64)DiscordGameSDK.Discord.CreateFlags.NoRequireDiscord);
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (errors == 2)
-                        {
-                            Debug.Log(ex.StackTrace);
-                            MessageBox.Show("Could not start or get Discord instance");
-                            Application.Current.Dispatcher.InvokeShutdown();
-                        }
-                        else
-                            errors++;
-                        Thread.Sleep(5000);
-                    }
-                }
-
-
-                //var start = DateTime.Now.Ticks;
-                //start = start - DateTime.ParseExact("1970/01/01", "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture).Ticks;
-                //start = start / TimeSpan.TicksPerSecond;
-                int tries = 0;
-
-                while (true)
-                {
-                    try
-                    {
-                        //var activity = new DiscordGameSDK.Discord.Activity
-                        //{
-                        //    Details = $"Running {TasksView.tasks.Count} tasks",
-                        //    State = 'v' + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                        //    Assets =
-                        //    {
-                        //        LargeImage = "logo",
-                        //        LargeText = "DiskoAIO"
-                        //    },
-                        //    Timestamps =
-                        //    {
-                        //        Start = start - 3750
-                        //    }
-                        //};
-                        //App.discord.GetActivityManager().UpdateActivity(activity, (result) =>
-                        //{
-                        //    if (result != DiscordGameSDK.Discord.Result.Ok)
-                        //    {
-                        //        Debug.Log("Could not update Discord status");
-                        //    }
-                        //});
-                        var userManager = discord.GetUserManager();
-                        userManager.CurrentUserHasFlag(DiscordGameSDK.Discord.UserFlag.HypeSquadEvents);
-                        byte[] bytes = new byte[1000];
-                        userManager.GetUser(long.Parse(Settings.Default.tk1), (DiscordGameSDK.Discord.Result result, ref DiscordGameSDK.Discord.User user) =>
-                        {
-                            if (result == DiscordGameSDK.Discord.Result.Ok)
-                            {
-                                if(user.Id != long.Parse(Settings.Default.tk1))
-                                {
-                                    MessageBox.Show("Invalid Discord account detected, shutting down...");
-                                    DiscordDriver.CleanUp();
-
-                                    Application.Current.Dispatcher.InvokeShutdown();
-                                }
-                            }
-                            else
-                            {
-                                MessageBox.Show("Login to your Discord account to use DiskoAIO on this machine");
-                                DiscordDriver.CleanUp();
-
-                                Application.Current.Dispatcher.InvokeShutdown();
-                            }
-                        });
-                        discord.RunCallbacks();
-
-                        //userID = userManager.GetCurrentUser().Id;
-                        if (userID != 0 && Settings.Default.tk1 != userID.ToString())
-                        {
-                            MessageBox.Show("Invalid discord account detected, make sure to use the account you binded to this licence");
-
-                            DiscordDriver.CleanUp();
-                            Application.Current.Dispatcher.InvokeShutdown();
-
-                            Environment.Exit(0);
-                        }
-                        tries = 0;
-                    }
-                    catch(Exception ex)
-                    {
-                        if(tries > 10 && ex.Message == "NotFound")
-                        {
-
-                        }
-                        else
-                        {
-                            tries++;
-                        }
-                    }
-            
-                    Thread.Sleep(1000);
-                }
-            
-            });
-
-            strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            strWorkPath = Path.GetDirectoryName(strExeFilePath);
-            if (File.Exists(strWorkPath + "\\logs\\log.txt"))
-                File.Delete(strWorkPath + "\\logs\\log.txt");
-
-            connected_to_internet = IsConnectedToInternet();
-            if (!connected_to_internet)
-            {
-                MessageBox.Show("Make sure to be connected to internet before attempting to open this application");
-                return;
-            }
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
-            {
-                socket.Connect("8.8.8.8", 65530);
-                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
-                localIP = endPoint.Address.ToString();
-            }
-            SetAccountGroups();
-
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
-            this.Dispatcher.UnhandledException += App_DispatcherUnhandledException;
-            var loadingScreen = new LoadingWindow();
-
-            if (!IsServiceInstalled("DiskoUpdater"))
-            {
-                loadingScreen.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                loadingScreen.Show();
-
-                Debug.Log("Updater not installed");
-                if (!IsUserAdministrator())
-                {
-
-                    var popup = new WarningPopupView("You need to run this program as administrator the first time running it", false);
-                    popup.ShowDialog();
-                    loadingScreen.Close();
-
+                    MessageBox.Show("Make sure to be connected to internet before attempting to open this application");
                     return;
                 }
-
-                if (!File.Exists(strWorkPath + "\\DiskoUpdater.exe"))
+                using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
                 {
-
-                    var popup = new WarningPopupView("Couldn't find the updater, please reinstall the program or contact our support", false);
-                    popup.ShowDialog();
-                    loadingScreen.Close();
-
-                    return;
+                    socket.Connect("8.8.8.8", 65530);
+                    IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                    localIP = endPoint.Address.ToString();
                 }
+                SetAccountGroups();
 
-                var proc = Process.Start(new ProcessStartInfo()
+                AppDomain currentDomain = AppDomain.CurrentDomain;
+                currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+                this.Dispatcher.UnhandledException += App_DispatcherUnhandledException;
+                var loadingScreen = new LoadingWindow();
+
+                if (!IsServiceInstalled("DiskoUpdater"))
                 {
-                    FileName = "sc.exe",
-                    Arguments = "CREATE \"DiskoUpdater\" binpath=" + $"\"{strWorkPath}\\DiskoUpdater.exe\"",
-                });
-                proc.WaitForExit();
-                proc.Dispose();
-                Debug.Log("Created service DiskoUpdater");
+                    loadingScreen.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    loadingScreen.Show();
 
-                proc = Process.Start(new ProcessStartInfo()
+                    Debug.Log("Updater not installed");
+                    if (!IsUserAdministrator())
+                    {
+
+                        var popup = new WarningPopupView("You need to run this program as administrator the first time running it", false);
+                        popup.ShowDialog();
+                        loadingScreen.Close();
+
+                        return;
+                    }
+
+                    if (!File.Exists(strWorkPath + "\\DiskoUpdater.exe"))
+                    {
+
+                        var popup = new WarningPopupView("Couldn't find the updater, please reinstall the program or contact our support", false);
+                        popup.ShowDialog();
+                        loadingScreen.Close();
+
+                        return;
+                    }
+
+                    var proc = Process.Start(new ProcessStartInfo()
+                    {
+                        FileName = "sc.exe",
+                        Arguments = "CREATE \"DiskoUpdater\" binpath=" + $"\"{strWorkPath}\\DiskoUpdater.exe\"",
+                    });
+                    proc.WaitForExit();
+                    proc.Dispose();
+                    Debug.Log("Created service DiskoUpdater");
+
+                    proc = Process.Start(new ProcessStartInfo()
+                    {
+                        FileName = "sc.exe",
+                        Arguments = "config DiskoUpdater start=auto"
+                    });
+                    proc.WaitForExit();
+                    proc.Dispose();
+
+                    Debug.Log("Set service to start automatically");
+
+                    proc = Process.Start(new ProcessStartInfo()
+                    {
+                        FileName = "sc.exe",
+                        Arguments = "start DiskoUpdater"
+                    });
+                    proc.WaitForExit();
+                    proc.Dispose();
+
+                    Debug.Log("Started the updater");
+                }
+                loadingScreen.Hide();
+                loadingScreen.ShowInTaskbar = false;
+
+                if (Settings.Default.tk1 != "" && Settings.Default.tk1 != null)
                 {
-                    FileName = "sc.exe",
-                    Arguments = "config DiskoUpdater start=auto"
-                });
-                proc.WaitForExit();
-                proc.Dispose();
+                    Debug.Log("Credentials saved in settings found");
+                    var key = LoginWindow.login(Settings.Default.tk1, Settings.Default.tk2);
+                    if (key == null)
+                    {
+                        Debug.Log("Invalid credentials");
 
-                Debug.Log("Set service to start automatically");
+                        Settings.Default.tk1 = "";
+                        Settings.Default.tk2 = "";
+                        var Login = new LoginWindow();
+                        Login.ShowDialog();
+                    }
+                    else
+                    {
+                        Debug.Log("Valid credentials and api key retrieved");
 
-                proc = Process.Start(new ProcessStartInfo()
-                {
-                    FileName = "sc.exe",
-                    Arguments = "start DiskoUpdater"
-                });
-                proc.WaitForExit();
-                proc.Dispose();
+                        App.api_key = key;
+                        Settings.Default.APIkey = key;
 
-                Debug.Log("Started the updater");
-            }
-            loadingScreen.Hide();
-            loadingScreen.ShowInTaskbar = false;
-
-            if (Settings.Default.tk1 != "" && Settings.Default.tk1 != null)
-            {
-                Debug.Log("Credentials saved in settings found");
-                var key = LoginWindow.login(Settings.Default.tk1, Settings.Default.tk2);
-                if (key == null)
-                {
-                    Debug.Log("Invalid credentials");
-
-                    Settings.Default.tk1 = "";
-                    Settings.Default.tk2 = "";
-                    var Login = new LoginWindow();
-                    Login.ShowDialog();
+                        LoginWindow.BindMachine();
+                        Settings.Default.Save();
+                        Settings.Default.Reload();
+                        App.SaveSettings();
+                    }
                 }
                 else
                 {
-                    Debug.Log("Valid credentials and api key retrieved");
+                    Debug.Log("Credentials not found");
 
-                    App.api_key = key;
-                    Settings.Default.APIkey = key;
-
-                    LoginWindow.BindMachine();
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                    App.SaveSettings();
+                    var Login = new LoginWindow();
+                    Login.ShowDialog();
                 }
+                Science.SendStatistic(ScienceTypes.login);
+                mainWindow = new MainWindow();
+
+                mainWindow.Show();
+                loadingScreen.Close();
             }
-            else
+            catch(Exception ex)
             {
-                Debug.Log("Credentials not found");
-
-                var Login = new LoginWindow();
-                Login.ShowDialog();
+                Debug.Log("Exception on startup: " + ex.Message);
             }
-            Science.SendStatistic(ScienceTypes.login);
-            mainWindow = new MainWindow();
-
-            mainWindow.Show();
-            loadingScreen.Close();
         }
         public static bool IsConnectedToInternet()
         {
@@ -635,6 +630,7 @@ namespace DiskoAIO
         ChangeImage,
         ChatBot,
         ChatSpam,
-        KryptoSign
+        KryptoSign,
+        CheckPresence
     }
 }

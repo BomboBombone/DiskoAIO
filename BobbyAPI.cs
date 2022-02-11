@@ -18,6 +18,23 @@ namespace DiskoAIO
 
             CreateChat(server_id);
         }
+        public static string GetSize(string serverID)
+        {
+            var request = new HttpRequest()
+            {
+
+            };
+            try
+            {
+                var res = request.Post(endpoint + "?server=" + serverID, "{}", "application/json");
+                return res.ToString().ToLower();
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex.Message);
+                return null;
+            }
+        }
         public void Train(string statement, string prev_statement)
         {
             try
@@ -26,8 +43,8 @@ namespace DiskoAIO
                 {
 
                 };
-                request.AddHeader("X-Forwarded-For", App.localIP);
-                string payload = '{' + $"\"chat_id\":{chat_id},\"text\":\"{statement}\",\"prev_text\":\"{prev_statement}\"" + '}';
+                //request.AddHeader("X-Forwarded-For", App.localIP);
+                string payload = '{' + $"\"chat_id\":{chat_id},\"text\":\"{statement.Replace('"', '\'')}\",\"prev_text\":\"{prev_statement.Replace('"', '\'')}\"" + '}';
                 request.Post(endpoint, payload, "application/json");
             }
             catch (Exception ex)
