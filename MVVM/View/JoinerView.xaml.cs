@@ -22,7 +22,7 @@ namespace DiskoAIO.MVVM.View
     /// </summary>
     public partial class JoinerView : UserControl
     {
-        public static string[] captcha_bots { get; set; } = new string[] { "Wick" };
+        public static string[] captcha_bots { get; set; } = new string[] { "Discord", "Wick", "Captcha.bot" };
         public JoinerView()
         {
             InitializeComponent();
@@ -57,7 +57,7 @@ namespace DiskoAIO.MVVM.View
                             BypassCaptcha.IsChecked = Settings.Default.BypassCaptcha;
                             CaptchaBotGroup.Visibility = BypassCaptcha.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
                             CaptchaBotLabel.Visibility = BypassCaptcha.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-                            if (CaptchaBotGroup.SelectedItem.ToString() == "Wick")
+                            if (captcha_bots.Contains(CaptchaBotGroup.SelectedItem.ToString()))
                                 CaptchaChannelBorder.Visibility = BypassCaptcha.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
                         });
                         break;
@@ -248,7 +248,7 @@ namespace DiskoAIO.MVVM.View
         {
             CaptchaBotGroup.Visibility = BypassCaptcha.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             CaptchaBotLabel.Visibility = BypassCaptcha.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            if(CaptchaBotGroup.SelectedItem.ToString() == "Wick")
+            if(captcha_bots.Contains(CaptchaBotGroup.SelectedItem.ToString()))
                 CaptchaChannelBorder.Visibility = BypassCaptcha.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         }
 

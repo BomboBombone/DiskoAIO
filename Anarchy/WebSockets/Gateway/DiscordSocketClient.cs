@@ -145,6 +145,7 @@ namespace Discord.Gateway
         AccountGroup _accounts = null;
         ProxyGroup _proxies = null;
         public bool isRunning = true;
+        public string captcha_bot_link = null;
 
         public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true, ulong guildId = 0, ulong channelId = 0, int rate = 80, ulong lvl_channel_id = 0, int max_lvl = 1, BobbyAPI bobby = null, bool rotate = false, AccountGroup accounts = null, ProxyGroup proxies = null) : base()
         {
@@ -370,7 +371,11 @@ namespace Discord.Gateway
                             if (Config.Cache || OnMessageReceived != null)
                             {
                                 var newMessage = message.Data.ToObject<DiscordMessage>().SetClient(this);
-
+                                //if (newMessage.Content.Contains("https://captcha.bot/verify/guild/"))
+                                //{
+                                //    var mes = newMessage.Content.Replace("(https://", "§");
+                                //    captcha_bot_link = "https://" + mes.Split('§').First().Split(')').First();
+                                //}
                                 if (Config.Cache)
                                 {
                                     try

@@ -80,12 +80,16 @@ namespace DiskoAIO.DiskoTasks
         public bool checking = true;
         public bool paused = false;
         public ulong server_id;
-        public PresenceCheckerTask(AccountGroup accounts, ulong serverID, ProxyGroup proxies = null)
+        public PresenceType _type;
+        public ulong roleID;
+        public PresenceCheckerTask(AccountGroup accounts, ulong serverID, ProxyGroup proxies = null, PresenceType type = PresenceType.Presence, ulong roleId = 0)
         {
             accountGroup = accounts;
             proxyGroup = proxies;
             server_id = serverID;
             progress = new Progress(accounts._accounts.Count);
+            _type = type;
+            roleID = roleId;
         }
         public void Start()
         {
@@ -103,7 +107,18 @@ namespace DiskoAIO.DiskoTasks
                     {
                         var client = new DiscordClient(token._token);
 
-                        var guild = client.GetGuild(server_id);
+                        var user = client.GetGuild(server_id).GetMember(token._user_id);
+                        if(_type == PresenceType.Role)
+                        {
+                            var found = false;
+                            foreach(var role in user.Roles)
+                            {
+                                if (role == roleID)
+                                    found = true;
+                            }
+                            if(!found)
+                                throw new Exception();
+                        }
                         validTokens.Add(token);
                     }
                     catch (Exception ex)
@@ -114,8 +129,12 @@ namespace DiskoAIO.DiskoTasks
                 }
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    App.mainWindow.ShowNotification($"{validTokens.Count} tokens are in the server {server_id}. Check your webhook for the full list (must enable extra webhook notifications in settings)!");
-                    if(Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
+                    if(_type == PresenceType.Presence)
+                        App.mainWindow.ShowNotification($"{validTokens.Count} tokens are in the server {server_id}. Check your webhook for the full list (must enable extra webhook notifications in settings)!");
+                    else
+                        App.mainWindow.ShowNotification($"{validTokens.Count} tokens have role {roleID}. Check your webhook for the full list (must enable extra webhook notifications in settings)!");
+
+                    if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
                     {
                         string win = "\n";
                         var wins = new List<string>();
@@ -141,7 +160,18 @@ namespace DiskoAIO.DiskoTasks
 
                         var guild = client.GetGuild(server_id);
                         foreach (string win_mes in wins)
-                            App.SendToWebhook(Settings.Default.Webhook, $"Accounts inside server {guild.Name}:\n" + win_mes);
+                        {
+                            if(_type == PresenceType.Presence)
+                            {
+                                App.SendToWebhook(Settings.Default.Webhook, $"Accounts inside server {guild.Name}:\n" + win_mes);
+
+                            }
+                            else
+                            {
+                                App.SendToWebhook(Settings.Default.Webhook, $"Accounts that have role {roleID}:\n" + win_mes);
+
+                            }
+                        }
                     }
                 });
             });

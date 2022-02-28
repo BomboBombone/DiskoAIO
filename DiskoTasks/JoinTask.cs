@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Gateway;
+using DiskoAIO.CaptchaSolvers;
 using DiskoAIO.Properties;
 using Leaf.xNet;
 using Newtonsoft.Json.Linq;
@@ -186,13 +187,19 @@ namespace DiskoAIO
                                     {
                                         bool hasJoined = false;
                                         int c = 0;
-                                        while (!hasJoined && c < 1)
+                                        while (!hasJoined && c == 0)
                                         {
                                             try
                                             {
                                                 joined_time = DateTime.Now;
 
-                                                client.JoinGuild(invite);
+                                                if(bypassCaptcha && captchaBotType == "Discord")
+                                                {
+                                                    var hcaptcha_key = DiscordSolver.Solve();
+                                                    client.JoinGuild(invite, hcaptcha_key);
+                                                }
+                                                else
+                                                    client.JoinGuild(invite);
                                                 Task.Run(() =>
                                                 {
                                                     verifyingCount++;
@@ -375,31 +382,61 @@ namespace DiskoAIO
                                                                     }
                                                                 }
                                                             }
-
+                                                            else if(captchaBotType == "Captcha.bot")
+                                                            {
+                                                                client.Proxy = null;
+                                                                if (captchaMessages.Count == 0 || mes == null)
+                                                                {
+                                                                    captchaMessages = (List<DiscordMessage>)client.GetChannelMessages(captchaChannelID, new MessageFilters()
+                                                                    {
+                                                                        Limit = 50
+                                                                    });
+                                                                }
+                                                                DateTime clicked = DateTime.Now;
+                                                                string link = null;
+                                                                foreach (var message in captchaMessages)
+                                                                {
+                                                                    if (message.Components.Count < 1 || message.Author.User.Id != 512333785338216465)
+                                                                        continue;
+                                                                    try
+                                                                    {
+                                                                        link = Click_Button_CaptchaBot(client, message);
+                                                                    }
+                                                                    catch (Exception ex)
+                                                                    {
+                                                                        Debug.Log(ex.Message);
+                                                                    }
+                                                                }
+                                                                Verify(client.Token, link.Split('/').Last(), guildId);
+                                                            }
                                                         }
                                                         catch (Exception ex)
                                                         {
                                                             Debug.Log(ex.StackTrace);
                                                         }
                                                     }
+                                                    joined++;
+
                                                     verifyingCount--;
                                                     _progress.completed_tokens += 1;
                                                 });
                                             }
                                             catch (Exception ex)
                                             {
+                                                joined++;
+
+                                                verifyingCount--;
                                                 _progress.completed_tokens += 1;
                                                 Debug.Log("Error during join - " + ex.StackTrace);
                                                 c++;
                                                 continue;
                                             }
 
-                                            joined++;
                                             hasJoined = true;
                                             clients1[i] = null;
                                             clients[clients.IndexOf(client)] = null;
                                         }
-                                        if (c >= 1)
+                                        if (c > 0)
                                         {
                                             if (!hasJoined)
                                                 _progress.completed_tokens += 1;
@@ -653,6 +690,92 @@ namespace DiskoAIO
             response = request.Post(endpoint, json, "application/json");
             socketClient.Dispose();
             var resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+        }
+        public string Click_Button_CaptchaBot(DiscordClient client, DiscordMessage message)
+        {
+            string endpoint = "https://discord.com/api/v9/interactions";
+            HttpRequest request = new HttpRequest()
+            {
+                KeepTemporaryHeadersOnRedirect = false,
+                EnableMiddleHeaders = false,
+                AllowEmptyHeaderValues = false
+                //SslProtocols = SslProtocols.Tls12
+            };
+            request.Proxy = client.Proxy;
+            /*
+            request.Proxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port);
+            if (_discordClient.Proxy.Username != null && _discordClient.Proxy.Username != "")
+                request.Proxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port, _discordClient.Proxy.Username, _discordClient.Proxy.Password);
+            */
+            request.ClearAllHeaders();
+            request.AddHeader("Accept", "*/*");
+            request.AddHeader("Accept-Encoding", "gzip, deflate");
+            request.AddHeader("Accept-Language", "it");
+            request.AddHeader("Authorization", client.Token);
+            request.AddHeader("Connection", "keep-alive");
+            request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
+            request.AddHeader("DNT", "1");
+            request.AddHeader("origin", "https://discord.com");
+            request.AddHeader("Referer", "https://discord.com/channels/@me");
+            request.AddHeader("TE", "Trailers");
+            request.AddHeader("User-Agent", client.Config.SuperProperties.UserAgent);
+            request.AddHeader("x-fingerprint", "939165939738501131.C0ANMVTeVHCs9ZxYzLBcC8a36os");
+            request.AddHeader("X-Super-Properties", client.Config.SuperProperties.ToBase64());
+
+            HttpResponse response;
+            var socketClient = new DiscordSocketClient();
+            socketClient.Login(client.Token);
+            while (!socketClient.LoggedIn)
+                Thread.Sleep(10);
+            var rnd = new Random();
+            var salt = rnd.Next(10000, 99999).ToString();
+            string json = "{" + $"\"type\":3,\"nonce\":\"9398285279632{salt}\",\"guild_id\":\"{serverID}\",\"channel_id\":\"{captchaChannelID}\",\"message_flags\":0,\"message_id\":\"{message.Id}\",\"application_id\":\"{message.Author.User.Id}\",\"session_id\":\"{socketClient.SessionId}\",\"data\":" + "{" + $"\"component_type\":2,\"custom_id\":\"{message.Components[0].Components[0].Id}\"" + "}}";
+            request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
+            response = request.Post(endpoint, json, "application/json");
+            var resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+            while (socketClient.WebSocket.captcha_bot_link == null)
+            {
+                Thread.Sleep(10);
+            }
+            return socketClient.WebSocket.captcha_bot_link;
+        }
+        public string GetCallBackURL(string token)
+        {
+            var payload = "{\"permissions\":\"0\",\"authorize\":true}";
+            var client = new System.Net.Http.HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", token);
+            var response = client.SendAsync(new HttpRequestMessage()
+            {
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json"),
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://discord.com/api/v9/oauth2/authorize?client_id=512333785338216465&response_type=code&redirect_uri=https%3A%2F%2Fcaptcha.bot%2Fcallback&scope=identify%20guilds")
+            }).GetAwaiter().GetResult();
+            var json = JObject.Parse(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+            return "https://captcha.bot/api/v1/oauth/callback?code=" + json.Value<string>("location").Split('=').Last();
+        }
+        public string GetAuthJWT(string token)
+        {
+            var client = new System.Net.Http.HttpClient();
+            var response = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri(GetCallBackURL(token))
+            }).GetAwaiter().GetResult();
+            var json = JObject.Parse(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+            return json.Value<string>("token");
+        }
+        public void Verify(string token, string hash, string guildID)
+        {
+            var client = new System.Net.Http.HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", GetAuthJWT(token));
+
+            var payload = '{' + $"\"token\":\"{DiscordSolver.Solve("8223d1d4-b37a-46cc-b0e6-f9bf43658d5d")}\",\"hash\":\"{hash}\",\"guildID\":\"{guildID}\"" + '}';
+            var response = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://captcha.bot/api/v1/captcha/verify"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
         }
         public void Stop()
         {

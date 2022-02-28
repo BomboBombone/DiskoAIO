@@ -177,6 +177,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CaptchaSolvers\DiscordSolver.cs" />
     <Compile Include="DiskoTasks\AccountCheckerTask.cs" />
     <Compile Include="Anarchy\Commands\Command\CommandAttribute.cs" />
     <Compile Include="Anarchy\Commands\Command\CommandBase.cs" />
@@ -638,6 +639,7 @@
     <Compile Include="DiskoTasks\LeaveTask.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="DiskoTasks\PresenceCheckerTask.cs" />
+    <Compile Include="DiskoTasks\TwitterSniperTask.cs" />
     <Compile Include="MVVM\ViewModel\ChatVM.cs" />
     <Compile Include="MVVM\View\AccountSettingsPopup.xaml.cs">
       <DependentUpon>AccountSettingsPopup.xaml</DependentUpon>
@@ -666,6 +668,9 @@
     <Compile Include="MVVM\View\PresenceView.xaml.cs">
       <DependentUpon>PresenceView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\SniperView.xaml.cs">
+      <DependentUpon>SniperView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\TaskSettingsPopup.xaml.cs">
       <DependentUpon>TaskSettingsPopup.xaml</DependentUpon>
     </Compile>
@@ -673,6 +678,8 @@
     <Compile Include="DiskoTasks\DiskoTask.cs" />
     <Compile Include="Science.cs" />
     <Compile Include="TaskStateToColorConverter.cs" />
+    <Compile Include="Twitter\Tweet.cs" />
+    <Compile Include="Twitter\Twitter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -747,6 +754,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\SniperView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -936,6 +947,7 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\snipe.ico" />
     <Resource Include="Images\presence_purple.ico" />
     <Resource Include="Images\sign_purple.ico" />
     <None Include="discord_game_sdk.dll">

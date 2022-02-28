@@ -17,22 +17,20 @@ using System.Windows.Shapes;
 namespace DiskoAIO.MVVM.View
 {
     /// <summary>
-    /// Interaction logic for PresenceView.xaml
+    /// Interaction logic for SniperView.xaml
     /// </summary>
-    public partial class PresenceView : UserControl
+    public partial class SniperView : UserControl
     {
-        public static List<string> types = new List<string>() { "Presence", "Role" };
-        public PresenceView()
+        public SniperView()
         {
             InitializeComponent();
-            Type.ItemsSource = types;
         }
 
-        private void Check_Task(object sender, RoutedEventArgs e)
+        private void Start_Task(object sender, RoutedEventArgs e)
         {
-            if(!ulong.TryParse(ServerID.Text, out var serverID) || ServerID.Text.Length != 18)
+            if (Username.Text == "")
             {
-                App.mainWindow.ShowNotification("Please input a valid server ID");
+                App.mainWindow.ShowNotification("Please input a valid username");
                 return;
             }
             AccountGroup accounts = null;
@@ -66,29 +64,10 @@ namespace DiskoAIO.MVVM.View
                     return;
                 }
             }
-            ulong roleId = 0;
-            PresenceType type = PresenceType.Presence;
-            if(Type.SelectedItem.ToString() == "Role")
-            {
-                type = PresenceType.Role;
-                if(!ulong.TryParse(RoleID.Text, out roleId))
-                {
-                    App.mainWindow.ShowNotification("Invalid role ID");
-                    return;
-                }
-            }
-            var checkPresenceTask = new PresenceCheckerTask(accounts, serverID, proxies, type, roleId);
+            var checkPresenceTask = new TwitterSniperTask(accounts, Username.Text, proxies);
             checkPresenceTask.Start();
             App.taskManager.AddTask(checkPresenceTask);
-            App.mainWindow.ShowNotification("Successfully started presence checker task");
-        }
-        private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            ulong result;
-            if (!ulong.TryParse(e.Text, out result))
-            {
-                e.Handled = true;
-            }
+            App.mainWindow.ShowNotification("Successfully started sniper task");
         }
         private void UseProxies_Click(object sender, RoutedEventArgs e)
         {
@@ -101,19 +80,6 @@ namespace DiskoAIO.MVVM.View
             {
                 ProxiesGroup.Visibility = Visibility.Collapsed;
                 ProxiesLabel.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void Type_DropDownClosed(object sender, EventArgs e)
-        {
-            if(Type.SelectedItem.ToString() == "Role")
-            {
-                RoleBorder.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                RoleBorder.Visibility = Visibility.Collapsed;
-
             }
         }
     }

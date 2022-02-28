@@ -89,7 +89,11 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Please insert a valid message link");
                 return;
             }
-
+            if(ReactionID.Text == "")
+            {
+                App.mainWindow.ShowNotification("Please insert a valid reaction ID");
+                return;
+            }
             AccountGroup accounts = null;
             foreach(var group in App.accountsGroups)
             {
@@ -130,7 +134,7 @@ namespace DiskoAIO.MVVM.View
             var type = GiveawayType.Reaction;
             if (Type.SelectedItem.ToString() == "Button")
                 type = GiveawayType.Button;
-            var giveawayTask = new GiveawayTask(accounts, server_id, channel_id, message_id, proxies, delay, type, skip);
+            var giveawayTask = new GiveawayTask(accounts, server_id, channel_id, message_id, proxies, delay, type, skip, ReactionID.Text);
             giveawayTask.Start();
             App.taskManager.AddTask(giveawayTask);
 

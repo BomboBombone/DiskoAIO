@@ -631,6 +631,12 @@ namespace DiskoAIO
         ChatBot,
         ChatSpam,
         KryptoSign,
-        CheckPresence
+        CheckPresence,
+        TwitterSniper
+    }
+    public enum PresenceType
+    {
+        Presence,
+        Role
     }
 }

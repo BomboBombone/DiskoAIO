@@ -86,6 +86,7 @@ namespace DiskoAIO
         int skip { get; set; }
         public bool joining { get; set; } = true;
         public bool paused { get; set; } = false;
+        public string reaction_id = "";
 
         public void Start()
         {
@@ -193,6 +194,11 @@ namespace DiskoAIO
                                                         {
                                                             if (react.Count > reaction.Count)
                                                                 reaction = react;
+                                                            if(react.Emoji.Id.ToString() == reaction_id || react.Emoji.Name == reaction_id)
+                                                            {
+                                                                reaction = react;
+                                                                break;
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -338,7 +344,6 @@ namespace DiskoAIO
                         while (paused)
                             Thread.Sleep(500);
                         clients.Add(client);
-
                     });
                     thread_pool.Add(join1);
                     join1.Priority = ThreadPriority.AboveNormal;
@@ -375,7 +380,7 @@ namespace DiskoAIO
                 App.mainWindow.ShowNotification("Successfully paused task");
             });
         }
-        public GiveawayTask(AccountGroup accounts, ulong server_id, ulong channel_id, ulong message_id, ProxyGroup proxies = null, int _delay = 2, GiveawayType gtype = GiveawayType.Reaction, int skip_tokens = 0)
+        public GiveawayTask(AccountGroup accounts, ulong server_id, ulong channel_id, ulong message_id, ProxyGroup proxies = null, int _delay = 2, GiveawayType gtype = GiveawayType.Reaction, int skip_tokens = 0, string custom_reaction_id = "")
         {
             accountGroup = accounts;
             proxyGroup = proxies;
@@ -386,7 +391,7 @@ namespace DiskoAIO
             channelID = channel_id;
             messageID = message_id;
             skip = skip_tokens;
-
+            reaction_id = custom_reaction_id;
             progress = new Progress(accountGroup._accounts.Count);
         }
 

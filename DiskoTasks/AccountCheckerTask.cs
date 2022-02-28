@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiskoAIO.MVVM.View;
 using DiskoAIO.Properties;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,7 @@ namespace DiskoAIO
             {
                 Running = true;
                 var validTokens = new List<DiscordToken>();
+                var original = accountGroup._accounts.Count;
                 foreach (var token in accountGroup._accounts)
                 {
                     if (!checking)
@@ -125,9 +127,12 @@ namespace DiskoAIO
                     else
                     {
                         App.accountsGroups[App.accountsGroups.IndexOf(accountGroup)]._accounts = validTokens;
+                        App.accountsView.ListTokens.ItemsSource = validTokens;
+                        App.accountsView.ListTokens.Items.Refresh();
                     }
-                    if (accountGroup._accounts.Count - validTokens.Count > 0)
-                        App.mainWindow.ShowNotification($"Successfully deleted {accountGroup._accounts.Count - validTokens.Count} invalid or locked accounts, make sure to save to confirm changes");
+                    App.accountsView.UpdateAccountCount();
+                    if (original - validTokens.Count > 0)
+                        App.mainWindow.ShowNotification($"Successfully deleted {original - validTokens.Count} invalid or locked accounts, make sure to save to confirm changes");
                     else
                         App.mainWindow.ShowNotification($"No invalid or locked accounts were found");
 

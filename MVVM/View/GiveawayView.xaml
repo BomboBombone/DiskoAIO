@@ -10,73 +10,84 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
-        <StackPanel Margin="40 ,0 ,0 ,0">
-            <TextBlock Text="GROUPS:" Style="{StaticResource DiskoLabelTitle}"
+        <ScrollViewer Grid.Row="0">
+            <StackPanel>
+                <StackPanel Margin="40 ,0 ,0 ,0">
+                    <TextBlock Text="GROUPS:" Style="{StaticResource DiskoLabelTitle}"
                        Margin="20, 40, 20, 30"/>
-            <WrapPanel>
-                <Label Content="Type:" FontFamily="/Fonts/#Montserrat" 
+                    <WrapPanel>
+                        <Label Content="Type:" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Margin="20, 0"/>
-                <ComboBox Name="Type"/>
-                <Label Content="Accounts:" FontFamily="/Fonts/#Montserrat" 
+                        <ComboBox Name="Type"/>
+                        <Label Content="Accounts:" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Margin="20, 0"/>
-                <ComboBox Name="TokenGroup"/>
-                <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
+                        <ComboBox Name="TokenGroup"/>
+                        <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Margin="20, 0"
                        Name="ProxiesLabel"/>
-                <ComboBox Name="ProxiesGroup"/>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
-            <TextBlock Text="MESSAGE INFO:" Style="{StaticResource DiskoLabelTitle}"
+                        <ComboBox Name="ProxiesGroup"/>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
+                    <TextBlock Text="MESSAGE INFO:" Style="{StaticResource DiskoLabelTitle}"
                        Margin="20, 50, 20, 30"/>
-            <WrapPanel VerticalAlignment="Center">
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Message link" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="690" Height="50"
-                                 Name="MessageLink" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40, 0, 0, 0" Grid.Row="2">
-            <TextBlock Text="SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
-                       Margin="20, 20, 20, 30"/>
-            <WrapPanel>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Tokens to skip" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
-                    <StackPanel  Margin="5, 5, 0, 0">
-                        <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                        <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
-                    </StackPanel>
-                </Border>
-                <Border Background="#181824" CornerRadius="10" Margin="20 ,10">
                     <WrapPanel VerticalAlignment="Center">
-                        <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Message link" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="690" Height="50"
+                                 Name="MessageLink" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="40, 40, 0, 0" Grid.Row="2">
+                    <TextBlock Text="SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
+                       Margin="20, 20, 20, 30"/>
+                    <WrapPanel>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Tokens to skip" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="SkipTokens" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Minimum delay (seconds)" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,10">
+                            <WrapPanel VerticalAlignment="Center">
+                                <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
                                    Foreground="White" FontSize="12"
                                    Margin="10, 0, 35, 0"/>
-                        <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
+                                <ToggleButton Margin="37, 0, 10, 0" Name="UseProxies"
                                           Style="{StaticResource DiskoToggle}"
                                       Click="UseProxies_Click"/>
+                            </WrapPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,20, 20, 0">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Reaction ID / Name" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="ReactionID"/>
+                            </StackPanel>
+                        </Border>
                     </WrapPanel>
-                </Border>
-            </WrapPanel>
-        </StackPanel>
-        <StackPanel Margin="40, 0, 0, 0" Grid.Row="3">
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+        <StackPanel Margin="40, -103, 0, 0" Grid.Row="3">
             <WrapPanel>
                 <Button Style="{StaticResource DiskoButton}" Content="Check winners" Margin="610, 0, 20, 0"
                         Width="100" Height="40" Click="Check_Winners"/>

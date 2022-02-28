@@ -16,11 +16,11 @@
     </Window.DataContext>
     <Window.Resources>
         <Storyboard x:Key="OpenMenu">
-            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,0,-250,0" To="0,0,0,-2" DecelerationRatio="0.9" Duration="0:0:0.5"/>
+            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,450,-250,0" To="0,450,0,-2" DecelerationRatio="0.9" Duration="0:0:0.5"/>
         </Storyboard>
 
         <Storyboard x:Key="CloseMenu">
-            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,0,0,-2" To="0,0,-250,0" DecelerationRatio="0.9" Duration="0:0:0.5"/>
+            <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0,450,0,-2" To="0,450,-250,0" DecelerationRatio="0.9" Duration="0:0:0.5"/>
         </Storyboard>
     </Window.Resources>
     <Border Background="#151520" CornerRadius="25" MouseDown="Window_MouseDown"
@@ -127,12 +127,15 @@
                     <RadioButton Content="Presence" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemePresence}"  LostFocus="Radio_LostFocus"
                              Command="{Binding PresenceViewCommand}"/>
+                    <RadioButton Content="Sniper" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemeSniper}"  LostFocus="Radio_LostFocus"
+                             Command="{Binding SniperViewCommand}"/>
                     <RadioButton Content="Tasks" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeTasks}"  LostFocus="Radio_LostFocus"
                              Command="{Binding TasksViewCommand}"/>
 
                     <TextBlock Text="SETTINGS" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
-                               Margin="30, 70, 30, 10" FontWeight="Black"/>
+                               Margin="30, 30, 30, 0" FontWeight="Black"/>
                     <RadioButton Content="Settings" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeSettings}"
                              Command="{Binding SettingsViewCommand}" LostFocus="Radio_LostFocus"/>

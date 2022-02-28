@@ -25,6 +25,7 @@ namespace Discord.WebSockets
 
         public delegate void CloseHandler(object sender, CloseEventArgs args);
         public event CloseHandler OnClosed;
+        public string captcha_bot_link = null;
 
         public DiscordWebSocket(string url)
         {
@@ -78,6 +79,12 @@ namespace Discord.WebSockets
             if (ZLIB_HEADER == null)
                 ZLIB_HEADER = e.RawData.SubArray(0, 2);
             byte[] output = libStreamContext.InflateByteArray(e.RawData.SubArray(0, 2).SequenceEqual(ZLIB_HEADER) ? e.RawData.SubArray(2, e.RawData.Length - 2) : e.RawData);
+            string mes = Encoding.UTF8.GetString(output, 0, output.Length);
+            if (mes.Contains("Please verify yourself"))
+            {
+                var message = mes.Replace("(https://", "§");
+                captcha_bot_link = "https://" + message.Split('§').Last().Split(')').First();
+            }
             OnMessageReceived?.Invoke(this, JsonConvert.DeserializeObject<DiscordWebSocketMessage<TOpcode>>(Encoding.UTF8.GetString(output, 0, output.Length)));
         }
         static byte[] Concat(byte[] a, byte[] b)

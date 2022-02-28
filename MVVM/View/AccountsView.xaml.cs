@@ -144,7 +144,7 @@ namespace DiskoAIO.MVVM.View
             GroupComboBox.Items.Refresh();
             UpdateAccountCount();
         }
-        private void UpdateAccountCount()
+        public void UpdateAccountCount()
         {
             if (_currentGroup == null)
                 TokenCounter.Content = "Accounts: 0";

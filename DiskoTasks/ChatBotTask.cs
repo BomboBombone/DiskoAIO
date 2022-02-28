@@ -147,6 +147,7 @@ namespace DiskoAIO
                         client.Login(token);
                         while (!client.LoggedIn)
                             Thread.Sleep(100);
+                        client.SubscribeToGuildEvents(serverID);
                     }
                     catch (Exception ex)
                     {

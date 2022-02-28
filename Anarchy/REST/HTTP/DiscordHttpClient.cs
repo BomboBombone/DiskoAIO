@@ -97,8 +97,14 @@ namespace Discord
                         request.AddHeader("origin", "https://discord.com");
                         request.AddHeader("Referer", "https://discord.com/channels/@me");
                         request.AddHeader("TE", "Trailers");
-                        request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
-                        request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
+                        request.AddHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36");
+                        request.AddHeader("X-Debug-Options", "bugReporterEnabled");
+                        //request.AddHeader("x-fingerprint", "903995807798296608.8ycsY24VnE7UWwSqpXx2yeE-AfM");
+                        request.AddHeader("X-Super-Properties", "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6Iml0LUlUIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzk4LjAuNDc1OC4xMDIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6Ijk4LjAuNDc1OC4xMDIiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTE1NjMzLCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==");
+                        request.AddHeader("x-discord-locale", "en-US");
+                        if (Fingerprint.fingerprint == null)
+                            Fingerprint.GetFingerprint().GetAwaiter().GetResult();
+                        request.AddHeader("X-Fingerprint", Fingerprint.fingerprint);
 
                         HttpResponse response;
                         if(endpoint == "https://discord.com/api/v9/users/@me/channels")
@@ -107,10 +113,12 @@ namespace Discord
                         }
                         else
                         {
-                            var context_pr = "{" + $"\"location\":\"Join Guild\",\"location_guild_id\":\"{guildId}\",\"location_channel_id\":\"{channelId}\",\"location_channel_type\":0" + "}";
+                            var context_pr = "{" + $"\"location\":\"Join Guild\",\"location_guild_id\":\"{guildId}\",\"location_channel_id\":\"{channelId}\",\"location_channel_type\":5" + "}";
                             var encoded_pr = Base64Encode(context_pr);
                             request.AddHeader("X-Context-Properties", encoded_pr);
                         }
+                        if(json != "{}")
+                            json = "{\"captcha_key\":\"" + json + "\"}";
                         request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
                         response = request.Post(endpoint, json, "application/json");
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
@@ -341,10 +349,10 @@ namespace Discord
                             request.AddHeader("origin", "https://discord.com");
                             request.AddHeader("Referer", $"https://discord.com/channels/{guild_id}");
                             request.AddHeader("TE", "Trailers");
-                            request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
+                            request.AddHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36");
                             request.AddHeader("X-Debug-Options", "bugReporterEnabled");
                             //request.AddHeader("x-fingerprint", "903995807798296608.8ycsY24VnE7UWwSqpXx2yeE-AfM");
-                            request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
+                            request.AddHeader("X-Super-Properties", "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6Iml0LUlUIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzk4LjAuNDc1OC4xMDIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6Ijk4LjAuNDc1OC4xMDIiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6IiIsInJlZmVycmluZ19kb21haW4iOiIiLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTE1NjMzLCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==");
                             request.AddHeader("x-discord-locale", "en-US");
                             var response = request.Put(endpoint, json_string, "application/json");
                         }

@@ -1,4 +1,7 @@
 ﻿using Discord;
+using DiskoAIO.CaptchaSolvers;
+using DiskoAIO.Properties;
+using Leaf.xNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +82,27 @@ namespace DiskoAIO
                             }
                         }
                     }
+                    if(Settings.Default.Anti_Captcha != "")
+                        foreach(var part in token_array)
+                        {
+                            if(part.Contains('@') && part.Contains('.'))
+                            {
+                                var pw = token_array[token_array.ToList().IndexOf(part) + 1];
+                                var token = Login(part, pw);
+                                if (App.IsConnectedToInternet())
+                                {
+                                    client = new DiscordClient(token);
+
+                                    client.QueryGuilds(new GuildQueryOptions()
+                                    {
+                                        Limit = 1
+                                    });
+                                }
+                                else
+                                    throw new InvalidTokenException("");
+                                return new DiscordToken(client.User.Id, token, client.User.PhoneNumber == null ? false : true, client.User.EmailVerified);
+                            }
+                        }
                 }
 
                 if (token_array.Length < 2)
@@ -106,6 +130,22 @@ namespace DiskoAIO
             {
                 return null;
             }
+        }
+        public static string Login(string email, string password)
+        {
+            var captcha_key = DiscordSolver.Solve("f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34");
+            var request = new HttpRequest() { };
+            request.AddHeader("Accept", "*/*");
+            request.AddHeader("Accept-Encoding", "gzip, deflate");
+            request.AddHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36");
+            request.AddHeader("x-debug-options", "bugReporterEnabled");
+            request.AddHeader("x-fingerprint", "945448142466334752.3vANn7dUuaXHZ8eOFy75OP0r9og");
+            request.AddHeader("x-super-properties", "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6Iml0LUlUIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzk4LjAuNDc1OC4xMDIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6Ijk4LjAuNDc1OC4xMDIiLCJvc192ZXJzaW9uIjoiMTAiLCJyZWZlcnJlciI6Imh0dHBzOi8vd2VibWFpbC5yZWdpc3Rlci5pdC8iLCJyZWZlcnJpbmdfZG9tYWluIjoid2VibWFpbC5yZWdpc3Rlci5pdCIsInJlZmVycmVyX2N1cnJlbnQiOiIiLCJyZWZlcnJpbmdfZG9tYWluX2N1cnJlbnQiOiIiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoxMTU2MzMsImNsaWVudF9ldmVudF9zb3VyY2UiOm51bGx9");
+            var payload = "{\"login\":\""+ email + "\",\"password\":\"" + password + "\",\"undelete\":false,\"captcha_key\":\"" + captcha_key + "\",\"login_source\":null,\"gift_code_sku_id\":null}";
+            request.AddHeader("Content-Length", payload.Length.ToString());
+            var response = request.Post("https://discord.com/api/v9/auth/login", payload, "application/json");
+            var res_array = response.ToString().Split('"');
+            return res_array[2];
         }
         public override string ToString()
         {

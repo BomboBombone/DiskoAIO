@@ -19,6 +19,7 @@ namespace DiskoAIO.MVVM.ViewModel
         public RelayCommand ChatViewCommand { get; set; }
         public RelayCommand KryptoViewCommand { get; set; }
         public RelayCommand PresenceViewCommand { get; set; }
+        public RelayCommand SniperViewCommand { get; set; }
 
         public RelayCommand SettingsViewCommand { get; set; }
         //Window change commands
@@ -30,10 +31,10 @@ namespace DiskoAIO.MVVM.ViewModel
         public ChatView ChatView { get; set; } = new ChatView();
         public KryptoView KryptoView { get; set; } = new KryptoView();
         public PresenceView PresenceView { get; set; } = new PresenceView();
+        public SniperView SniperView { get; set; } = new SniperView();
         public SettingsView SettingsView { get; set; } = new SettingsView();
 
         private object _currentView;
-
         public object CurrentView
         {
             get { return _currentView; }
@@ -168,6 +169,22 @@ namespace DiskoAIO.MVVM.ViewModel
                     source = source.Append(group._name).ToArray();
                 }
                 PresenceView.TokenGroup.ItemsSource = source;
+            });
+            SniperViewCommand = new RelayCommand(o =>
+            {
+                CurrentView = SniperView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                SniperView.ProxiesGroup.ItemsSource = source;
+                source = new string[] { };
+                foreach (var group in App.accountsGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                SniperView.TokenGroup.ItemsSource = source;
             });
         }
     }
