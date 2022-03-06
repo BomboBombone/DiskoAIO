@@ -363,7 +363,7 @@ namespace DiskoAIO.DiskoTasks
                 if (link.Contains("discord."))
                 {
                     var code = link.Split('/').Last().Split('?').First();
-                    code = new string(code.Where(Char.IsLetter).ToArray());
+                    code = new string(code.Where(o => Char.IsDigit(o) || Char.IsLetter(o)).ToArray());
                     return code;
                 }
             }

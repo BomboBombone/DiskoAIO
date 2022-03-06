@@ -15,6 +15,7 @@ namespace DiskoAIO
 {
     class ChatBotTask : DiskoTask
     {
+        public List<string> default_responses = new List<string>() { "humm", "yup", "i dont know", "I don't know", "hmm", "ok", "ook", "good", "ye", "nah", "hi man", "what's up" };
         public TaskType type
         {
             get { return TaskType.ChatBot; }
@@ -258,20 +259,21 @@ namespace DiskoAIO
         }
         private string CleanString(string input)
         {
+            var rnd = new Random();
             input = input.Replace('<', ' ').Replace('>', ' ').Replace('@', ' ').Trim('.');
             if (input.Contains("chat_id") || input.Contains("everyone") || Regex.Replace(input, @"[^\u0000-\u007F]+", string.Empty) == "")
-                return "Ayoo";
+                return default_responses[rnd.Next(0, default_responses.Count - 1)];
             if (input.ToLower().Contains("i'm from") || input.ToLower().Contains("im from") || input.ToLower().Contains("i am from"))
-                return "I'm from Asia man";
+                return default_responses[rnd.Next(0, default_responses.Count - 1)];
             if (input.Contains("http") && !send_links)
-                return "hm";
+                return default_responses[rnd.Next(0, default_responses.Count - 1)];
             foreach (var word in input.Split(' '))
             {
                 try
                 {
                     if (ulong.TryParse(word.Trim('!', '#'), out var userId))
                     {
-                        return "Hi everyone new";
+                        return default_responses[rnd.Next(0, default_responses.Count - 1)];
                     }
                 }
                 catch(Exception ex)

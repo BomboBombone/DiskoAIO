@@ -638,6 +638,7 @@
     <Compile Include="DiskoTasks\KryptoSignTask.cs" />
     <Compile Include="DiskoTasks\LeaveTask.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="DiskoTasks\PremintTask.cs" />
     <Compile Include="DiskoTasks\PresenceCheckerTask.cs" />
     <Compile Include="DiskoTasks\TwitterSniperTask.cs" />
     <Compile Include="MVVM\ViewModel\ChatVM.cs" />
@@ -674,6 +675,8 @@
     <Compile Include="MVVM\View\TaskSettingsPopup.xaml.cs">
       <DependentUpon>TaskSettingsPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Premint\Premint.cs" />
+    <Compile Include="Premint\PremintAccount.cs" />
     <Compile Include="ProxyGroup.cs" />
     <Compile Include="DiskoTasks\DiskoTask.cs" />
     <Compile Include="Science.cs" />

@@ -47,6 +47,19 @@ namespace DiskoAIO
                 return false;
             }
         }
+        public static Account GetWallet()
+        {
+            var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
+            var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
+            return new Account(privateKey);
+        }
+        public static string SignMessage(string msg, Account account)
+        {
+            var signer = new EthereumMessageSigner();
+
+            var signature = signer.EncodeUTF8AndSign(msg, new EthECKey(account.PrivateKey));
+            return signature;
+        }
         public string GetFirstSignature()
         {
             var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
