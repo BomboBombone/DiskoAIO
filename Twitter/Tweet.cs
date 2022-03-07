@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO.Twitter
 {
-    class Tweet
+    public class Tweet
     {
         [JsonProperty("id")]
         public string id { get; private set; }

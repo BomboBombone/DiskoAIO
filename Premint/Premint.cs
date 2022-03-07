@@ -1,4 +1,6 @@
 ﻿using Discord;
+using Nethereum.Web3.Accounts;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,49 @@ namespace DiskoAIO.Premint
         {
             InitializeHttpClient();
         }
+        public void Register()
+        {
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("GET"),
+                RequestUri = new Uri("https://www.premint.xyz/v1/login_api/")
+            }).GetAwaiter().GetResult();
+            var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(jt.ToString());
+            var nonce = json.Value<string>("data");
+            var mm = DiscordWeb3.GetWallet();
+
+            var msg = $"Welcome to PREMINT!\n\nSigning is the only way we can truly know \nthat you are the owner of the wallet you \nare connecting. Signing is a safe, gas-less \ntransaction that does not in any way give \nPREMINT permission to perform any \ntransactions with your wallet.\n\nWallet address:\n{mm.Address}\n\nNonce: " + nonce;
+            var signature = DiscordWeb3.SignMessage(msg, mm);
+            var payload = $"web3provider=metamask&address={mm.Address}&signature={signature}";
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
+            }).GetAwaiter().GetResult();
+        }
+        public void Login(Account mm)
+        {
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("GET"),
+                RequestUri = new Uri("https://www.premint.xyz/v1/login_api/")
+            }).GetAwaiter().GetResult();
+            var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(jt.ToString());
+            var nonce = json.Value<string>("data");
+
+            var msg = $"Welcome to PREMINT!\n\nSigning is the only way we can truly know \nthat you are the owner of the wallet you \nare connecting. Signing is a safe, gas-less \ntransaction that does not in any way give \nPREMINT permission to perform any \ntransactions with your wallet.\n\nWallet address:\n{mm.Address}\n\nNonce: " + nonce;
+            var signature = DiscordWeb3.SignMessage(msg, mm);
+            var payload = $"web3provider=metamask&address={mm.Address}&signature=0x{signature}";
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
+            }).GetAwaiter().GetResult();
+        }
         public void Connect(string username, string password, string phone = null)
         {
             var twitter_client = new Twitter.Twitter(username, password, phone);
@@ -32,15 +77,20 @@ namespace DiskoAIO.Premint
                 Method = new HttpMethod("GET"),
                 RequestUri = res.Headers.Location
             }).GetAwaiter().GetResult();
-            var auth_token = res.Content.ReadAsStringAsync().GetAwaiter().GetResult().Replace("<input type=\"hidden\" name=\"authenticity_token\" value=\"", "§").Split('§').Last().Split('"').First();
+            var content = res.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var auth_token = content.Replace("<input type=\"hidden\" name=\"authenticity_token\" value=\"", "§").Split('§').Last().Split('"').First();
+            var next_link = "href=\"https://www.premint.xyz/accounts/twitter/login/callback/?oauth_token=" + content.Replace("href=\"https://www.premint.xyz/accounts/twitter/login/callback/?oauth_token=", "§").Split('§').Last().Split('"').First();
             client.DefaultRequestHeaders.Add("Referer", "https://api.twitter.com/oauth/authenticate?oauth_token=9U-QAgAAAAABUjydAAABf2BoDwc&oauth_callback=https%3A%2F%2Fwww.premint.xyz%2Faccounts%2Ftwitter%2Flogin%2Fcallback%2F");
-            var payload = $"authenticity_token={auth_token}&redirect_after_login=https://api.twitter.com/oauth/authorize?oauth_token={oauth_token}&oauth_token={oauth_token}";
+            //var payload = $"authenticity_token={auth_token}&redirect_after_login=https://api.twitter.com/oauth/authorize?oauth_token={oauth_token}&oauth_token={oauth_token}";
             res = twitter_client.client.SendAsync(new HttpRequestMessage()
             {
-                Method = new HttpMethod("POST"),
-                RequestUri = new Uri("https://api.twitter.com/oauth/authorize"),
-                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
+                Method = new HttpMethod("GET"),
+                RequestUri = new Uri(next_link)
             }).GetAwaiter().GetResult();
+            if(res.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception("Could not bind twitter account to premint");
+            }
         }
         public void InitializeHttpClient()
         {

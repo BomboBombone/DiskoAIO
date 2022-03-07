@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="DiskoAIO.MVVM.View.TwitterAccountsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
+             mc:Ignorable="d" 
+             mc:Ignorable="d" Drop="Grid_Drop" AllowDrop="True" DragOver="Grid_DragOver"
+             d:DesignHeight="670" d:DesignWidth="1000">
+    <Grid>
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="VisibleIfTrueConverter" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <WrapPanel VerticalAlignment="Center">
+            <Label Content="GROUP:" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="80, 5 , 20, 0" FontWeight="Black"/>
+            <ComboBox Name="GroupComboBox" SelectionChanged="GroupComboBox_SelectionChanged"/>
+            <Button Width="30" Height="30" Style="{StaticResource DeleteButton}" Margin="20, 0"
+                    Click="Delete_Click"/>
+            <Button Width="30" Height="30" Style="{StaticResource AddButton}"  Margin="0, 0, 20, 0" 
+                    Click="Add_Group_Click"/>
+            <TextBox x:Name="SearchBox" Style="{StaticResource SearchBox}" Margin="50, 0, 0, 0"
+                    TextChanged="SearchBox_TextChanged" PreviewTextInput="Search_Input"/>
+            <Button Width="30" Height="30" Style="{StaticResource SaveButton}" Margin="50, 0, 20, 0"
+                    Click="Save_Click"/>
+            <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="0, 0, 0, 0" 
+                    Click="Load_Tokens_Click"/>
+            <Button Width="30" Height="30" Style="{StaticResource CheckerButton}"  Margin="20, 0, 0, 0" 
+                    Click="Check_Tokens_Click"/>
+        </WrapPanel>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <WrapPanel Grid.Row="0">
+                <Label Content="NOTE" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="80, 0 , 20, 0" FontWeight="Black"/>
+                <Label Content="USERNAME" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="233, 0 , 20, 0" FontWeight="Black"/>
+                <Label Content="EXTRA" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                   Margin="215, 0 , 20, 0" FontWeight="Black"/>
+            </WrapPanel>
+            <ListBox x:Name="ListTokens"  Grid.Row="1"
+            SourceUpdated="ListTokens_SourceUpdated"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0"
+            Background="Transparent" Margin="60, 10, 10, 10" SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding Username}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                               VerticalAlignment="Center" Width="150" Margin="55, 0, 0, 0"/>
+                            <Button Style="{StaticResource CopyButton}" Margin="10, 0, 0, 0" Grid.Column="1" HorizontalAlignment="Right"
+                                    Width="25" Height="25" Click="Copy_Click"/>
+
+                            <Label Content="{Binding Note}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                               VerticalAlignment="Center" Width="250" Margin="15, 0, 0, 0" MouseDoubleClick="Note_Double_Click"/>
+                            <WrapPanel Grid.Column="2"  Width="150" Margin="85, 0, 0, 0">
+                                <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton" Width="30" Click="DeleteToken_Click"/>
+                                <Button Style="{StaticResource PencilButton}" x:Name="PencilButton" Width="30" Click="Settings_Click" ToolTip="Account settings"/>
+                                <Button Style="{StaticResource CleanButton}" Grid.Column="1" HorizontalAlignment="Right"
+                                    Width="30" Click="Clean_Click" ToolTip="Wipe servers"/>
+                            </WrapPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <WrapPanel Grid.Row="2">
+            <Label Content="Accounts: 0" x:Name="TokenCounter" FontWeight="Black"
+               FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+               Margin="80 ,0, 0, 12"/>
+        </WrapPanel>
+    </Grid>
+</UserControl>

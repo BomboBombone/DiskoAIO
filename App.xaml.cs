@@ -28,6 +28,7 @@ using System.Threading;
 using System.Net.Sockets;
 using DiscordGameSDK;
 using System.Reflection;
+using DiskoAIO.Twitter;
 
 namespace DiskoAIO
 {
@@ -44,10 +45,12 @@ namespace DiskoAIO
 
         public static string strWorkPath { get; set; }
         public static List<AccountGroup> accountsGroups { get; set; } = new List<AccountGroup>();
+        public static List<TwitterAccountGroup> twitteGroups { get; set; } = new List<TwitterAccountGroup>();
         public static List<ProxyGroup> proxyGroups { get; set; } = new List<ProxyGroup>();
         public static MainWindow mainWindow { get; set; }
         public static ProxiesView proxiesView { get; set; } = null;
         public static AccountsView accountsView { get; set; } = null;
+        public static TwitterAccountsView twitterAccountsView { get; set; } = null;
         public static TasksView taskManager { get; set; } = null;
         public static long userID { get; set; }
         public static string localIP { get; set; }

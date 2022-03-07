@@ -11,8 +11,27 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO.Twitter
 {
-    class Twitter
+    public class Twitter
     {
+        public string _username { get; set; }
+        public string Username
+        {
+            get { return _username; }
+            set { _username = value; }
+        }
+        public string _token { get; set; }
+        public string _note { get; set; }
+        public string Note
+        {
+            get
+            {
+                if (_note == null)
+                    _note = "Double click to add note...";
+                return _note;
+            }
+            set { _note = value; }
+        }
+
         public HttpClient client { get; set; }
         public DiscordClient discordClient { get; set; }
         public HttpClientHandler clientHandler { get; set; }
@@ -44,6 +63,14 @@ namespace DiskoAIO.Twitter
         {
             InitializeHttpClient();
             Login(username, password, phone);
+        }
+        public static Twitter Load(List<string> input)
+        {
+            if(input.Count != 3)
+            {
+                return null;
+            }
+            return new Twitter(input[0], input[1], input[2]);
         }
         public Tweet getLatestTweet()
         {

@@ -53,6 +53,10 @@ namespace DiskoAIO
             var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
             return new Account(privateKey);
         }
+        public static Account GetWallet(string privateKey)
+        {
+            return new Account(privateKey);
+        }
         public static string SignMessage(string msg, Account account)
         {
             var signer = new EthereumMessageSigner();

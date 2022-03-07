@@ -669,11 +669,17 @@
     <Compile Include="MVVM\View\PresenceView.xaml.cs">
       <DependentUpon>PresenceView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MVVM\View\SniperView.xaml.cs">
+    <Compile Include="MVVM\View\Twitter\TwitterAccountsView.xaml.cs">
+      <DependentUpon>TwitterAccountsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Twitter\SniperView.xaml.cs">
       <DependentUpon>SniperView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\TaskSettingsPopup.xaml.cs">
       <DependentUpon>TaskSettingsPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Twitter\TwitterView.xaml.cs">
+      <DependentUpon>TwitterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Premint\Premint.cs" />
     <Compile Include="Premint\PremintAccount.cs" />
@@ -683,6 +689,7 @@
     <Compile Include="TaskStateToColorConverter.cs" />
     <Compile Include="Twitter\Tweet.cs" />
     <Compile Include="Twitter\Twitter.cs" />
+    <Compile Include="Twitter\TwitterAccountGroup.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -760,7 +767,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\SniperView.xaml">
+    <Page Include="MVVM\View\Twitter\TwitterAccountsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Twitter\SniperView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -769,6 +780,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\TasksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Twitter\TwitterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -950,6 +965,7 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\twitter.ico" />
     <Resource Include="Images\snipe.ico" />
     <Resource Include="Images\presence_purple.ico" />
     <Resource Include="Images\sign_purple.ico" />

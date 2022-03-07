@@ -101,52 +101,61 @@
                 </Grid>
             </Border>
             <Border Grid.Column="0" Grid.Row="2" Background="#181824"  CornerRadius="0, 0, 0, 25">
-                <StackPanel Grid.Row="0">
-                    <TextBlock Text="HOME" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
+                <ScrollViewer Grid.Row="0">
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="HOME" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
                                Margin="30, 10, 30, 20" FontWeight="Black"/>
-                    <RadioButton Content="Joiner" Height="50" Click="RadioButton_Click"
+                        <RadioButton Content="Joiner" Height="50" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeJoin}"  LostFocus="Radio_LostFocus"
                              Command="{Binding JoinerViewCommand}" Foreground="White" FontWeight="Bold"
                              IsChecked="True" x:Name="JoinerRadio"/>
-                    <RadioButton Content="Giveaways" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                        <RadioButton Content="Giveaways" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeGiveaways}"  LostFocus="Radio_LostFocus"
                              Command="{Binding GiveawaysViewCommand}"/>
-                    <RadioButton Content="KryptoSign" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                        <RadioButton Content="KryptoSign" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeKrypto}"  LostFocus="Radio_LostFocus"
                              Command="{Binding KryptoViewCommand}" Visibility="Collapsed"/>
-                    <RadioButton Content="Chat" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                        <RadioButton Content="Chat" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeChat}"  LostFocus="Radio_LostFocus"
                              Command="{Binding ChatViewCommand}"/>
 
-                    <RadioButton Content="Proxies" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                        <RadioButton Content="Proxies" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeProxies}"  LostFocus="Radio_LostFocus"
                              Command="{Binding ProxiesViewCommand}"/>
-                    <RadioButton Content="Accounts" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                        <RadioButton Content="Accounts" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeAccounts}"  LostFocus="Radio_LostFocus"
                              Command="{Binding AccountsViewCommand}"/>
-                    <RadioButton Content="Presence" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                        <RadioButton Content="Presence" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemePresence}"  LostFocus="Radio_LostFocus"
                              Command="{Binding PresenceViewCommand}"/>
-                    <RadioButton Content="Sniper" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
-                             FontSize="14" Style="{StaticResource MenuButtonThemeSniper}"  LostFocus="Radio_LostFocus"
-                             Command="{Binding SniperViewCommand}"/>
-                    <RadioButton Content="Tasks" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                        <RadioButton Content="Tasks" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeTasks}"  LostFocus="Radio_LostFocus"
                              Command="{Binding TasksViewCommand}"/>
 
-                    <TextBlock Text="SETTINGS" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
+                        <TextBlock Text="TWITTER" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
                                Margin="30, 30, 30, 0" FontWeight="Black"/>
-                    <RadioButton Content="Settings" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
-                             FontSize="14" Style="{StaticResource MenuButtonThemeSettings}"
+                        <RadioButton Content="Twitter" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemeTwitter}"
                              Command="{Binding SettingsViewCommand}" LostFocus="Radio_LostFocus"/>
-                </StackPanel>
+                        <RadioButton Content="Sniper" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemeSniper}"  LostFocus="Radio_LostFocus"
+                             Command="{Binding SniperViewCommand}"/>
+
+                        <TextBlock Text="SETTINGS" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
+                               Margin="30, 30, 30, 0" FontWeight="Black"/>
+                        <RadioButton Content="Settings" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemeSettings}" Margin="0, 0, 0, 20"
+                             Command="{Binding SettingsViewCommand}" LostFocus="Radio_LostFocus"/>
+                        
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
             <ContentControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"
                             Content="{Binding CurrentView}"/>
             <Label Name="VersionLabel" Content="v1.0.0.0" FontSize="9" 
                     FontWeight="Black" Foreground="White" Grid.Row="2"
-                   HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                   Grid.Column="0" Margin="30,0, 0, 20"/>
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                   Grid.Column="1" Margin="0, 0, 20, 10"/>
             <Button Content="X" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
                     FontSize="12" FontStretch="Expanded" VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center" Margin="10, 10" FontWeight="Black"

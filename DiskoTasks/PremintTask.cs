@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace DiskoAIO.DiskoTasks
 {
-    class PremintTask : DiskoAIO
+    class PremintTask : DiskoTask
     {
         public TaskType type
         {
@@ -71,12 +71,9 @@ namespace DiskoAIO.DiskoTasks
         {
             get { return paused; }
         }
-
         public int delay { get; set; } = 2;
-
         public bool checking = true;
         public bool paused = false;
-
         public void Start()
         {
 
