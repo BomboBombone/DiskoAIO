@@ -238,5 +238,17 @@ namespace DiskoAIO.Properties {
                 this["ChatType"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitterGroup {
+            get {
+                return ((string)(this["TwitterGroup"]));
+            }
+            set {
+                this["TwitterGroup"] = value;
+            }
+        }
     }
 }

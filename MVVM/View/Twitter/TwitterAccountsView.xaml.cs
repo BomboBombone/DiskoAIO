@@ -32,7 +32,7 @@ namespace DiskoAIO.MVVM.View
             if (App.twitterAccountsView == null)
                 App.twitterAccountsView = this;
             var source = new string[] { };
-            foreach (var group in App.accountsGroups)
+            foreach (var group in App.twitterGroups)
             {
                 source = source.Append(group._name).ToArray();
             }
@@ -40,8 +40,8 @@ namespace DiskoAIO.MVVM.View
             if (_currentGroup != null)
                 GroupComboBox.SelectedItem = _currentGroup._name;
             else
-                 if (App.accountsGroups.Count > 0)
-                _currentGroup = App.accountsGroups.First();
+                 if (App.twitterGroups.Count > 0)
+                _currentGroup = App.twitterGroups.First();
             GroupComboBox.SelectedItem = Settings.Default.TokenGroup;
 
             if (_currentGroup != null)
@@ -88,16 +88,16 @@ namespace DiskoAIO.MVVM.View
             }
             var inputName = new InputPopupView("Choose a name for the account group", 16);
             inputName.ShowDialog();
-            var accountGroup = new AccountGroup(null, inputName.answer);
+            var accountGroup = new TwitterAccountGroup(null, inputName.answer);
             if (accountGroup == null || accountGroup._name == null)
             {
                 App.mainWindow.ShowNotification("Invalid group name selected");
                 return;
             }
-            App.accountsGroups.Add(accountGroup);
+            App.twitterGroups.Add(accountGroup);
             _currentGroup = accountGroup;
             var source = new string[] { };
-            foreach (var group in App.accountsGroups)
+            foreach (var group in App.twitterGroups)
             {
                 source = source.Append(group._name).ToArray();
             }
@@ -125,8 +125,8 @@ namespace DiskoAIO.MVVM.View
             var result = _currentGroup.Delete();
             if (result > 0)
                 return;
-            if (App.accountsGroups.Count > 0)
-                _currentGroup = App.accountsGroups.First();
+            if (App.twitterGroups.Count > 0)
+                _currentGroup = App.twitterGroups.First();
             else
                 _currentGroup = null;
 
@@ -134,7 +134,7 @@ namespace DiskoAIO.MVVM.View
             ListTokens.Items.Refresh();
 
             var source = new string[] { };
-            foreach (var group in App.accountsGroups)
+            foreach (var group in App.twitterGroups)
             {
                 source = source.Append(group._name).ToArray();
             }
@@ -205,7 +205,7 @@ namespace DiskoAIO.MVVM.View
                             }
                             var group_id = _currentGroup._id;
                             var group_name = _currentGroup._name;
-                            var group_index = App.accountsGroups.IndexOf(_currentGroup);
+                            var group_index = App.twitterGroups.IndexOf(_currentGroup);
 
                             seconds_remaining = (int)(lines / 3);
                             using (var reader = new StreamReader(path))
@@ -216,13 +216,21 @@ namespace DiskoAIO.MVVM.View
                                     try
                                     {
                                         line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
-                                        var token_array = line.Split(':');
-                                        DiscordToken token = null;
+                                        var token_array = line.Split(':').ToList();
+                                        Twitter.Twitter token = null;
                                         var task = Task.Run(() =>
                                         {
-                                            token = DiscordToken.Load(token_array);
+                                            try
+                                            {
+                                                token = Twitter.Twitter.Load(token_array);
+
+                                            }
+                                            catch
+                                            {
+
+                                            }
                                         });
-                                        if (task.Wait(TimeSpan.FromSeconds(3)))
+                                        if (task.Wait(TimeSpan.FromSeconds(5)))
                                             ;
                                         else
                                         {
@@ -268,7 +276,7 @@ namespace DiskoAIO.MVVM.View
                                     catch (Exception ex)
                                     {
                                         Dispatcher.Invoke(() => {
-                                            App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
+                                            App.mainWindow.ShowNotification("Format of selected accounts seems to be wrong.\nHint: one account per line");
                                         });
                                         return;
                                     }
@@ -278,7 +286,7 @@ namespace DiskoAIO.MVVM.View
                             {
                                 ListTokens.ItemsSource = _currentGroup._accounts;
                                 ListTokens.Items.Refresh();
-                                App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
+                                App.mainWindow.ShowNotification("Accounts added successfully: " + (tokens.Count - start_count).ToString());
                                 UpdateAccountCount();
                             });
 
@@ -286,7 +294,7 @@ namespace DiskoAIO.MVVM.View
                             {
                                 try
                                 {
-                                    using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
+                                    using (var writer = new StreamWriter(App.strWorkPath + "\\twitter\\" + _currentGroup._name + ".txt"))
                                     {
                                         foreach (var token in tokens)
                                         {
@@ -302,7 +310,7 @@ namespace DiskoAIO.MVVM.View
                                     Thread.Sleep(100);
                                 }
                             }
-                            App.accountsGroups[group_index]._accounts = tokens;
+                            App.twitterGroups[group_index]._accounts = tokens;
 
                         }
                     }
@@ -352,7 +360,7 @@ namespace DiskoAIO.MVVM.View
 
         private void Note_Double_Click(object sender, MouseButtonEventArgs e)
         {
-            var source = new List<DiscordToken>();
+            var source = new List<Twitter.Twitter>();
             foreach (var o in _currentGroup._accounts)
             {
                 if (o.Note.ToLower().Contains(to_search.ToLower()) &&
@@ -361,7 +369,7 @@ namespace DiskoAIO.MVVM.View
                 {
                     source.Add(o);
                 }
-                else if (o.User_id.Contains(to_search))
+                else if (o.Username.Contains(to_search))
                     source.Add(o);
             }
 
@@ -383,10 +391,12 @@ namespace DiskoAIO.MVVM.View
             ListTokens.Items.Refresh();
             TokenCounter.Content = ListTokens.Items.Count.ToString() + " accounts";
         }
-
-        private void Settings_Click(object sender, RoutedEventArgs e)
+        private void Open_Browser(object sender, RoutedEventArgs e)
         {
-            var source = new List<DiscordToken>();
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            var source = new List<Twitter.Twitter>();
+
             foreach (var o in _currentGroup._accounts)
             {
                 if (o.Note.ToLower().Contains(to_search.ToLower()) &&
@@ -395,16 +405,33 @@ namespace DiskoAIO.MVVM.View
                 {
                     source.Add(o);
                 }
-                else if (o.User_id.Contains(to_search))
+                else if (o.Username.Contains(to_search))
                     source.Add(o);
             }
-
-            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
-            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
-
-            var popup = new AccountSettingsPopup(GroupComboBox.SelectedItem.ToString(), source[index], index);
-            popup.Show();
+            source[index].Login();
+            new TwitterDriver(source[index].Cookies.GetCookieHeader(new Uri("https://twitter.com")));
         }
+        //private void Settings_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var source = new List<Twitter.Twitter>();
+        //    foreach (var o in _currentGroup._accounts)
+        //    {
+        //        if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+        //            o.Note != "Double click to add note..." &&
+        //            to_search != "")
+        //        {
+        //            source.Add(o);
+        //        }
+        //        else if (o.Username.Contains(to_search))
+        //            source.Add(o);
+        //    }
+        //
+        //    var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+        //    var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+        //
+        //    var popup = new AccountSettingsPopup(GroupComboBox.SelectedItem.ToString(), source[index], index);
+        //    popup.Show();
+        //}
         private void DeleteToken_Click(object sender, RoutedEventArgs e)
         {
             var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
@@ -419,7 +446,7 @@ namespace DiskoAIO.MVVM.View
         {
             if (e.Text == "\r")
             {
-                var source = new List<DiscordToken>();
+                var source = new List<Twitter.Twitter>();
                 foreach (var o in _currentGroup._accounts)
                 {
                     if (o.Note.ToLower().Contains(to_search.ToLower()) &&
@@ -428,7 +455,7 @@ namespace DiskoAIO.MVVM.View
                     {
                         source.Add(o);
                     }
-                    else if (o.User_id.Contains(to_search))
+                    else if (o.Username.Contains(to_search))
                         source.Add(o);
                 }
 
@@ -449,7 +476,7 @@ namespace DiskoAIO.MVVM.View
             {
                 return;
             }
-            _currentGroup = App.accountsGroups.Where(o => o._name == GroupComboBox.SelectedItem.ToString()).ToArray()[0];
+            _currentGroup = App.twitterGroups.Where(o => o._name == GroupComboBox.SelectedItem.ToString()).ToArray()[0];
             ListTokens.ItemsSource = _currentGroup._accounts;
             ListTokens.Items.Refresh();
             UpdateAccountCount();
@@ -511,7 +538,7 @@ namespace DiskoAIO.MVVM.View
                                     }
                                     var group_id = _currentGroup._id;
                                     var group_name = _currentGroup._name;
-                                    var group_index = App.accountsGroups.IndexOf(_currentGroup);
+                                    var group_index = App.twitterGroups.IndexOf(_currentGroup);
 
                                     seconds_remaining = (int)(lines / 3);
                                     using (var reader = new StreamReader(file))
@@ -608,7 +635,7 @@ namespace DiskoAIO.MVVM.View
                                             Thread.Sleep(100);
                                         }
                                     }
-                                    App.accountsGroups[group_index]._accounts = tokens;
+                                    App.twitterGroups[group_index]._accounts = tokens;
 
                                 }
                             }
@@ -635,7 +662,7 @@ namespace DiskoAIO.MVVM.View
         {
             var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
             var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
-            var source = new List<DiscordToken>();
+            var source = new List<Twitter.Twitter>();
 
             foreach (var o in _currentGroup._accounts)
             {
@@ -645,11 +672,11 @@ namespace DiskoAIO.MVVM.View
                 {
                     source.Add(o);
                 }
-                else if (o.User_id.Contains(to_search))
+                else if (o.Username.Contains(to_search))
                     source.Add(o);
             }
-            Clipboard.SetDataObject(source[index].User_id);
-            App.mainWindow.ShowNotification("Successfully copied Discord ID");
+            Clipboard.SetDataObject(source[index].Username);
+            App.mainWindow.ShowNotification("Successfully copied Twitter username");
         }
     }
 }

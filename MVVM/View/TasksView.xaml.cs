@@ -21,7 +21,7 @@ namespace DiskoAIO.MVVM.View
     /// </summary>
     public partial class TasksView : UserControl
     {
-        public static List<DiskoTask> tasks { get; set; } = new List<DiskoTask>();
+        public static List<IDiskoTask> tasks { get; set; } = new List<IDiskoTask>();
         public Timer refreshUI { get; set; } = null;
 
         public TasksView()
@@ -89,7 +89,7 @@ namespace DiskoAIO.MVVM.View
             ListTasks.Items.Refresh();
             App.mainWindow.ShowNotification("Successfully deleted task");
         }
-        public void AddTask(DiskoTask task)
+        public void AddTask(IDiskoTask task)
         {
             tasks.Add(task);
             tasks.Reverse();
@@ -109,7 +109,7 @@ namespace DiskoAIO.MVVM.View
             else
             {
                 var currTask = tasks[index];
-                var popup = new TaskSettingsPopup(currTask.accountGroup._name, currTask.proxyGroup == null ? "None" : currTask.proxyGroup._name, true, "Delay (ms)", currTask.delay.ToString());
+                var popup = new TaskSettingsPopup(currTask.accountGroupName, currTask.proxyGroup == null ? "None" : currTask.proxyGroup._name, true, "Delay (ms)", currTask.delay.ToString());
                 popup.Show();
             }
         }

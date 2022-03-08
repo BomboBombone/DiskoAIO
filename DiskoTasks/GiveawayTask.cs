@@ -15,7 +15,7 @@ using System.Windows.Threading;
 
 namespace DiskoAIO
 {
-    class GiveawayTask : DiskoTask
+    class GiveawayTask : IDiskoTask
     {
         public TaskType type
         {
@@ -58,6 +58,17 @@ namespace DiskoAIO
         public string Account
         {
             get { return _accountGroup._name; }
+        }
+        public string accountGroupName
+        {
+            get
+            {
+                return _accountGroup._name;
+            }
+            set
+            {
+                _accountGroup._name = value;
+            }
         }
         public string Proxy
         {

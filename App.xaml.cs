@@ -45,7 +45,7 @@ namespace DiskoAIO
 
         public static string strWorkPath { get; set; }
         public static List<AccountGroup> accountsGroups { get; set; } = new List<AccountGroup>();
-        public static List<TwitterAccountGroup> twitteGroups { get; set; } = new List<TwitterAccountGroup>();
+        public static List<TwitterAccountGroup> twitterGroups { get; set; } = new List<TwitterAccountGroup>();
         public static List<ProxyGroup> proxyGroups { get; set; } = new List<ProxyGroup>();
         public static MainWindow mainWindow { get; set; }
         public static ProxiesView proxiesView { get; set; } = null;
@@ -434,6 +434,37 @@ namespace DiskoAIO
                 if(group != null && group._name != "")
                     proxyGroups.Add(group);
             }
+            if (!Directory.Exists(strWorkPath + "/twitter"))
+            {
+                Directory.CreateDirectory(strWorkPath + "/twitter");
+            }
+            foreach (var file in Directory.GetFiles(strWorkPath + "/twitter"))
+            {
+                var name = file.Split('\\').Last().Split('.')[0];
+                var tokens = new List<Twitter.Twitter>();
+                using (var reader = new StreamReader(file))
+                {
+                    var line = reader.ReadLine();
+                    while (line != null && line != "")
+                    {
+                        try
+                        {
+                            line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                            var token_array = line.Split(':').ToList();
+                            var token = Twitter.Twitter.Load(token_array);
+                            line = reader.ReadLine();
+                            tokens.Add(token);
+                        }
+                        catch (FormatException ex)
+                        {
+                            Debug.Log(ex.Message);
+                        }
+                    }
+                }
+                var group = new TwitterAccountGroup(tokens, name, false);
+                if (group != null && group._name != "")
+                    twitterGroups.Add(group);
+            }
         }
         static void MyHandler(object sender, UnhandledExceptionEventArgs args)
         {
@@ -443,6 +474,7 @@ namespace DiskoAIO
             {
                 Science.SendStatistic(ScienceTypes.logout);
                 DiscordDriver.CleanUp();
+                TwitterDriver.CleanUp();
                 Application.Current.Dispatcher.InvokeShutdown();
             }
         }

@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace DiskoAIO
 {
-    class AccountCheckerTask : DiskoTask
+    class AccountCheckerTask : IDiskoTask
     {
         public TaskType type
         {
@@ -44,6 +44,17 @@ namespace DiskoAIO
             set
             {
                 _accountGroup = value;
+            }
+        }
+        public string accountGroupName
+        {
+            get
+            {
+                return _accountGroup._name;
+            }
+            set
+            {
+                _accountGroup._name = value;
             }
         }
         private ProxyGroup _proxyGroup;

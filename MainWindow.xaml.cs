@@ -19,6 +19,7 @@ using DiskoAIO.MVVM.View;
 using System.Runtime.InteropServices;
 using System.Runtime;
 using System.Reflection;
+using DiskoAIO.Twitter;
 
 namespace DiskoAIO
 {
@@ -66,6 +67,8 @@ namespace DiskoAIO
             Science.SendStatistic(ScienceTypes.logout);
 
             DiscordDriver.CleanUp();
+            TwitterDriver.CleanUp();
+
             Application.Current.Dispatcher.InvokeShutdown();
 
             Environment.Exit(0);

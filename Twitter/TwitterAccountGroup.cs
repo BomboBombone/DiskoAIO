@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiskoAIO.DiskoTasks;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO.Twitter
 {
-    public class TwitterAccountGroup
+    public class TwitterAccountGroup : IGroup
     {
         public int _id { get; set; }
         public List<Twitter> _accounts { get; set; }
@@ -64,7 +65,7 @@ namespace DiskoAIO.Twitter
                 try
                 {
                     File.Delete(App.strWorkPath + "/twitter/" + _name + ".txt");
-                    App.twitteGroups.Remove(this);
+                    App.twitterGroups.Remove(this);
                     break;
                 }
                 catch (Exception ex)

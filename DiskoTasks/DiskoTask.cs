@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiskoAIO.DiskoTasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO
 {
-    public interface DiskoTask
+    public interface IDiskoTask
     {
         string Type { get; }
         Progress progress { get; set; }
-        AccountGroup accountGroup { get; set; }
+        //IGroup accountGroup { get; set; }
+        public string accountGroupName { get; set; }
         ProxyGroup proxyGroup { get; set; }
         string Account { get; }
         string Proxy { get; }

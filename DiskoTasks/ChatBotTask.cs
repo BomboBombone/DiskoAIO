@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace DiskoAIO
 {
-    class ChatBotTask : DiskoTask
+    class ChatBotTask : IDiskoTask
     {
         public List<string> default_responses = new List<string>() { "humm", "yup", "i dont know", "I don't know", "hmm", "ok", "ook", "good", "ye", "nah", "hi man", "what's up" };
         public TaskType type
@@ -47,6 +47,17 @@ namespace DiskoAIO
             set
             {
                 _accountGroup = value;
+            }
+        }
+        public string accountGroupName
+        {
+            get
+            {
+                return _accountGroup._name;
+            }
+            set
+            {
+                _accountGroup._name = value;
             }
         }
         private ProxyGroup _proxyGroup = null;

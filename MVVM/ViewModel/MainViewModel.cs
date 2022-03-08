@@ -20,6 +20,8 @@ namespace DiskoAIO.MVVM.ViewModel
         public RelayCommand KryptoViewCommand { get; set; }
         public RelayCommand PresenceViewCommand { get; set; }
         public RelayCommand SniperViewCommand { get; set; }
+        public RelayCommand TwitterViewCommand { get; set; }
+        public RelayCommand TwitterAccountsViewCommand { get; set; }
 
         public RelayCommand SettingsViewCommand { get; set; }
         //Window change commands
@@ -32,6 +34,8 @@ namespace DiskoAIO.MVVM.ViewModel
         public KryptoView KryptoView { get; set; } = new KryptoView();
         public PresenceView PresenceView { get; set; } = new PresenceView();
         public SniperView SniperView { get; set; } = new SniperView();
+        public TwitterView TwitterView { get; set; } = new TwitterView();
+        public TwitterAccountsView TwitterAccountsView { get; set; } = new TwitterAccountsView();
         public SettingsView SettingsView { get; set; } = new SettingsView();
 
         private object _currentView;
@@ -185,6 +189,23 @@ namespace DiskoAIO.MVVM.ViewModel
                     source = source.Append(group._name).ToArray();
                 }
                 SniperView.TokenGroup.ItemsSource = source;
+            });
+            TwitterViewCommand = new RelayCommand(o =>
+            {
+
+            });
+            TwitterAccountsViewCommand = new RelayCommand(o =>
+            {
+                CurrentView = TwitterAccountsView;
+                var source = new string[] { };
+                foreach (var group in App.twitterGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                TwitterAccountsView.GroupComboBox.ItemsSource = source;
+                if (App.twitterGroups.Count > 0)
+                    TwitterAccountsView.ListTokens.SelectedItem = App.twitterGroups.First()._name;
+                TwitterAccountsView.ListTokens.SelectedItem = Settings.Default.TwitterGroup;
             });
         }
     }

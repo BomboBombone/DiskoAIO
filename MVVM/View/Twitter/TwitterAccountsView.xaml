@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DiskoAIO.MVVM.View"
              mc:Ignorable="d" 
-             mc:Ignorable="d" Drop="Grid_Drop" AllowDrop="True" DragOver="Grid_DragOver"
+             Drop="Grid_Drop" AllowDrop="True" DragOver="Grid_DragOver"
              d:DesignHeight="670" d:DesignWidth="1000">
     <Grid>
         <Grid.Resources>
@@ -30,8 +30,7 @@
                     Click="Save_Click"/>
             <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="0, 0, 0, 0" 
                     Click="Load_Tokens_Click"/>
-            <Button Width="30" Height="30" Style="{StaticResource CheckerButton}"  Margin="20, 0, 0, 0" 
-                    Click="Check_Tokens_Click"/>
+
         </WrapPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -65,11 +64,12 @@
 
                             <Label Content="{Binding Note}" Grid.Column="0" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="250" Margin="15, 0, 0, 0" MouseDoubleClick="Note_Double_Click"/>
-                            <WrapPanel Grid.Column="2"  Width="150" Margin="85, 0, 0, 0">
+                            <WrapPanel Grid.Column="2"  Width="150" Margin="180, 0, 0, 0">
                                 <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton" Width="30" Click="DeleteToken_Click"/>
-                                <Button Style="{StaticResource PencilButton}" x:Name="PencilButton" Width="30" Click="Settings_Click" ToolTip="Account settings"/>
-                                <Button Style="{StaticResource CleanButton}" Grid.Column="1" HorizontalAlignment="Right"
-                                    Width="30" Click="Clean_Click" ToolTip="Wipe servers"/>
+                                <Button Style="{StaticResource BrowserButton}" x:Name="BrowserButton" Width="30" ToolTip="Open in browser"
+                                        Click="Open_Browser"/>
+                                <Button Style="{StaticResource PencilButton}" x:Name="PencilButton" Width="30" ToolTip="Account settings"
+                                        Visibility="Collapsed"/>
                             </WrapPanel>
                         </Grid>
                     </DataTemplate>

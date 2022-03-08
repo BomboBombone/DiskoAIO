@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiskoAIO.DiskoTasks;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO
 {
-    public class AccountGroup
+    public class AccountGroup : IGroup
     {
         public int _id { get; set; }
         public List<DiscordToken> _accounts { get; set; }

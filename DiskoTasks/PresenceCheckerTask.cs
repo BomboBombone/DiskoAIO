@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace DiskoAIO.DiskoTasks
 {
-    class PresenceCheckerTask : DiskoTask
+    class PresenceCheckerTask : IDiskoTask
     {
         public TaskType type
         {
@@ -43,6 +43,17 @@ namespace DiskoAIO.DiskoTasks
             set
             {
                 _accountGroup = value;
+            }
+        }
+        public string accountGroupName
+        {
+            get
+            {
+                return _accountGroup._name;
+            }
+            set
+            {
+                _accountGroup._name = value;
             }
         }
         private ProxyGroup _proxyGroup;

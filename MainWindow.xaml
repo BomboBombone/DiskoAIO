@@ -140,6 +140,9 @@
                         <RadioButton Content="Sniper" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeSniper}"  LostFocus="Radio_LostFocus"
                              Command="{Binding SniperViewCommand}"/>
+                        <RadioButton Content="Accounts" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
+                             FontSize="14" Style="{StaticResource MenuButtonThemeAccounts}"  LostFocus="Radio_LostFocus"
+                             Command="{Binding TwitterAccountsViewCommand}"/>
 
                         <TextBlock Text="SETTINGS" FontSize="14" FontFamily="/Fonts/#Montserrat" Foreground="White"
                                Margin="30, 30, 30, 0" FontWeight="Black"/>

@@ -19,7 +19,6 @@ namespace DiskoAIO.Twitter
             get { return _username; }
             set { _username = value; }
         }
-        public string _token { get; set; }
         public string _note { get; set; }
         public string Note
         {
@@ -31,7 +30,8 @@ namespace DiskoAIO.Twitter
             }
             set { _note = value; }
         }
-
+        public string _password { get; set; } = null;
+        public string _phone { get; set; } = null;
         public HttpClient client { get; set; }
         public DiscordClient discordClient { get; set; }
         public HttpClientHandler clientHandler { get; set; }
@@ -63,11 +63,25 @@ namespace DiskoAIO.Twitter
         {
             InitializeHttpClient();
             Login(username, password, phone);
+            Username = username;
+            _password = password;
+            _phone = phone;
+        }
+        public Twitter(string username, string password, string phone, string note)
+        {
+            Username = username;
+            _password = password;
+            _phone = phone;
+            Note = note;
         }
         public static Twitter Load(List<string> input)
         {
             if(input.Count != 3)
             {
+                if(input.Count == 4)
+                {
+                    return new Twitter(input[0], input[1], input[2], input[3]);
+                }
                 return null;
             }
             return new Twitter(input[0], input[1], input[2]);
@@ -179,6 +193,95 @@ namespace DiskoAIO.Twitter
                 }
             }
         }
+        public void Login()
+        {
+            InitializeHttpClient();
+            //Start flow
+            var payload = "{\"flow_token\":\"" + flow_token + "\",\"subtask_inputs\":[{\"subtask_id\":\"LoginJsInstrumentationSubtask\",\"js_instrumentation\":{\"response\":\"{\\\"rf\\\":{\\\"afb81c033fd6f364a802ede2f04b3badebed7eab30c6a3dc24b53f5bc0c3fb40\\\":39,\\\"a9bcb53c0a384833dd391b82e08f20e8d585a7653c4b134839040c3b73ca77b5\\\":-152,\\\"ade0004470720de9e449ba7a7f027f2e2acde541424efa9e318fb9799b3f67eb\\\":-78,\\\"a1eec63129cf622d1181176fe614fa9e8f255b603a3c2794b39d3ffb0df1a0b9\\\":4},\\\"s\\\":\\\"LPDkb_E8SSN66-KmBshp-jvMRB16IwLVChOWGpknRG-uQQLiQFrq70VOK5DdKauAv2Mn36XlCFg3ekrst6xPMyWzD6gqpf9hlk1USXvimzH1VDi7Uo1xg4v01CkMhMGxArq7DDdMoyGSb_pHNBxR60sXgdT7hhjNU0ZDaZdTZ1FjYvxa_VME5GSVYGEWpcyHIWl0_Qq3G1gn7XLx7M447qQAYk59jbjpLP-TUqRq9oDvheDxBvcKM4t6AWPsijzoNHd5A3VjayDta1w2mE3eUK21MdLz17ZZ_O3kmaffWfZyM0nGW-w-8SR34gXEI--6S3pWqAfpVg8ZW2YlWknp3QAAAX9VNQUk\\\"}\",\"link\":\"next_link\"}}]}";
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://twitter.com/i/api/1.1/onboarding/task.json"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
+            var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(jt.ToString());
+            flow_token = json.Value<string>("flow_token");
+            //Start login with username
+            payload = "{\"flow_token\":\"" + flow_token + "\",\"subtask_inputs\":[{\"subtask_id\":\"LoginEnterUserIdentifierSSOSubtask\",\"settings_list\":{\"setting_responses\":[{\"key\":\"user_identifier\",\"response_data\":{\"text_data\":{\"result\":\"" + Username + "\"}}}],\"link\":\"next_link\"}}]}";
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://twitter.com/i/api/1.1/onboarding/task.json"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
+            jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            json = JObject.Parse(jt.ToString());
+            flow_token = json.Value<string>("flow_token");
+            //Enter password
+            payload = "{\"flow_token\":\"" + flow_token + "\",\"subtask_inputs\":[{\"subtask_id\":\"LoginEnterPassword\",\"enter_password\":{\"password\":\"" + _password + "\",\"link\":\"next_link\"}}]}";
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://twitter.com/i/api/1.1/onboarding/task.json"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
+            jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            json = JObject.Parse(jt.ToString());
+            flow_token = json.Value<string>("flow_token");
+            //Login final confirmation sets access token and csrf cookie
+            payload = "{\"flow_token\":\"" + flow_token + "\",\"subtask_inputs\":[{\"subtask_id\":\"AccountDuplicationCheck\",\"check_logged_in_account\":{\"link\":\"AccountDuplicationCheck_false\"}}]}";
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://twitter.com/i/api/1.1/onboarding/task.json"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
+            jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            json = JObject.Parse(jt.ToString());
+            flow_token = json.Value<string>("flow_token");
+            if(flow_token == null)
+            {
+                var cookies_container = Cookies.GetCookies(new Uri("https://twitter.com"));
+                client.DefaultRequestHeaders.Add("x-csrf-token", cookies_container["ct0"].Value);
+                res = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new System.Net.Http.HttpMethod("POST"),
+                    RequestUri = new Uri("https://twitter.com/i/api/1.1/onboarding/task.json"),
+                    Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+                }).GetAwaiter().GetResult();
+                jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+                json = JObject.Parse(jt.ToString());
+                flow_token = json.Value<string>("flow_token");
+            }
+            if (flow_token.EndsWith("7"))
+            {
+                if (_phone != null)
+                {
+                    payload = "{\"flow_token\":\"" + flow_token + "\",\"subtask_inputs\":[{\"subtask_id\":\"LoginAcid\",\"enter_text\":{\"text\":\"" + _phone + "\",\"link\":\"next_link\"}}]}";
+                    res = client.SendAsync(new HttpRequestMessage()
+                    {
+                        Method = new System.Net.Http.HttpMethod("POST"),
+                        RequestUri = new Uri("https://twitter.com/i/api/1.1/onboarding/task.json"),
+                        Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+                    }).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    throw new Exception("Account needs phone number to complete login");
+                }
+            }
+            //Set csrf header for future requests
+            var cookies = res.Headers.GetValues("set-cookie");
+            foreach (var cookie in cookies)
+            {
+                if (cookie.StartsWith("ct0"))
+                {
+                    client.DefaultRequestHeaders.Add("x-csrf-token", cookie.Split(';').First().Split('=').Last());
+                    break;
+                }
+            }
+        }
         public void InitializeHttpClient()
         {
             clientHandler = new HttpClientHandler
@@ -203,7 +306,7 @@ namespace DiskoAIO.Twitter
             res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new System.Net.Http.HttpMethod("POST"),
-                RequestUri = new Uri("https://api.twitter.com/1.1/guest/activate.json"),
+                RequestUri = new Uri("https://twitter.com/i/api/1.1/onboarding/task.json?flow_name=login"),
                 Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
             }).GetAwaiter().GetResult();
             jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
@@ -215,6 +318,10 @@ namespace DiskoAIO.Twitter
         {
             get { return clientHandler.CookieContainer; }
             set { clientHandler.CookieContainer = value; }
+        }
+        public override string ToString()
+        {
+            return $"{Username}:{_password}:{_phone}:{Note}";
         }
     }
 }

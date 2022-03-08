@@ -1,4 +1,5 @@
-﻿using Leaf.xNet;
+﻿using DiskoAIO.Twitter;
+using Leaf.xNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +56,8 @@ namespace DiskoAIO
                 if(ex.Message.Contains("401"))
                 {
                     DiscordDriver.CleanUp();
+                    TwitterDriver.CleanUp();
+
                     Application.Current.Dispatcher.InvokeShutdown();
                     MessageBox.Show("Your account was not found, shutting down.");
                     Environment.Exit(1);

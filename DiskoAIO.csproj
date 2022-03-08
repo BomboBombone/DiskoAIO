@@ -633,6 +633,7 @@
     <Compile Include="DiscordGameSDK\StoreManager.cs" />
     <Compile Include="DiscordWeb3.cs" />
     <Compile Include="DiskoTasks\GiveawayTask.cs" />
+    <Compile Include="DiskoTasks\IGroup.cs" />
     <Compile Include="DiskoTasks\ImageChangerTask.cs" />
     <Compile Include="DiskoTasks\JoinTask.cs" />
     <Compile Include="DiskoTasks\KryptoSignTask.cs" />
@@ -640,6 +641,8 @@
     <Compile Include="Debug.cs" />
     <Compile Include="DiskoTasks\PremintTask.cs" />
     <Compile Include="DiskoTasks\PresenceCheckerTask.cs" />
+    <Compile Include="DiskoTasks\Twitter\TwitterFollowTask.cs" />
+    <Compile Include="DiskoTasks\Twitter\TwitterPostTask.cs" />
     <Compile Include="DiskoTasks\TwitterSniperTask.cs" />
     <Compile Include="MVVM\ViewModel\ChatVM.cs" />
     <Compile Include="MVVM\View\AccountSettingsPopup.xaml.cs">
@@ -690,6 +693,7 @@
     <Compile Include="Twitter\Tweet.cs" />
     <Compile Include="Twitter\Twitter.cs" />
     <Compile Include="Twitter\TwitterAccountGroup.cs" />
+    <Compile Include="Twitter\TwitterDriver.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
