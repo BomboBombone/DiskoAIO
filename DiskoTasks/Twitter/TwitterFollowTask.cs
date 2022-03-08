@@ -3,6 +3,7 @@ using DiskoAIO.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -93,11 +94,14 @@ namespace DiskoAIO.DiskoTasks
         public bool joining { get; set; } = true;
         public bool paused { get; set; } = false;
         public string to_follow;
-        public TwitterFollowTask(TwitterAccountGroup accountGroup, ProxyGroup proxyGroup, string username)
+        public TwitterFollowTask(TwitterAccountGroup accountGroup, ProxyGroup proxyGroup, string username, int _delay = 0, int _skip = 0)
         {
             _accountGroup = accountGroup;
             _proxyGroup = proxyGroup;
             to_follow = username;
+            delay = _delay;
+            skip = _skip;
+            _progress = new Progress(_accountGroup._accounts.Count);
         }
         public void Start()
         {
@@ -247,9 +251,12 @@ namespace DiskoAIO.DiskoTasks
                                     {
                                         System.Net.WebProxy proxies = new System.Net.WebProxy($"http://{proxy.Host}:{proxy.Port}");
                                         if (proxy.Username != null && proxy.Username != "")
-                                            proxies = new System.Net.WebProxy($"http://{proxy.Host}:{proxy.Port}@{proxy.Username}:{proxy.Password}");
-                                        client.clientHandler.Proxy = proxies;
-                                        client.clientHandler.UseProxy = true;
+                                        {
+                                            ICredentials credentials = new NetworkCredential(proxy.Username, proxy.Password);
+                                            proxies = new WebProxy($"http://{proxy.Host}:{proxy.Port}", true, null, credentials);
+                                        }
+                                        if (client.clientHandler == null)
+                                            client.InitializeHttpClient(proxies);
                                     }
                                     break;
                                 }

@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DiskoAIO.Twitter
 {
@@ -61,7 +62,8 @@ namespace DiskoAIO.Twitter
         }
         public Twitter(string username, string password, string phone = null)
         {
-            InitializeHttpClient();
+            if (clientHandler == null)
+                InitializeHttpClient();
             Login(username, password, phone);
             Username = username;
             _password = password;
@@ -137,6 +139,16 @@ namespace DiskoAIO.Twitter
                 var json = JObject.Parse(jt.ToString());
                 Debug.Log("Error during twitter post: " + json["error"].First.ToString());
             }
+        }
+        public void Retweet(string tweet_id)
+        {
+            string payload = "{\"variables\":\"{\\\"tweet_id\\\":\\\"" + tweet_id + "\\\",\\\"dark_request\\\":false}\",\"queryId\":\"ojPdsZsimiJrUGLR1sjUtA\"}";
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://twitter.com/i/api/graphql/ojPdsZsimiJrUGLR1sjUtA/CreateRetweet"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
         }
         public void Login(string username, string password, string phone = null)
         {
@@ -301,22 +313,35 @@ namespace DiskoAIO.Twitter
                 }
             }
         }
-        public void InitializeHttpClient()
+        public void InitializeHttpClient(WebProxy proxy = null)
         {
             clientHandler = new HttpClientHandler
             {
                 AllowAutoRedirect = true,
                 UseCookies = true,
-                CookieContainer = new System.Net.CookieContainer()
+                CookieContainer = new System.Net.CookieContainer(),
+                Proxy = proxy,
+                UseProxy = proxy == null ? false : true
             };
             client = new System.Net.Http.HttpClient(clientHandler);
             client.DefaultRequestHeaders.Add("Authorization", "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA");
-
-            var res = client.SendAsync(new HttpRequestMessage()
+            HttpResponseMessage res = null;
+            try
             {
-                Method = new System.Net.Http.HttpMethod("POST"),
-                RequestUri = new Uri("https://api.twitter.com/1.1/guest/activate.json")
-            }).GetAwaiter().GetResult();
+                res = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new System.Net.Http.HttpMethod("POST"),
+                    RequestUri = new Uri("https://api.twitter.com/1.1/guest/activate.json")
+                }).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    App.mainWindow.ShowNotification("Failed to connect to remote server");
+                //});
+                Debug.Log("Failed to connect to remote host");
+            }
             var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
             var json = JObject.Parse(jt.ToString());
             client.DefaultRequestHeaders.Add("x-guest-token", json.Value<string>("guest_token"));

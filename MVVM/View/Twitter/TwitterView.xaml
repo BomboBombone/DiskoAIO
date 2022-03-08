@@ -82,6 +82,52 @@
                                       Click="UseProxies_Click"/>
                             </WrapPanel>
                         </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,20"
+                                Name="FriendTagBorder" Visibility="Collapsed">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Friends to tag" FontFamily="/Fonts/#Montserrat" 
+                       FontSize="12" Foreground="White"/>
+                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
+                                 Name="Tags" PreviewTextInput="textBox_PreviewTextInput"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,30"
+                                Name="UseFileBorder" Visibility="Collapsed">
+                            <WrapPanel VerticalAlignment="Center">
+                                <Label Content="Use file" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10, 0, 60, 0"/>
+                                <ToggleButton Margin="37, 0, 10, 0" Name="UseFile"
+                                          Style="{StaticResource DiskoToggle}"
+                                      Click="UseFile_Click"/>
+                            </WrapPanel>
+                        </Border>
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,30"
+                                Name="RetweetBorder" Visibility="Collapsed">
+                            <WrapPanel VerticalAlignment="Center">
+                                <Label Content="Retweet" FontFamily="/Fonts/#Montserrat"
+                                   Foreground="White" FontSize="12"
+                                   Margin="10, 0, 55, 0"/>
+                                <ToggleButton Margin="37, 0, 10, 0" Name="AutoRetweet"
+                                          Style="{StaticResource DiskoToggle}"
+                                      Click="UseProxies_Click"/>
+                            </WrapPanel>
+                        </Border>
+                    </WrapPanel>
+                    <WrapPanel Margin="0, 20">
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0" Height="80"
+                                Name="MessagePathBorder" Visibility="Collapsed">
+                            <StackPanel  Margin="5, 5, 0, 0">
+                                <Label Content="Message file path" FontFamily="/Fonts/#Montserrat" 
+                                FontSize="12" Foreground="White"/>
+                                <WrapPanel>
+                                    <TextBox Style="{StaticResource ModernTextBox}" Width="614" Height="50"
+                                            Name="MessagePath"/>
+                                    <Button Style="{StaticResource ExploreButton}" Margin="25, 0"
+                                            Width="25" Height="25" Click="Explore_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
                     </WrapPanel>
                 </StackPanel>
 

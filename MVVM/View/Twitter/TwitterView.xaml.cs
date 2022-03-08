@@ -1,8 +1,10 @@
 ﻿using DiskoAIO.DiskoTasks;
 using DiskoAIO.Properties;
 using DiskoAIO.Twitter;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,7 +83,7 @@ namespace DiskoAIO.MVVM.View
                         return;
                     }
                     var username = MessageLink.Text.Split('/').Last();
-                    var task = new TwitterFollowTask(accounts, proxies, username);
+                    var task = new TwitterFollowTask(accounts, proxies, username, delay, skip);
                     task.Start();
                     App.taskManager.AddTask(task);
 
@@ -89,12 +91,23 @@ namespace DiskoAIO.MVVM.View
                     break;
                 case "Post":
                     ulong reply_to = 0;
+                    ulong to_tag = 0;
                     if(ReplyTo.Text.Length == 19 && !ulong.TryParse(ReplyTo.Text, out reply_to))
                     {
                         App.mainWindow.ShowNotification("Please insert a valid message ID");
                         return;
                     }
-                    var task1 = new TwitterPostTask(accounts, proxies, MessageLink.Text, reply_to);
+                    if(Tags.Text.Length > 0 && !ulong.TryParse(Tags.Text, out to_tag))
+                    {
+                        App.mainWindow.ShowNotification("Please insert a valid number of people to tag");
+                        return;
+                    }
+                    if(UseFile.IsChecked == true && (!File.Exists(MessagePath.Text) || !MessagePath.Text.EndsWith(".txt")))
+                    {
+                        App.mainWindow.ShowNotification("Please insert a valid path to a text file");
+                        return;
+                    }
+                    var task1 = new TwitterPostTask(accounts, proxies, MessageLink.Text, reply_to, AutoRetweet.IsChecked == true ? true : false, delay, skip, (int)to_tag, MessagePath.Text);
                     task1.Start();
                     App.taskManager.AddTask(task1);
 
@@ -102,18 +115,49 @@ namespace DiskoAIO.MVVM.View
                     break;
             }
         }
-
+        private void Explore_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog();
+            dialog.Title = "Select your message file";
+            dialog.AddToMostRecentlyUsedList = true;
+            dialog.EnsureFileExists = true;
+            dialog.EnsurePathExists = true;
+            string path = "";
+            var result = CommonFileDialogResult.Ok;
+            Dispatcher.Invoke(() => result = dialog.ShowDialog());
+            if (result == CommonFileDialogResult.Ok)
+            {
+                path = dialog.FileName;
+                if (!path.EndsWith(".txt"))
+                {
+                    App.mainWindow.ShowNotification("Please select a .txt file");
+                    return;
+                }
+                MessagePath.Text = path;
+            }
+        }
         private void Type_DropDownClosed(object sender, EventArgs e)
         {
             if(Type.SelectedItem.ToString() == "Follow")
             {
                 MessageIDBorder.Visibility = Visibility.Collapsed;
                 MessageBox.Content = "Profile link";
+                if (UseFile.IsChecked != true)
+                    MessagePathBorder.Visibility = Visibility.Collapsed;
+                RetweetBorder.Visibility = Visibility.Collapsed;
+                UseFileBorder.Visibility = Visibility.Collapsed;
+                FriendTagBorder.Visibility = Visibility.Collapsed;
             }
             else if(Type.SelectedItem.ToString() == "Post")
             {
                 MessageIDBorder.Visibility = Visibility.Visible;
                 MessageBox.Content = "Message";
+
+                if(UseFile.IsChecked == true)
+                    MessagePathBorder.Visibility = Visibility.Visible;
+                RetweetBorder.Visibility = Visibility.Visible;
+                UseFileBorder.Visibility = Visibility.Visible;
+                FriendTagBorder.Visibility = Visibility.Visible;
             }
         }
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -128,6 +172,15 @@ namespace DiskoAIO.MVVM.View
         {
             ProxiesGroup.Visibility = (bool)UseProxies.IsChecked ? Visibility.Visible : Visibility.Collapsed;
             ProxiesLabel.Visibility = (bool)UseProxies.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void UseFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (UseFile.IsChecked == true)
+                MessagePathBorder.Visibility = Visibility.Visible;
+            else
+                MessagePathBorder.Visibility = Visibility.Collapsed;
+
         }
     }
 }

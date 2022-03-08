@@ -3,7 +3,9 @@ using DiskoAIO.Twitter;
 using Leaf.xNet;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,7 +88,6 @@ namespace DiskoAIO.DiskoTasks
         {
             get { return paused; }
         }
-        public string invite { get; set; }
 
         public int delay { get; set; } = 2;
         public int max_tokens { get; set; } = 0;
@@ -95,12 +96,21 @@ namespace DiskoAIO.DiskoTasks
         public bool paused { get; set; } = false;
         public ulong _reply_to;
         public string message;
-        public TwitterPostTask(TwitterAccountGroup accountGroup, ProxyGroup proxyGroup, string msg, ulong reply_to = 0)
+        public bool _retweet;
+        public int to_tag;
+        public string path_to_file;
+        public TwitterPostTask(TwitterAccountGroup accountGroup, ProxyGroup proxyGroup, string msg, ulong reply_to = 0, bool retweet = false, int _delay = 0, int _skip = 0, int number_to_tag = 0, string path = null)
         {
             _accountGroup = accountGroup;
             _proxyGroup = proxyGroup;
             message = msg;
             _reply_to = reply_to;
+            _retweet = retweet;
+            delay = _delay;
+            skip = _skip;
+            to_tag = number_to_tag;
+            path_to_file = path;
+            _progress = new Progress(_accountGroup._accounts.Count);
         }
         public void Start()
         {
@@ -121,6 +131,26 @@ namespace DiskoAIO.DiskoTasks
                         continue;
                     }
                     token_list.Add(tk.ToString());
+                }
+                var messages = new List<string>();
+                if(path_to_file != null)
+                {
+                    using (var reader = new StreamReader(path_to_file))
+                    {
+                        var line = reader.ReadLine();
+                        while (line != null && line != "")
+                        {
+                            try
+                            {
+                                line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                                messages.Add(line);
+                            }
+                            catch (FormatException ex)
+                            {
+                                Debug.Log(ex.Message);
+                            }
+                        }
+                    }
                 }
                 Thread joiner = new Thread(() =>
                 {
@@ -166,7 +196,24 @@ namespace DiskoAIO.DiskoTasks
                                             {
                                                 client.Login();
                                             }
+                                            var rnd = new Random();
+
+                                            string new_mes = null;
+                                            if(messages.Count != 0)
+                                            {
+                                                new_mes = messages[rnd.Next(0, messages.Count - 1)];
+                                            }
+                                            else
+                                            {
+                                                new_mes = message;
+                                            }
+                                            foreach(var name in accountGroup._accounts.OrderBy(x => rnd.Next()).Take(to_tag))
+                                            {
+                                                new_mes += $" @{name.Username}";
+                                            }
                                             client.PostTweet(message, _reply_to.ToString());
+                                            if (_retweet)
+                                                client.Retweet(_reply_to.ToString());
                                         }
                                         catch (Exception ex)
                                         {
@@ -250,9 +297,12 @@ namespace DiskoAIO.DiskoTasks
                                     {
                                         System.Net.WebProxy proxies = new System.Net.WebProxy($"http://{proxy.Host}:{proxy.Port}");
                                         if (proxy.Username != null && proxy.Username != "")
-                                            proxies = new System.Net.WebProxy($"http://{proxy.Host}:{proxy.Port}@{proxy.Username}:{proxy.Password}");
-                                        client.clientHandler.Proxy = proxies;
-                                        client.clientHandler.UseProxy = true;
+                                        {
+                                            ICredentials credentials = new NetworkCredential(proxy.Username, proxy.Password);
+                                            proxies = new WebProxy($"http://{proxy.Host}:{proxy.Port}", true, null, credentials);
+                                        }
+                                        if (client.clientHandler == null)
+                                            client.InitializeHttpClient(proxies);
                                     }
                                     break;
                                 }
