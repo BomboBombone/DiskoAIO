@@ -8,6 +8,6 @@ namespace DiskoAIO.DiskoTasks
 {
     public interface IGroup
     {
-        public string _name { get; set; }
+        string _name { get; set; }
     }
 }

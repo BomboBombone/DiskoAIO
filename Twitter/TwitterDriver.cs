@@ -59,7 +59,7 @@ namespace DiskoAIO.Twitter
         }
         private IWebDriver GetSeleniumDriver()
         {
-            var chromeDriverService = ChromeDriverService.CreateDefaultService();
+            var chromeDriverService = ChromeDriverService.CreateDefaultService(App.strWorkPath);
             chromeDriverService.HideCommandPromptWindow = true;
             return new ChromeDriver(chromeDriverService, new ChromeOptions());
         }

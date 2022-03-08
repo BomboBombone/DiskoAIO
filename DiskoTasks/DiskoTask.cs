@@ -12,7 +12,7 @@ namespace DiskoAIO
         string Type { get; }
         Progress progress { get; set; }
         //IGroup accountGroup { get; set; }
-        public string accountGroupName { get; set; }
+        string accountGroupName { get; set; }
         ProxyGroup proxyGroup { get; set; }
         string Account { get; }
         string Proxy { get; }

@@ -120,8 +120,6 @@ namespace DiskoAIO.DiskoTasks
                         _progress.Add(1);
                         continue;
                     }
-                    if (token_list.Count == max_tokens)
-                        break;
                     token_list.Add(tk.ToString());
                 }
                 Thread joiner = new Thread(() =>
@@ -168,7 +166,7 @@ namespace DiskoAIO.DiskoTasks
                                             {
                                                 client.Login();
                                             }
-                                            client.PostTweet(message);
+                                            client.PostTweet(message, _reply_to.ToString());
                                         }
                                         catch (Exception ex)
                                         {

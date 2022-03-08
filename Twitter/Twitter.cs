@@ -82,6 +82,10 @@ namespace DiskoAIO.Twitter
                 {
                     return new Twitter(input[0], input[1], input[2], input[3]);
                 }
+                if(input.Count == 2)
+                {
+                    return new Twitter(input[0], input[1]);
+                }
                 return null;
             }
             return new Twitter(input[0], input[1], input[2]);
@@ -110,15 +114,29 @@ namespace DiskoAIO.Twitter
                 Content = new FormUrlEncodedContent(dict)
             }).GetAwaiter().GetResult();
         }
-        public void PostTweet(string input)
+        public void PostTweet(string input, string reply_to = null)
         {
-            var payload = "{\"variables\":\"{\\\"tweet_text\\\":\\\"" + input + "\\\",\\\"media\\\":{\\\"media_entities\\\":[],\\\"possibly_sensitive\\\":false},\\\"withDownvotePerspective\\\":false,\\\"withReactionsMetadata\\\":false,\\\"withReactionsPerspective\\\":false,\\\"withSuperFollowsTweetFields\\\":true,\\\"withSuperFollowsUserFields\\\":true,\\\"semantic_annotation_ids\\\":[],\\\"dark_request\\\":false,\\\"__fs_dont_mention_me_view_api_enabled\\\":false,\\\"__fs_interactive_text_enabled\\\":false,\\\"__fs_responsive_web_uc_gql_enabled\\\":false}\",\"queryId\":\"E7Zjy2bwXIths_dsqOVvxQ\"}";
-            client.SendAsync(new HttpRequestMessage()
+            string payload = "{}";
+            if(reply_to == null)
+            {
+                payload = "{\"variables\":\"{\\\"tweet_text\\\":\\\"" + input + "\\\",\\\"media\\\":{\\\"media_entities\\\":[],\\\"possibly_sensitive\\\":false},\\\"withDownvotePerspective\\\":false,\\\"withReactionsMetadata\\\":false,\\\"withReactionsPerspective\\\":false,\\\"withSuperFollowsTweetFields\\\":true,\\\"withSuperFollowsUserFields\\\":true,\\\"semantic_annotation_ids\\\":[],\\\"dark_request\\\":false,\\\"__fs_dont_mention_me_view_api_enabled\\\":false,\\\"__fs_interactive_text_enabled\\\":false,\\\"__fs_responsive_web_uc_gql_enabled\\\":false}\",\"queryId\":\"E7Zjy2bwXIths_dsqOVvxQ\"}";
+            }
+            else
+            {
+                payload = "{\"variables\":\"{\\\"tweet_text\\\":\\\"" + input + "\\\",\\\"reply\\\":{\\\"in_reply_to_tweet_id\\\":\\\"" + reply_to + "\\\",\\\"exclude_reply_user_ids\\\":[]},\\\"media\\\":{\\\"media_entities\\\":[],\\\"possibly_sensitive\\\":false},\\\"withDownvotePerspective\\\":false,\\\"withReactionsMetadata\\\":false,\\\"withReactionsPerspective\\\":false,\\\"withSuperFollowsTweetFields\\\":true,\\\"withSuperFollowsUserFields\\\":true,\\\"semantic_annotation_ids\\\":[],\\\"dark_request\\\":false,\\\"__fs_dont_mention_me_view_api_enabled\\\":false,\\\"__fs_interactive_text_enabled\\\":true,\\\"__fs_responsive_web_uc_gql_enabled\\\":false}\",\"queryId\":\"E7Zjy2bwXIths_dsqOVvxQ\"}";
+            }
+            var res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new System.Net.Http.HttpMethod("POST"),
                 RequestUri = new Uri("https://twitter.com/i/api/graphql/E7Zjy2bwXIths_dsqOVvxQ/CreateTweet"),
                 Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
             }).GetAwaiter().GetResult();
+            if(res.StatusCode != HttpStatusCode.OK)
+            {
+                var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+                var json = JObject.Parse(jt.ToString());
+                Debug.Log("Error during twitter post: " + json["error"].First.ToString());
+            }
         }
         public void Login(string username, string password, string phone = null)
         {

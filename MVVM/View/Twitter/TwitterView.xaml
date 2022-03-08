@@ -38,7 +38,7 @@
                                 <Label Content="Profile link" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Name="MessageBox"/>
                                 <TextBox Style="{StaticResource ModernTextBox}" Width="800" Height="50"
-                                 Name="MessageLink" PreviewTextInput="textBox_PreviewTextInput"/>
+                                 Name="MessageLink"/>
                             </StackPanel>
                         </Border>
                         <Border Background="#181824" CornerRadius="10" Margin="20 ,30"
