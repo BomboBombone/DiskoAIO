@@ -20,7 +20,7 @@ namespace DiskoAIO.Twitter
                 try
                 {
                     driver = (ChromeDriver)GetSeleniumDriver();
-                    driver.ExecuteScript($"window.location.href = \"https://twitter.com\"; document.cookie = ''");
+                    driver.ExecuteScript($"window.location.href = \"https://twitter.com\"");
                     foreach(var cookie1 in cookies.Split(';'))
                     {
                         var cookie = cookie1.Trim();

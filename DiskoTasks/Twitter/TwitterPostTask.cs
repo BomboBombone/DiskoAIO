@@ -159,8 +159,15 @@ namespace DiskoAIO.DiskoTasks
                                         try
                                         {
                                             joined_time = DateTime.Now;
-                                            if(!client.Cookies.GetCookieHeader(new Uri("https://twitter.com")).Contains("auth"))
+                                            try
+                                            {
+                                                if (!client.Cookies.GetCookieHeader(new Uri("https://twitter.com")).Contains("auth"))
+                                                    client.Login();
+                                            }
+                                            catch (Exception ex)
+                                            {
                                                 client.Login();
+                                            }
                                             client.PostTweet(message);
                                         }
                                         catch (Exception ex)

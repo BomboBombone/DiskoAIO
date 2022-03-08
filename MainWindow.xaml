@@ -136,7 +136,7 @@
                                Margin="30, 30, 30, 0" FontWeight="Black"/>
                         <RadioButton Content="Twitter" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeTwitter}"
-                             Command="{Binding SettingsViewCommand}" LostFocus="Radio_LostFocus"/>
+                             Command="{Binding TwitterViewCommand}" LostFocus="Radio_LostFocus"/>
                         <RadioButton Content="Sniper" Height="50" Foreground="#A2A7BC" Click="RadioButton_Click"
                              FontSize="14" Style="{StaticResource MenuButtonThemeSniper}"  LostFocus="Radio_LostFocus"
                              Command="{Binding SniperViewCommand}"/>

@@ -192,7 +192,19 @@ namespace DiskoAIO.MVVM.ViewModel
             });
             TwitterViewCommand = new RelayCommand(o =>
             {
-
+                CurrentView = TwitterView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                TwitterView.ProxiesGroup.ItemsSource = source;
+                source = new string[] { };
+                foreach (var group in App.twitterGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                TwitterView.TokenGroup.ItemsSource = source;
             });
             TwitterAccountsViewCommand = new RelayCommand(o =>
             {

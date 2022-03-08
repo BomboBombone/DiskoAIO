@@ -117,8 +117,6 @@ namespace DiskoAIO.DiskoTasks
                         _progress.Add(1);
                         continue;
                     }
-                    if (token_list.Count == max_tokens)
-                        break;
                     token_list.Add(tk.ToString());
                 }
                 Thread joiner = new Thread(() =>
@@ -156,8 +154,15 @@ namespace DiskoAIO.DiskoTasks
                                         try
                                         {
                                             joined_time = DateTime.Now;
-                                            if (!client.Cookies.GetCookieHeader(new Uri("https://twitter.com")).Contains("auth"))
+                                            try
+                                            {
+                                                if (!client.Cookies.GetCookieHeader(new Uri("https://twitter.com")).Contains("auth"))
+                                                    client.Login();
+                                            }
+                                            catch(Exception ex)
+                                            {
                                                 client.Login();
+                                            }
                                             client.Follow(to_follow);
                                         }
                                         catch (Exception ex)

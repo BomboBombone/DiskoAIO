@@ -101,12 +101,13 @@ namespace DiskoAIO.Twitter
         }
         public void Follow(string username)
         {
-            var userId = getUserID(username);
+            var dict = new Dictionary<string, string>();
+            dict.Add("user_id", getUserID(username));
             client.SendAsync(new HttpRequestMessage()
             {
                 Method = new System.Net.Http.HttpMethod("POST"),
                 RequestUri = new Uri("https://twitter.com/i/api/1.1/friendships/create.json"),
-                Content = new System.Net.Http.StringContent("user_id=956823686", Encoding.UTF8, "x-www-form-urlencoded")
+                Content = new FormUrlEncodedContent(dict)
             }).GetAwaiter().GetResult();
         }
         public void PostTweet(string input)
