@@ -99,7 +99,7 @@ namespace DiskoAIO.DiskoTasks
             _accountGroup = accountGroup;
             _proxyGroup = proxyGroup;
             to_follow = username;
-            delay = _delay;
+            delay = _delay * 1000;
             skip = _skip;
             _progress = new Progress(_accountGroup._accounts.Count);
         }

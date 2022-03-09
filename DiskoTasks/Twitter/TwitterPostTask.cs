@@ -106,7 +106,7 @@ namespace DiskoAIO.DiskoTasks
             message = msg;
             _reply_to = reply_to;
             _retweet = retweet;
-            delay = _delay;
+            delay = _delay * 1000;
             skip = _skip;
             to_tag = number_to_tag;
             path_to_file = path;
@@ -142,6 +142,8 @@ namespace DiskoAIO.DiskoTasks
                         {
                             try
                             {
+                                if (line == null)
+                                    break;
                                 line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
                                 messages.Add(line);
                             }
@@ -149,6 +151,8 @@ namespace DiskoAIO.DiskoTasks
                             {
                                 Debug.Log(ex.Message);
                             }
+                            line = reader.ReadLine();
+
                         }
                     }
                 }
@@ -211,7 +215,7 @@ namespace DiskoAIO.DiskoTasks
                                             {
                                                 new_mes += $" @{name.Username}";
                                             }
-                                            client.PostTweet(message, _reply_to.ToString());
+                                            client.PostTweet(new_mes, _reply_to.ToString());
                                             if (_retweet)
                                                 client.Retweet(_reply_to.ToString());
                                         }

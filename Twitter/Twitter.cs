@@ -137,7 +137,24 @@ namespace DiskoAIO.Twitter
             {
                 var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
                 var json = JObject.Parse(jt.ToString());
-                Debug.Log("Error during twitter post: " + json["error"].First.ToString());
+                Debug.Log("Error during twitter post: " + json["errors"].First.ToString());
+                //Set csrf header for future requests
+                var cookies = res.Headers.GetValues("set-cookie");
+                foreach (var cookie in cookies)
+                {
+                    if (cookie.StartsWith("ct0"))
+                    {
+                        client.DefaultRequestHeaders.Remove("x-csrf-token");
+                        client.DefaultRequestHeaders.Add("x-csrf-token", cookie.Split(';').First().Split('=').Last());
+                        break;
+                    }
+                }
+                res = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new System.Net.Http.HttpMethod("POST"),
+                    RequestUri = new Uri("https://twitter.com/i/api/graphql/E7Zjy2bwXIths_dsqOVvxQ/CreateTweet"),
+                    Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+                }).GetAwaiter().GetResult();
             }
         }
         public void Retweet(string tweet_id)
@@ -149,6 +166,30 @@ namespace DiskoAIO.Twitter
                 RequestUri = new Uri("https://twitter.com/i/api/graphql/ojPdsZsimiJrUGLR1sjUtA/CreateRetweet"),
                 Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
             }).GetAwaiter().GetResult();
+            if (res.StatusCode != HttpStatusCode.OK)
+            {
+                var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+                var json = JObject.Parse(jt.ToString());
+                Debug.Log("Error during twitter retweet: " + json["errors"].First.ToString());
+
+                //Set csrf header for future requests
+                var cookies = res.Headers.GetValues("set-cookie");
+                foreach (var cookie in cookies)
+                {
+                    if (cookie.StartsWith("ct0"))
+                    {
+                        client.DefaultRequestHeaders.Remove("x-csrf-token");
+                        client.DefaultRequestHeaders.Add("x-csrf-token", cookie.Split(';').First().Split('=').Last());
+                        break;
+                    }
+                }
+                res = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new System.Net.Http.HttpMethod("POST"),
+                    RequestUri = new Uri("https://twitter.com/i/api/graphql/ojPdsZsimiJrUGLR1sjUtA/CreateRetweet"),
+                    Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+                }).GetAwaiter().GetResult();
+            }
         }
         public void Login(string username, string password, string phone = null)
         {
