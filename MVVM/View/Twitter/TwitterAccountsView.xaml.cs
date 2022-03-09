@@ -394,10 +394,11 @@ namespace DiskoAIO.MVVM.View
         }
         private void Open_Browser(object sender, RoutedEventArgs e)
         {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
             Task.Run(() =>
             {
-                var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
-                var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+
                 var source = new List<Twitter.Twitter>();
 
                 foreach (var o in _currentGroup._accounts)
