@@ -1,4 +1,5 @@
 ﻿using Discord.Gateway;
+using DiskoAIO.DiskoTasks;
 using DiskoAIO.Properties;
 using DiskoAIO.Twitter;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -677,6 +678,14 @@ namespace DiskoAIO.MVVM.View
             }
             Clipboard.SetDataObject(source[index].Username);
             App.mainWindow.ShowNotification("Successfully copied Twitter username");
+        }
+
+        private void Check_Tokens_Click(object sender, RoutedEventArgs e)
+        {
+            App.mainWindow.ShowNotification("Checking current group, invalid accounts will be deleted soon");
+            var checkerTask = new TwitterAccountCheckerTask(_currentGroup);
+            checkerTask.Start();
+            App.taskManager.AddTask(checkerTask);
         }
     }
 }

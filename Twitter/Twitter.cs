@@ -191,6 +191,23 @@ namespace DiskoAIO.Twitter
                 }).GetAwaiter().GetResult();
             }
         }
+        public bool IsValid()
+        {
+            if (clientHandler == null)
+                InitializeHttpClient();
+            string payload = "{\"event\":\"open\"}";
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://twitter.com/i/api/1.1/attribution/event.json"),
+                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
+            if (res.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
         public void Login(string username, string password, string phone = null)
         {
             //Start flow

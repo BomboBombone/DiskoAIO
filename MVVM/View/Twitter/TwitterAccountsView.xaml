@@ -30,7 +30,8 @@
                     Click="Save_Click"/>
             <Button Width="30" Height="30" Style="{StaticResource AddFromFileButton}"  Margin="0, 0, 0, 0" 
                     Click="Load_Tokens_Click"/>
-
+            <Button Width="30" Height="30" Style="{StaticResource CheckerButton}"  Margin="20, 0, 0, 0" 
+                    Click="Check_Tokens_Click"/>
         </WrapPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

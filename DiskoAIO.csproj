@@ -641,6 +641,7 @@
     <Compile Include="Debug.cs" />
     <Compile Include="DiskoTasks\PremintTask.cs" />
     <Compile Include="DiskoTasks\PresenceCheckerTask.cs" />
+    <Compile Include="DiskoTasks\Twitter\TwitterAccountCheckerTask.cs" />
     <Compile Include="DiskoTasks\Twitter\TwitterFollowTask.cs" />
     <Compile Include="DiskoTasks\Twitter\TwitterPostTask.cs" />
     <Compile Include="DiskoTasks\TwitterSniperTask.cs" />

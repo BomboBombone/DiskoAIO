@@ -86,7 +86,6 @@ namespace DiskoAIO.DiskoTasks
         {
             get { return paused; }
         }
-        public string invite { get; set; }
 
         public int delay { get; set; } = 2;
         public int max_tokens { get; set; } = 0;
