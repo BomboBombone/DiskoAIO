@@ -336,7 +336,7 @@ namespace DiskoAIO.MVVM.View
                 {
                     try
                     {
-                        using (var writer = new StreamWriter(App.strWorkPath + "\\groups\\" + _currentGroup._name + ".txt"))
+                        using (var writer = new StreamWriter(App.strWorkPath + "\\twitter\\" + _currentGroup._name + ".txt"))
                         {
                             foreach (var proxy in _currentGroup._accounts)
                             {
@@ -394,23 +394,26 @@ namespace DiskoAIO.MVVM.View
         }
         private void Open_Browser(object sender, RoutedEventArgs e)
         {
-            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
-            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
-            var source = new List<Twitter.Twitter>();
-
-            foreach (var o in _currentGroup._accounts)
+            Task.Run(() =>
             {
-                if (o.Note.ToLower().Contains(to_search.ToLower()) &&
-                    o.Note != "Double click to add note..." &&
-                    to_search != "")
+                var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+                var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+                var source = new List<Twitter.Twitter>();
+
+                foreach (var o in _currentGroup._accounts)
                 {
-                    source.Add(o);
+                    if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                        o.Note != "Double click to add note..." &&
+                        to_search != "")
+                    {
+                        source.Add(o);
+                    }
+                    else if (o.Username.Contains(to_search))
+                        source.Add(o);
                 }
-                else if (o.Username.Contains(to_search))
-                    source.Add(o);
-            }
-            source[index].Login();
-            new TwitterDriver(source[index].Cookies.GetCookieHeader(new Uri("https://twitter.com")));
+                source[index].Login();
+                new TwitterDriver(source[index].Cookies.GetCookieHeader(new Uri("https://twitter.com")));
+            });
         }
         //private void Settings_Click(object sender, RoutedEventArgs e)
         //{
@@ -525,7 +528,7 @@ namespace DiskoAIO.MVVM.View
                                 if (file.EndsWith(".txt"))
                                 {
                                     Dispatcher.Invoke(() => {
-                                        App.mainWindow.ShowNotification("Adding tokens, please wait...", 1000);
+                                        App.mainWindow.ShowNotification("Adding accounts, please wait...", 1000);
                                     });
                                     int lines = 0;
                                     using (var reader = new StreamReader(file))
@@ -602,7 +605,7 @@ namespace DiskoAIO.MVVM.View
                                             catch (Exception ex)
                                             {
                                                 Dispatcher.Invoke(() => {
-                                                    App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one token per line");
+                                                    App.mainWindow.ShowNotification("Format of selected tokens seems to be wrong.\nHint: one account per line");
                                                 });
                                                 return;
                                             }
@@ -612,7 +615,7 @@ namespace DiskoAIO.MVVM.View
                                     {
                                         ListTokens.ItemsSource = _currentGroup._accounts;
                                         ListTokens.Items.Refresh();
-                                        App.mainWindow.ShowNotification("Tokens added successfully: " + (tokens.Count - start_count).ToString());
+                                        App.mainWindow.ShowNotification("Accounts added successfully: " + (tokens.Count - start_count).ToString());
                                         UpdateAccountCount();
                                     });
 
@@ -686,6 +689,27 @@ namespace DiskoAIO.MVVM.View
             var checkerTask = new TwitterAccountCheckerTask(_currentGroup);
             checkerTask.Start();
             App.taskManager.AddTask(checkerTask);
+        }
+
+        private void Change_Image_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog();
+            dialog.Title = "Select images folder";
+            dialog.IsFolderPicker = true;
+            dialog.AddToMostRecentlyUsedList = true;
+            dialog.EnsureFileExists = true;
+            dialog.EnsurePathExists = true;
+            string path = "";
+            var result = CommonFileDialogResult.Ok;
+            Dispatcher.Invoke(() => result = dialog.ShowDialog());
+            if (result == CommonFileDialogResult.Ok)
+            {
+                path = dialog.FileName;
+                var changerTask = new TwitterImageChangerTask(_currentGroup, path);
+                changerTask.Start();
+                App.taskManager.AddTask(changerTask);
+                App.mainWindow.ShowNotification("Image changer task started successfully");
+            }
         }
     }
 }

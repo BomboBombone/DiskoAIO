@@ -3,6 +3,7 @@ using Discord;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -64,6 +65,7 @@ namespace DiskoAIO.Twitter
         {
             if (clientHandler == null)
                 InitializeHttpClient();
+            username = username.Split('@').First();
             Login(username, password, phone);
             Username = username;
             _password = password;
@@ -190,6 +192,80 @@ namespace DiskoAIO.Twitter
                     Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "application/json")
                 }).GetAwaiter().GetResult();
             }
+        }
+        public string PostImage(string path)
+        {
+            var fileLength = new FileInfo(path).Length;
+            client.DefaultRequestHeaders.Add("Origin", "https://twitter.com");
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri($"https://upload.twitter.com/i/media/upload.json?command=INIT&total_bytes={fileLength}&media_type=image%2F" + path.Split('.').Last())
+            }).GetAwaiter().GetResult();
+            if (res.StatusCode != HttpStatusCode.OK)
+            {
+                //Set csrf header for future requests
+                var cookies = res.Headers.GetValues("set-cookie");
+                foreach (var cookie in cookies)
+                {
+                    if (cookie.StartsWith("ct0"))
+                    {
+                        client.DefaultRequestHeaders.Remove("x-csrf-token");
+                        client.DefaultRequestHeaders.Add("x-csrf-token", cookie.Split(';').First().Split('=').Last());
+                        break;
+                    }
+                }
+                res = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new System.Net.Http.HttpMethod("POST"),
+                    RequestUri = new Uri($"https://upload.twitter.com/i/media/upload.json?command=INIT&total_bytes={fileLength}&media_type=image%2F" + path.Split('.').Last())
+                }).GetAwaiter().GetResult();
+            }
+
+            var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(jt.ToString());
+            var media_id = json.Value<string>("media_id_string");
+            using (var multiPartStream = new MultipartFormDataContent())
+            {
+                var filecontent = File.ReadAllBytes(path);
+                multiPartStream.Add(new ByteArrayContent(filecontent, 0, filecontent.Length), "media", "blob");
+                res = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new System.Net.Http.HttpMethod("POST"),
+                    RequestUri = new Uri($"https://upload.twitter.com/i/media/upload.json?command=APPEND&media_id={media_id}&segment_index=0"),
+                    Content = multiPartStream
+                }).GetAwaiter().GetResult();
+                res = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new System.Net.Http.HttpMethod("POST"),
+                    RequestUri = new Uri($"https://upload.twitter.com/i/media/upload.json?command=FINALIZE&media_id={media_id}")
+                }).GetAwaiter().GetResult();
+            }
+            return media_id;
+        }
+        public void ChangeImage(string path)
+        {
+            string media_id = PostImage(path);
+            var dict = new Dictionary<string, string>();
+            dict.Add("include_profile_interstitial_type", "1");
+            dict.Add("include_blocking", "1");
+            dict.Add("include_blocked_by", "1");
+            dict.Add("include_followed_by", "1");
+            dict.Add("include_want_retweets", "1");
+            dict.Add("include_mute_edge", "1");
+            dict.Add("include_can_dm", "1");
+            dict.Add("include_can_media_tag", "1");
+            dict.Add("include_ext_has_nft_avatar", "1");
+            dict.Add("skip_status", "1");
+            dict.Add("return_user", "true");
+            dict.Add("media_id", media_id);
+            client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://twitter.com/i/api/1.1/account/update_profile_image.json"),
+                Content = new FormUrlEncodedContent(dict)
+            }).GetAwaiter().GetResult();
+            client.DefaultRequestHeaders.Remove("Origin");
         }
         public bool IsValid()
         {

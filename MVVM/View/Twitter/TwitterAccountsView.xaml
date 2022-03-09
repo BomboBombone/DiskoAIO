@@ -32,6 +32,8 @@
                     Click="Load_Tokens_Click"/>
             <Button Width="30" Height="30" Style="{StaticResource CheckerButton}"  Margin="20, 0, 0, 0" 
                     Click="Check_Tokens_Click"/>
+            <Button Style="{StaticResource ImageChangerButton}" ToolTip="Mass image changer"
+                    Height="30" Width="30" Margin="20, 0, 0, 0" Click="Change_Image_Click"/>
         </WrapPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
