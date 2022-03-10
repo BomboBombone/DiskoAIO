@@ -22,6 +22,8 @@ namespace DiskoAIO.MVVM.ViewModel
         public RelayCommand SniperViewCommand { get; set; }
         public RelayCommand TwitterViewCommand { get; set; }
         public RelayCommand TwitterAccountsViewCommand { get; set; }
+        public RelayCommand PremintViewCommand { get; set; }
+        public RelayCommand PremintAccountsViewCommand { get; set; }
 
         public RelayCommand SettingsViewCommand { get; set; }
         //Window change commands
@@ -36,6 +38,8 @@ namespace DiskoAIO.MVVM.ViewModel
         public SniperView SniperView { get; set; } = new SniperView();
         public TwitterView TwitterView { get; set; } = new TwitterView();
         public TwitterAccountsView TwitterAccountsView { get; set; } = new TwitterAccountsView();
+        public PremintView PremintView { get; set; } = new PremintView();
+        public PremintAccountsView PremintAccountsView { get; set; } = new PremintAccountsView();
         public SettingsView SettingsView { get; set; } = new SettingsView();
 
         private object _currentView;
@@ -218,6 +222,35 @@ namespace DiskoAIO.MVVM.ViewModel
                 if (App.twitterGroups.Count > 0)
                     TwitterAccountsView.ListTokens.SelectedItem = App.twitterGroups.First()._name;
                 TwitterAccountsView.ListTokens.SelectedItem = Settings.Default.TwitterGroup;
+            });
+            PremintViewCommand = new RelayCommand(o =>
+            {
+                CurrentView = TwitterView;
+                var source = new string[] { };
+                foreach (var group in App.proxyGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                TwitterView.ProxiesGroup.ItemsSource = source;
+                source = new string[] { };
+                foreach (var group in App.twitterGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                TwitterView.TokenGroup.ItemsSource = source;
+            });
+            PremintAccountsViewCommand = new RelayCommand(o =>
+            {
+                CurrentView = PremintAccountsView;
+                var source = new string[] { };
+                foreach (var group in App.twitterGroups)
+                {
+                    source = source.Append(group._name).ToArray();
+                }
+                PremintAccountsView.GroupComboBox.ItemsSource = source;
+                if (App.premintGroups.Count > 0)
+                    PremintAccountsView.ListTokens.SelectedItem = App.twitterGroups.First()._name;
+                PremintAccountsView.ListTokens.SelectedItem = Settings.Default.TwitterGroup;
             });
         }
     }

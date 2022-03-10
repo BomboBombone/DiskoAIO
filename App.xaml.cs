@@ -29,6 +29,7 @@ using System.Net.Sockets;
 using DiscordGameSDK;
 using System.Reflection;
 using DiskoAIO.Twitter;
+using DiskoAIO.Premint;
 
 namespace DiskoAIO
 {
@@ -46,6 +47,7 @@ namespace DiskoAIO
         public static string strWorkPath { get; set; }
         public static List<AccountGroup> accountsGroups { get; set; } = new List<AccountGroup>();
         public static List<TwitterAccountGroup> twitterGroups { get; set; } = new List<TwitterAccountGroup>();
+        public static List<PremintAccountGroup> premintGroups { get; set; } = new List<PremintAccountGroup>();
         public static List<ProxyGroup> proxyGroups { get; set; } = new List<ProxyGroup>();
         public static MainWindow mainWindow { get; set; }
         public static ProxiesView proxiesView { get; set; } = null;
@@ -464,6 +466,37 @@ namespace DiskoAIO
                 var group = new TwitterAccountGroup(tokens, name, false);
                 if (group != null && group._name != "")
                     twitterGroups.Add(group);
+            }
+            if (!Directory.Exists(strWorkPath + "/premint"))
+            {
+                Directory.CreateDirectory(strWorkPath + "/premint");
+            }
+            foreach (var file in Directory.GetFiles(strWorkPath + "/premint"))
+            {
+                var name = file.Split('\\').Last().Split('.')[0];
+                var tokens = new List<Premint.Premint>();
+                using (var reader = new StreamReader(file))
+                {
+                    var line = reader.ReadLine();
+                    while (line != null && line != "")
+                    {
+                        try
+                        {
+                            line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
+                            var token_array = line.Split(':').ToList();
+                            var token = Premint.Premint.Load(token_array);
+                            line = reader.ReadLine();
+                            tokens.Add(token);
+                        }
+                        catch (FormatException ex)
+                        {
+                            Debug.Log(ex.Message);
+                        }
+                    }
+                }
+                var group = new PremintAccountGroup(tokens, name, false);
+                if (group != null && group._name != "")
+                    premintGroups.Add(group);
             }
         }
         static void MyHandler(object sender, UnhandledExceptionEventArgs args)

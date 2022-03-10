@@ -671,6 +671,12 @@
     <Compile Include="MVVM\View\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Premint\PremintAccountsView.xaml.cs">
+      <DependentUpon>PremintAccountsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Premint\PremintView.xaml.cs">
+      <DependentUpon>PremintView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\PresenceView.xaml.cs">
       <DependentUpon>PresenceView.xaml</DependentUpon>
     </Compile>
@@ -688,6 +694,7 @@
     </Compile>
     <Compile Include="Premint\Premint.cs" />
     <Compile Include="Premint\PremintAccount.cs" />
+    <Compile Include="Premint\PremintAccountGroup.cs" />
     <Compile Include="ProxyGroup.cs" />
     <Compile Include="DiskoTasks\DiskoTask.cs" />
     <Compile Include="Science.cs" />
@@ -758,6 +765,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Premint\PremintAccountsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Premint\PremintView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -971,6 +986,7 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\premint.ico" />
     <Resource Include="Images\twitter.ico" />
     <Resource Include="Images\snipe.ico" />
     <Resource Include="Images\presence_purple.ico" />

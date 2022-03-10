@@ -11,8 +11,26 @@ using System.Threading.Tasks;
 
 namespace DiskoAIO.Premint
 {
-    class Premint
+    public class Premint
     {
+        public string _address { get; set; }
+        public string Address
+        {
+            get { return _address; }
+            set { _address = value; }
+        }
+        public string _note { get; set; }
+        public string Note
+        {
+            get
+            {
+                if (_note == null)
+                    _note = "Double click to add note...";
+                return _note;
+            }
+            set { _note = value; }
+        }
+        public string private_key { get; set; }
         public HttpClient client { get; set; }
         public DiscordClient discordClient { get; set; }
         public HttpClientHandler clientHandler { get; set; }
@@ -20,7 +38,7 @@ namespace DiskoAIO.Premint
         {
             InitializeHttpClient();
         }
-        public void Register()
+        public string Register()
         {
             var res = client.SendAsync(new HttpRequestMessage()
             {
@@ -41,6 +59,7 @@ namespace DiskoAIO.Premint
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
                 Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
             }).GetAwaiter().GetResult();
+            return mm.PrivateKey;
         }
         public void Login(Account mm)
         {
@@ -63,7 +82,7 @@ namespace DiskoAIO.Premint
                 Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
             }).GetAwaiter().GetResult();
         }
-        public void Connect(string username, string password, string phone = null)
+        public void ConnectTwitter(string username, string password, string phone = null)
         {
             var twitter_client = new Twitter.Twitter(username, password, phone);
             var res = client.SendAsync(new HttpRequestMessage()
@@ -78,7 +97,7 @@ namespace DiskoAIO.Premint
                 RequestUri = res.Headers.Location
             }).GetAwaiter().GetResult();
             var content = res.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            var auth_token = content.Replace("<input type=\"hidden\" name=\"authenticity_token\" value=\"", "§").Split('§').Last().Split('"').First();
+            //var auth_token = content.Replace("<input type=\"hidden\" name=\"authenticity_token\" value=\"", "§").Split('§').Last().Split('"').First();
             var next_link = "href=\"https://www.premint.xyz/accounts/twitter/login/callback/?oauth_token=" + content.Replace("href=\"https://www.premint.xyz/accounts/twitter/login/callback/?oauth_token=", "§").Split('§').Last().Split('"').First();
             client.DefaultRequestHeaders.Add("Referer", "https://api.twitter.com/oauth/authenticate?oauth_token=9U-QAgAAAAABUjydAAABf2BoDwc&oauth_callback=https%3A%2F%2Fwww.premint.xyz%2Faccounts%2Ftwitter%2Flogin%2Fcallback%2F");
             //var payload = $"authenticity_token={auth_token}&redirect_after_login=https://api.twitter.com/oauth/authorize?oauth_token={oauth_token}&oauth_token={oauth_token}";
