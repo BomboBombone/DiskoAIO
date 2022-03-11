@@ -31,6 +31,18 @@ namespace DiskoAIO.Premint
             set { _note = value; }
         }
         public string private_key { get; set; }
+        public bool _isTwitterConnected { get; set; }
+        public bool IsTwitterConnected
+        {
+            get { return _isTwitterConnected; }
+            set { _isTwitterConnected = value; }
+        }
+        public bool _isDiscordConnected { get; set; }
+        public bool IsDiscordConnected
+        {
+            get { return _isDiscordConnected; }
+            set { _isDiscordConnected = value; }
+        }
         public HttpClient client { get; set; }
         public DiscordClient discordClient { get; set; }
         public HttpClientHandler clientHandler { get; set; }
@@ -38,7 +50,16 @@ namespace DiskoAIO.Premint
         {
             InitializeHttpClient();
         }
-        public string Register()
+        public static Premint Load(List<string> input)
+        {
+            var premint = new Premint();
+            premint.private_key = input[1];
+            premint._isDiscordConnected = input[2] == "true";
+            premint._isTwitterConnected = input[3] == "true";
+            premint.Login(new Account(Encoding.ASCII.GetBytes(input[1])));
+            return premint;
+        }
+        public Account Register()
         {
             var res = client.SendAsync(new HttpRequestMessage()
             {
@@ -59,7 +80,7 @@ namespace DiskoAIO.Premint
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
                 Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
             }).GetAwaiter().GetResult();
-            return mm.PrivateKey;
+            return mm;
         }
         public void Login(Account mm)
         {
@@ -111,6 +132,29 @@ namespace DiskoAIO.Premint
                 throw new Exception("Could not bind twitter account to premint");
             }
         }
+        public void SubscribeToProject(string project_name)
+        {
+            string url = "https://www.premint.xyz/" + project_name;
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("GET"),
+                RequestUri = new Uri(project_name)
+            }).GetAwaiter().GetResult();
+            var content = res.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var csrf_token = content.Replace("<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\"", "§").Split('§').Last().Split('"').First();
+            var dict = new Dictionary<string, string>();
+            dict.Add("csrfmiddlewaretoken", csrf_token);
+            dict.Add("params_field", "{}");
+            dict.Add("email_field", "");
+            dict.Add("registration-form-submit", "");
+            var payload = new FormUrlEncodedContent(dict);
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri(url),
+                Content = payload
+            }).GetAwaiter().GetResult();
+        }
         public void InitializeHttpClient()
         {
             clientHandler = new HttpClientHandler
@@ -120,6 +164,7 @@ namespace DiskoAIO.Premint
                 CookieContainer = new System.Net.CookieContainer()
             };
             client = new System.Net.Http.HttpClient(clientHandler);
+            client.DefaultRequestHeaders.Add("Referer", "https://www.premint.xyz");
         }
 
         public CookieContainer Cookies

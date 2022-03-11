@@ -24,5 +24,30 @@ namespace DiskoAIO.MVVM.View
         {
             InitializeComponent();
         }
+
+        private void UseProxies_Click(object sender, RoutedEventArgs e)
+        {
+            ProxiesGroup.Visibility = (bool)UseProxies.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            ProxiesLabel.Visibility = (bool)UseProxies.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void Start_Task(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            ulong result;
+            if (!ulong.TryParse(e.Text, out result))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void Type_DropDownClosed(object sender, EventArgs e)
+        {
+
+        }
     }
 }

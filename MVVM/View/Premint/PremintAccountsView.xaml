@@ -36,7 +36,7 @@
             <WrapPanel Grid.Row="0">
                 <Label Content="NOTE" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
                    Margin="80, 0 , 20, 0" FontWeight="Black"/>
-                <Label Content="USERNAME" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
+                <Label Content="ADDRESS " FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
                    Margin="233, 0 , 20, 0" FontWeight="Black"/>
                 <Label Content="EXTRA" FontFamily="/Fonts/#Montserrat" FontSize="14" Foreground="White"
                    Margin="215, 0 , 20, 0" FontWeight="Black"/>
@@ -53,7 +53,7 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <Label Content="{Binding Username}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
+                            <Label Content="{Binding Address}" Grid.Column="1" FontFamily="/Fonts/#Montserrat" FontSize="10" Foreground="#A2A7BC"
                                VerticalAlignment="Center" Width="150" Margin="55, 0, 0, 0"/>
                             <Button Style="{StaticResource CopyButton}" Margin="10, 0, 0, 0" Grid.Column="1" HorizontalAlignment="Right"
                                     Width="25" Height="25" Click="Copy_Click"/>
@@ -63,7 +63,7 @@
                             <WrapPanel Grid.Column="2"  Width="150" Margin="180, 0, 0, 0">
                                 <Button Style="{StaticResource DeleteButton}" x:Name="DeleteButton" Width="30" Click="DeleteToken_Click"/>
                                 <Button Style="{StaticResource BrowserButton}" x:Name="BrowserButton" Width="30" ToolTip="Open in browser"
-                                        Click="Open_Browser"/>
+                                        />
                                 <Button Style="{StaticResource PencilButton}" x:Name="PencilButton" Width="30" ToolTip="Account settings"
                                         Visibility="Collapsed"/>
                             </WrapPanel>

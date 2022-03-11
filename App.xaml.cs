@@ -53,6 +53,7 @@ namespace DiskoAIO
         public static ProxiesView proxiesView { get; set; } = null;
         public static AccountsView accountsView { get; set; } = null;
         public static TwitterAccountsView twitterAccountsView { get; set; } = null;
+        public static PremintAccountsView premintAccountsView { get; set; } = null;
         public static TasksView taskManager { get; set; } = null;
         public static long userID { get; set; }
         public static string localIP { get; set; }

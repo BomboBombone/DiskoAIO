@@ -131,7 +131,7 @@ namespace DiskoAIO.MVVM.View
             else
                 _currentGroup = null;
 
-            ListTokens.ItemsSource = new List<DiscordToken>();
+            ListTokens.ItemsSource = new List<Premint.Premint>();
             ListTokens.Items.Refresh();
 
             var source = new string[] { };

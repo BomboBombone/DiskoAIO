@@ -639,7 +639,8 @@
     <Compile Include="DiskoTasks\KryptoSignTask.cs" />
     <Compile Include="DiskoTasks\LeaveTask.cs" />
     <Compile Include="Debug.cs" />
-    <Compile Include="DiskoTasks\PremintTask.cs" />
+    <Compile Include="DiskoTasks\Premint\PremintRegisterTask.cs" />
+    <Compile Include="DiskoTasks\Premint\PremintTask.cs" />
     <Compile Include="DiskoTasks\PresenceCheckerTask.cs" />
     <Compile Include="DiskoTasks\Twitter\TwitterImageChangerTask.cs" />
     <Compile Include="DiskoTasks\Twitter\TwitterAccountCheckerTask.cs" />
@@ -986,6 +987,8 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\discord_white.ico" />
+    <Resource Include="Images\twitter_white.ico" />
     <Resource Include="Images\premint.ico" />
     <Resource Include="Images\twitter.ico" />
     <Resource Include="Images\snipe.ico" />
