@@ -1,4 +1,5 @@
-﻿using DiskoAIO.Premint;
+﻿using DiskoAIO.DiskoTasks;
+using DiskoAIO.Premint;
 using DiskoAIO.Properties;
 using System;
 using System.Collections.Generic;
@@ -27,10 +28,10 @@ namespace DiskoAIO.MVVM.View
         public PremintAccountsView()
         {
             InitializeComponent();
-            if (App.twitterAccountsView == null)
+            if (App.premintAccountsView == null)
                 App.premintAccountsView = this;
             var source = new string[] { };
-            foreach (var group in App.twitterGroups)
+            foreach (var group in App.premintGroups)
             {
                 source = source.Append(group._name).ToArray();
             }
@@ -306,7 +307,66 @@ namespace DiskoAIO.MVVM.View
                     source.Add(o);
             }
             Clipboard.SetDataObject(source[index].Address);
-            App.mainWindow.ShowNotification("Successfully copied Premint address");
+            App.mainWindow.ShowNotification("Successfully copied public address");
+        }
+
+        private void Load_Tokens_Click(object sender, RoutedEventArgs e)
+        {
+            var popup = new InputPopupView("Enter the amount of accounts to create", 32, true);
+            popup.ShowDialog();
+            if(popup.answer != null && popup.answer != "")
+            {
+                var task = new PremintRegisterTask(_currentGroup, int.Parse(popup.answer));
+                App.taskManager.AddTask(task);
+                task.Start();
+                App.mainWindow.ShowNotification("Successfully started generator task");
+            }
+        }
+
+        private void Open_Browser(object sender, RoutedEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            Task.Run(() =>
+            {
+
+                var source = new List<Premint.Premint>();
+
+                foreach (var o in _currentGroup._accounts)
+                {
+                    if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                        o.Note != "Double click to add note..." &&
+                        to_search != "")
+                    {
+                        source.Add(o);
+                    }
+                    else if (o.Address.Contains(to_search))
+                        source.Add(o);
+                }
+                source[index].Login();
+                new PremintDriver(source[index].Cookies.GetCookieHeader(new Uri("https://www.premint.xyz")));
+            });
+        }
+
+        private void CopyPrivate_Click(object sender, RoutedEventArgs e)
+        {
+            var lbItem = App.FindParent<ListBoxItem>((DependencyObject)e.Source);
+            var index = ListTokens.ItemContainerGenerator.IndexFromContainer(lbItem);
+            var source = new List<Premint.Premint>();
+
+            foreach (var o in _currentGroup._accounts)
+            {
+                if (o.Note.ToLower().Contains(to_search.ToLower()) &&
+                    o.Note != "Double click to add note..." &&
+                    to_search != "")
+                {
+                    source.Add(o);
+                }
+                else if (o.Address.Contains(to_search))
+                    source.Add(o);
+            }
+            Clipboard.SetDataObject(source[index].private_key);
+            App.mainWindow.ShowNotification("Successfully copied private key");
         }
     }
 }

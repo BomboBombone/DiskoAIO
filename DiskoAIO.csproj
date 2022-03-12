@@ -694,8 +694,8 @@
       <DependentUpon>TwitterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Premint\Premint.cs" />
-    <Compile Include="Premint\PremintAccount.cs" />
     <Compile Include="Premint\PremintAccountGroup.cs" />
+    <Compile Include="Premint\PremintDriver.cs" />
     <Compile Include="ProxyGroup.cs" />
     <Compile Include="DiskoTasks\DiskoTask.cs" />
     <Compile Include="Science.cs" />
@@ -987,6 +987,7 @@
   <ItemGroup>
     <Content Include="anticaptcha-csharp\.gitattributes" />
     <Content Include="anticaptcha-csharp\.gitignore" />
+    <Resource Include="Images\key.ico" />
     <Resource Include="Images\discord_white.ico" />
     <Resource Include="Images\twitter_white.ico" />
     <Resource Include="Images\premint.ico" />

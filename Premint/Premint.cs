@@ -31,18 +31,20 @@ namespace DiskoAIO.Premint
             set { _note = value; }
         }
         public string private_key { get; set; }
-        public bool _isTwitterConnected { get; set; }
+        public bool _isTwitterConnected { get; set; } = false;
         public bool IsTwitterConnected
         {
-            get { return _isTwitterConnected; }
+            get { return _isTwitterConnected; } 
             set { _isTwitterConnected = value; }
         }
-        public bool _isDiscordConnected { get; set; }
+        public bool _isDiscordConnected { get; set; } = false;
         public bool IsDiscordConnected
         {
             get { return _isDiscordConnected; }
             set { _isDiscordConnected = value; }
         }
+        public string twitterUsername { get; set; } = "";
+        public string discordUserId { get; set; } = "";
         public HttpClient client { get; set; }
         public DiscordClient discordClient { get; set; }
         public HttpClientHandler clientHandler { get; set; }
@@ -52,16 +54,36 @@ namespace DiskoAIO.Premint
         }
         public static Premint Load(List<string> input)
         {
+            while(input.Count < 7)
+            {
+                input.Add("");
+            }
             var premint = new Premint();
             premint.private_key = input[1];
             premint._isDiscordConnected = input[2] == "true";
             premint._isTwitterConnected = input[3] == "true";
+            premint.discordUserId = input[4];
+            premint.twitterUsername = input[5];
+            premint.Note = input.Last();
             premint.Login(new Account(Encoding.ASCII.GetBytes(input[1])));
             return premint;
         }
         public Account Register()
         {
+            var mm = DiscordWeb3.GetWallet();
+
+            var payload = new Dictionary<string, string>();
+            payload.Add("username", mm.Address);
+            client.DefaultRequestHeaders.Add("X-CSRFToken", Cookies.GetCookieHeader(new Uri("https://www.premint.xyz")).Split('=').Last());
             var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("POST"),
+                RequestUri = new Uri("https://www.premint.xyz/v1/signup_api/"),
+                Content = new FormUrlEncodedContent(payload)
+            }).GetAwaiter().GetResult();
+            client.DefaultRequestHeaders.Remove("X-CSRFToken");
+            client.DefaultRequestHeaders.Add("X-CSRFToken", res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("csrftoken")).First().Split(';').First().Split('=').Last());
+            res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new HttpMethod("GET"),
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/")
@@ -69,21 +91,28 @@ namespace DiskoAIO.Premint
             var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
             var json = JObject.Parse(jt.ToString());
             var nonce = json.Value<string>("data");
-            var mm = DiscordWeb3.GetWallet();
 
             var msg = $"Welcome to PREMINT!\n\nSigning is the only way we can truly know \nthat you are the owner of the wallet you \nare connecting. Signing is a safe, gas-less \ntransaction that does not in any way give \nPREMINT permission to perform any \ntransactions with your wallet.\n\nWallet address:\n{mm.Address}\n\nNonce: " + nonce;
             var signature = DiscordWeb3.SignMessage(msg, mm);
-            var payload = $"web3provider=metamask&address={mm.Address}&signature={signature}";
+            var dict = new Dictionary<string, string>();
+            dict.Add("web3provider", "metamask");
+            dict.Add("address", mm.Address);
+            dict.Add("signature", signature);
             res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new System.Net.Http.HttpMethod("POST"),
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
-                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
+                Content = new FormUrlEncodedContent(dict)
             }).GetAwaiter().GetResult();
+            // client.DefaultRequestHeaders.Remove("X-CSRFToken");
+            private_key = mm.PrivateKey;
+            Address = mm.Address;
             return mm;
         }
         public void Login(Account mm)
         {
+            private_key = mm.PrivateKey;
+            Address = mm.Address;
             var res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new HttpMethod("GET"),
@@ -95,12 +124,40 @@ namespace DiskoAIO.Premint
 
             var msg = $"Welcome to PREMINT!\n\nSigning is the only way we can truly know \nthat you are the owner of the wallet you \nare connecting. Signing is a safe, gas-less \ntransaction that does not in any way give \nPREMINT permission to perform any \ntransactions with your wallet.\n\nWallet address:\n{mm.Address}\n\nNonce: " + nonce;
             var signature = DiscordWeb3.SignMessage(msg, mm);
-            var payload = $"web3provider=metamask&address={mm.Address}&signature=0x{signature}";
+            var dict = new Dictionary<string, string>();
+            dict.Add("web3provider", "metamask");
+            dict.Add("address", mm.Address);
+            dict.Add("signature", signature);
             res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new System.Net.Http.HttpMethod("POST"),
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
-                Content = new System.Net.Http.StringContent(payload, Encoding.UTF8, "x-www-form-urlencoded")
+                Content = new FormUrlEncodedContent(dict)
+            }).GetAwaiter().GetResult();
+        }
+        public void Login()
+        {
+            var mm = new Account(private_key);
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("GET"),
+                RequestUri = new Uri("https://www.premint.xyz/v1/login_api/")
+            }).GetAwaiter().GetResult();
+            var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(jt.ToString());
+            var nonce = json.Value<string>("data");
+
+            var msg = $"Welcome to PREMINT!\n\nSigning is the only way we can truly know \nthat you are the owner of the wallet you \nare connecting. Signing is a safe, gas-less \ntransaction that does not in any way give \nPREMINT permission to perform any \ntransactions with your wallet.\n\nWallet address:\n{mm.Address}\n\nNonce: " + nonce;
+            var signature = DiscordWeb3.SignMessage(msg, mm);
+            var dict = new Dictionary<string, string>();
+            dict.Add("web3provider", "metamask");
+            dict.Add("address", mm.Address);
+            dict.Add("signature", signature);
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("POST"),
+                RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
+                Content = new FormUrlEncodedContent(dict)
             }).GetAwaiter().GetResult();
         }
         public void ConnectTwitter(string username, string password, string phone = null)
@@ -165,12 +222,21 @@ namespace DiskoAIO.Premint
             };
             client = new System.Net.Http.HttpClient(clientHandler);
             client.DefaultRequestHeaders.Add("Referer", "https://www.premint.xyz");
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("GET"),
+                RequestUri = new Uri("https://www.premint.xyz/")
+            }).GetAwaiter().GetResult();
         }
 
         public CookieContainer Cookies
         {
             get { return clientHandler.CookieContainer; }
             set { clientHandler.CookieContainer = value; }
+        }
+        public override string ToString()
+        {
+            return $"{Address}:{private_key}:{IsDiscordConnected}:{IsTwitterConnected}:{discordUserId}:{twitterUsername}:{Note}";
         }
     }
 }
