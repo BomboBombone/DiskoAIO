@@ -61,7 +61,7 @@ namespace DiskoAIO
         {
             var signer = new EthereumMessageSigner();
 
-            var signature = signer.EncodeUTF8AndSign(msg, new EthECKey(account.PrivateKey));
+            var signature = signer.Sign(UTF8Encoding.UTF8.GetBytes(msg), new EthECKey(account.PrivateKey));
             return signature;
         }
         public string GetFirstSignature()

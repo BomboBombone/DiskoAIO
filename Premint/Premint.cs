@@ -76,7 +76,7 @@ namespace DiskoAIO.Premint
 
             var payload = new Dictionary<string, string>();
             payload.Add("username", mm.Address);
-            client.DefaultRequestHeaders.Add("X-CSRFToken", Cookies.GetCookieHeader(new Uri("https://www.premint.xyz")).Split('=').Last());
+            //client.DefaultRequestHeaders.Add("X-CSRFToken", Cookies.GetCookieHeader(new Uri("https://www.premint.xyz")).Split('=').Last());
             var res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new HttpMethod("POST"),
@@ -98,7 +98,7 @@ namespace DiskoAIO.Premint
             var signature = DiscordWeb3.SignMessage(msg, mm);
             var dict = new Dictionary<string, string>();
             dict.Add("web3provider", "metamask");
-            dict.Add("address", mm.Address);
+            dict.Add("address", mm.Address.ToLower());
             dict.Add("signature", signature);
             res = client.SendAsync(new HttpRequestMessage()
             {
@@ -116,6 +116,17 @@ namespace DiskoAIO.Premint
             private_key = mm.PrivateKey;
             Address = mm.Address;
             var res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("GET"),
+                RequestUri = new Uri("https://www.premint.xyz/")
+            }).GetAwaiter().GetResult();
+            try
+            {
+                client.DefaultRequestHeaders.Remove("X-CSRFToken");
+            }
+            catch (Exception ex) { }
+            client.DefaultRequestHeaders.Add("X-CSRFToken", res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("csrftoken")).First().Split(';').First().Split('=').Last());
+            res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new HttpMethod("GET"),
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/")
@@ -143,24 +154,39 @@ namespace DiskoAIO.Premint
             var res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new HttpMethod("GET"),
+                RequestUri = new Uri("https://www.premint.xyz/")
+            }).GetAwaiter().GetResult();
+            try
+            {
+                client.DefaultRequestHeaders.Remove("X-CSRFToken");
+            }
+            catch(Exception ex) { }
+            client.DefaultRequestHeaders.Add("X-CSRFToken", res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("csrftoken")).First().Split(';').First().Split('=').Last());
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("GET"),
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/")
             }).GetAwaiter().GetResult();
             var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
             var json = JObject.Parse(jt.ToString());
             var nonce = json.Value<string>("data");
 
-            var msg = $"Welcome to PREMINT!\n\nSigning is the only way we can truly know \nthat you are the owner of the wallet you \nare connecting. Signing is a safe, gas-less \ntransaction that does not in any way give \nPREMINT permission to perform any \ntransactions with your wallet.\n\nWallet address:\n{mm.Address}\n\nNonce: " + nonce;
+            var msg = $"Welcome to PREMINT!\n\nSigning is the only way we can truly know \nthat you are the owner of the wallet you \nare connecting. Signing is a safe, gas-less \ntransaction that does not in any way give \nPREMINT permission to perform any \ntransactions with your wallet.\n\nWallet address:\n{mm.Address.ToLower()}\n\nNonce: " + nonce;
             var signature = DiscordWeb3.SignMessage(msg, mm);
             var dict = new Dictionary<string, string>();
             dict.Add("web3provider", "metamask");
-            dict.Add("address", mm.Address);
+            dict.Add("address", mm.Address.ToLower());
             dict.Add("signature", signature);
+            client.DefaultRequestHeaders.Add("Origin", "https://www.premint.xyz");
+
+
             res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new System.Net.Http.HttpMethod("POST"),
                 RequestUri = new Uri("https://www.premint.xyz/v1/login_api/"),
                 Content = new FormUrlEncodedContent(dict)
             }).GetAwaiter().GetResult();
+            client.DefaultRequestHeaders.Remove("Origin");
         }
         public void ConnectTwitter(string username, string password, string phone = null)
         {
@@ -194,6 +220,7 @@ namespace DiskoAIO.Premint
         }
         public void ConnectDiscord(DiscordToken token)
         {
+            Login();
             var res = client.SendAsync(new HttpRequestMessage()
             {
                 RequestUri = new Uri("https://www.premint.xyz/accounts/discord/login/?process=connect&next=%2Fdisko-aio-test%2F&scope=guilds.members.read"),
@@ -227,6 +254,8 @@ namespace DiskoAIO.Premint
                 Method = new HttpMethod("GET"),
                 RequestUri = new Uri(project_name)
             }).GetAwaiter().GetResult();
+            client.DefaultRequestHeaders.Add("X-CSRFToken", res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("csrftoken")).First().Split('=').Last());
+
             var content = res.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             var csrf_token = content.Replace("<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\"", "§").Split('§').Last().Split('"').First();
             var dict = new Dictionary<string, string>();
@@ -246,7 +275,7 @@ namespace DiskoAIO.Premint
         {
             clientHandler = new HttpClientHandler
             {
-                AllowAutoRedirect = true,
+                AllowAutoRedirect = false,
                 UseCookies = true,
                 CookieContainer = new System.Net.CookieContainer()
             };
@@ -257,6 +286,8 @@ namespace DiskoAIO.Premint
                 Method = new HttpMethod("GET"),
                 RequestUri = new Uri("https://www.premint.xyz/")
             }).GetAwaiter().GetResult();
+            client.DefaultRequestHeaders.Add("X-CSRFToken", res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("csrftoken")).First().Split(';').First().Split('=').Last());
+
         }
 
         public CookieContainer Cookies

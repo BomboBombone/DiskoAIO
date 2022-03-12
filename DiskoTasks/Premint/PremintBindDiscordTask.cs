@@ -92,7 +92,7 @@ namespace DiskoAIO.DiskoTasks
         {
             accountGroup = premintAccountGroup;
             discordAccountGroup = discordGroup;
-            _progress = new Progress(premintAccountGroup._accounts.Count > discordAccountGroup._accounts.Count ? premintAccountGroup._accounts.Count : discordAccountGroup._accounts.Count);
+            _progress = new Progress(premintAccountGroup._accounts.Count < discordAccountGroup._accounts.Count ? premintAccountGroup._accounts.Count : discordAccountGroup._accounts.Count);
 
         }
         public void Start()
@@ -100,7 +100,7 @@ namespace DiskoAIO.DiskoTasks
             Task.Run(() =>
             {
                 Running = true;
-                var max = accountGroup._accounts.Count > discordAccountGroup._accounts.Count ? accountGroup._accounts.Count : discordAccountGroup._accounts.Count;
+                var max = accountGroup._accounts.Count < discordAccountGroup._accounts.Count ? accountGroup._accounts.Count : discordAccountGroup._accounts.Count;
                 for(int i = 0; i < max; i++)
                 {
                     try
