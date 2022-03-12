@@ -225,19 +225,19 @@ namespace DiskoAIO.MVVM.ViewModel
             });
             PremintViewCommand = new RelayCommand(o =>
             {
-                CurrentView = TwitterView;
+                CurrentView = PremintView;
                 var source = new string[] { };
                 foreach (var group in App.proxyGroups)
                 {
                     source = source.Append(group._name).ToArray();
                 }
-                TwitterView.ProxiesGroup.ItemsSource = source;
+                PremintView.ProxiesGroup.ItemsSource = source;
                 source = new string[] { };
-                foreach (var group in App.twitterGroups)
+                foreach (var group in App.premintGroups)
                 {
                     source = source.Append(group._name).ToArray();
                 }
-                TwitterView.TokenGroup.ItemsSource = source;
+                PremintView.TokenGroup.ItemsSource = source;
             });
             PremintAccountsViewCommand = new RelayCommand(o =>
             {

@@ -1,5 +1,6 @@
 ﻿using DiskoAIO.Premint;
 using DiskoAIO.Properties;
+using DiskoAIO.Twitter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Windows;
 
 namespace DiskoAIO.DiskoTasks
 {
-    class PremintTask : IDiskoTask
+    class PremintBindTwitterTask : IDiskoTask
     {
         public TaskType type
         {
@@ -18,7 +19,7 @@ namespace DiskoAIO.DiskoTasks
         }
         public string Type
         {
-            get { return "Account checker"; }
+            get { return "Premint binder"; }
         }
         private Progress _progress;
         public Progress progress
@@ -77,37 +78,38 @@ namespace DiskoAIO.DiskoTasks
         }
         public bool Running
         {
-            get { return running && !paused; }
-            set { running = value; paused = !value; }
+            get { return checking && !paused; }
+            set { checking = value; paused = !value; }
         }
         public bool Paused
         {
             get { return paused; }
         }
+        public TwitterAccountGroup twitterAccountGroup;
         public int delay { get; set; } = 2;
-        public bool running = true;
+        public bool checking = true;
         public bool paused = false;
-        public string project_name { get; set; }
-        public PremintTask(PremintAccountGroup premintAccountGroup, string name)
+        public PremintBindTwitterTask(PremintAccountGroup premintAccountGroup, TwitterAccountGroup twitterGroup)
         {
             accountGroup = premintAccountGroup;
-            project_name = name;
-            _progress = new Progress(accountGroup._accounts.Count);
+            twitterAccountGroup = twitterGroup;
+            _progress = new Progress(premintAccountGroup._accounts.Count > twitterAccountGroup._accounts.Count ? premintAccountGroup._accounts.Count : twitterAccountGroup._accounts.Count);
         }
         public void Start()
         {
             Task.Run(() =>
             {
                 Running = true;
-                foreach(var account in accountGroup._accounts)
+                var max = accountGroup._accounts.Count > twitterAccountGroup._accounts.Count ? accountGroup._accounts.Count : twitterAccountGroup._accounts.Count;
+                for (int i = 0; i < max; i++)
                 {
                     try
                     {
-                        account.Login();
-                        account.SubscribeToProject(project_name);
+                        var twitter = twitterAccountGroup._accounts[i];
+                        accountGroup._accounts[i].ConnectTwitter(twitter.Username, twitter._password, twitter._phone);
                         _progress.Add(1);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Debug.Log(ex.Message);
                     }
@@ -115,17 +117,19 @@ namespace DiskoAIO.DiskoTasks
                 Running = false;
                 paused = false;
                 if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
-                    App.SendToWebhook(Settings.Default.Webhook, "Premint task completed successfully\n**Group:** " + accountGroup._name);
+                    App.SendToWebhook(Settings.Default.Webhook, "Twitter binder generator task completed successfully\n**Group:** " + accountGroup._name);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    App.mainWindow.ShowNotification("Premint task completed successfully");
+                    App.premintAccountsView.ListTokens.Items.Refresh();
+                    App.premintAccountsView.UpdateAccountCount();
+                    App.mainWindow.ShowNotification("Twitter binder task completed successfully");
                 });
             });
         }
         public void Stop()
         {
-            running = false;
+            checking = false;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 App.mainWindow.ShowNotification("Successfully stopped task");

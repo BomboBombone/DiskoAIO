@@ -485,7 +485,7 @@ namespace DiskoAIO
                         {
                             line = line.Trim(new char[] { '\n', '\t', '\r', ' ' });
                             var token_array = line.Split(':').ToList();
-                            var token = Premint.Premint.Load(token_array);
+                            var token = Premint.Premint.Load(token_array, false);
                             line = reader.ReadLine();
                             tokens.Add(token);
                         }

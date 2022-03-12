@@ -20,9 +20,12 @@ namespace DiskoAIO.MVVM.View
     /// </summary>
     public partial class PremintView : UserControl
     {
+        public static List<string> types = new List<string>() { "Connect Discord", "Connect Twitter", "Subscribe" };
         public PremintView()
         {
             InitializeComponent();
+            Type.ItemsSource = types;
+            Type.SelectedItem = types.First();
         }
 
         private void UseProxies_Click(object sender, RoutedEventArgs e)
@@ -47,7 +50,18 @@ namespace DiskoAIO.MVVM.View
 
         private void Type_DropDownClosed(object sender, EventArgs e)
         {
-
+            if(Type.SelectedItem.ToString() != "Subscribe")
+            {
+                PremintLinkBorder.Visibility = Visibility.Collapsed;
+                BindGroupLabel.Visibility = Visibility.Visible;
+                BindGroup.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                PremintLinkBorder.Visibility = Visibility.Visible;
+                BindGroupLabel.Visibility = Visibility.Collapsed;
+                BindGroup.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

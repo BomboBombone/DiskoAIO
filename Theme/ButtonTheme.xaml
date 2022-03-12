@@ -432,7 +432,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/discord.ico" Margin="5"/>
+                                <Image Source="/Images/discord_white.ico" Margin="5"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -453,7 +453,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Source="/Images/twitter_white.ico" Margin="5"/>
+                                <Image Source="/Images/twitter_white.ico" Margin="2"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>

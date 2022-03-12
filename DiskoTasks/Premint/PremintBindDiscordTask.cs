@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace DiskoAIO.DiskoTasks
 {
-    class PremintTask : IDiskoTask
+    class PremintBindDiscordTask : IDiskoTask
     {
         public TaskType type
         {
@@ -18,7 +18,7 @@ namespace DiskoAIO.DiskoTasks
         }
         public string Type
         {
-            get { return "Account checker"; }
+            get { return "Premint binder"; }
         }
         private Progress _progress;
         public Progress progress
@@ -77,34 +77,35 @@ namespace DiskoAIO.DiskoTasks
         }
         public bool Running
         {
-            get { return running && !paused; }
-            set { running = value; paused = !value; }
+            get { return checking && !paused; }
+            set { checking = value; paused = !value; }
         }
         public bool Paused
         {
             get { return paused; }
         }
+        public AccountGroup discordAccountGroup;
         public int delay { get; set; } = 2;
-        public bool running = true;
+        public bool checking = true;
         public bool paused = false;
-        public string project_name { get; set; }
-        public PremintTask(PremintAccountGroup premintAccountGroup, string name)
+        public PremintBindDiscordTask(PremintAccountGroup premintAccountGroup, AccountGroup discordGroup)
         {
             accountGroup = premintAccountGroup;
-            project_name = name;
-            _progress = new Progress(accountGroup._accounts.Count);
+            discordAccountGroup = discordGroup;
+            _progress = new Progress(premintAccountGroup._accounts.Count > discordAccountGroup._accounts.Count ? premintAccountGroup._accounts.Count : discordAccountGroup._accounts.Count);
+
         }
         public void Start()
         {
             Task.Run(() =>
             {
                 Running = true;
-                foreach(var account in accountGroup._accounts)
+                var max = accountGroup._accounts.Count > discordAccountGroup._accounts.Count ? accountGroup._accounts.Count : discordAccountGroup._accounts.Count;
+                for(int i = 0; i < max; i++)
                 {
                     try
                     {
-                        account.Login();
-                        account.SubscribeToProject(project_name);
+                        accountGroup._accounts[i].ConnectDiscord(discordAccountGroup._accounts[i]);
                         _progress.Add(1);
                     }
                     catch(Exception ex)
@@ -115,17 +116,19 @@ namespace DiskoAIO.DiskoTasks
                 Running = false;
                 paused = false;
                 if (Settings.Default.Webhook != "" && Settings.Default.SendWebhook)
-                    App.SendToWebhook(Settings.Default.Webhook, "Premint task completed successfully\n**Group:** " + accountGroup._name);
+                    App.SendToWebhook(Settings.Default.Webhook, "Discord binder generator task completed successfully\n**Group:** " + accountGroup._name);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    App.mainWindow.ShowNotification("Premint task completed successfully");
+                    App.premintAccountsView.ListTokens.Items.Refresh();
+                    App.premintAccountsView.UpdateAccountCount();
+                    App.mainWindow.ShowNotification("Discord binder task completed successfully");
                 });
             });
         }
         public void Stop()
         {
-            running = false;
+            checking = false;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 App.mainWindow.ShowNotification("Successfully stopped task");

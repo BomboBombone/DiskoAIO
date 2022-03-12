@@ -639,6 +639,8 @@
     <Compile Include="DiskoTasks\KryptoSignTask.cs" />
     <Compile Include="DiskoTasks\LeaveTask.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="DiskoTasks\Premint\PremintBindDiscordTask.cs" />
+    <Compile Include="DiskoTasks\Premint\PremintBindTwitterTask.cs" />
     <Compile Include="DiskoTasks\Premint\PremintRegisterTask.cs" />
     <Compile Include="DiskoTasks\Premint\PremintTask.cs" />
     <Compile Include="DiskoTasks\PresenceCheckerTask.cs" />

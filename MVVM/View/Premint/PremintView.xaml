@@ -25,15 +25,16 @@
                         <ComboBox Name="TokenGroup"/>
                         <Label Content="Proxies:" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Margin="20, 0"
-                       Name="ProxiesLabel"/>
-                        <ComboBox Name="ProxiesGroup"/>
+                       Name="ProxiesLabel" Visibility="Hidden"/>
+                        <ComboBox Name="ProxiesGroup" Visibility="Hidden"/>
                     </WrapPanel>
                 </StackPanel>
                 <StackPanel Margin="40, 0, 0, 0" Grid.Row="1">
-                    <TextBlock Text="MESSAGE INFO:" Style="{StaticResource DiskoLabelTitle}"
+                    <TextBlock Text="PREMINT INFO:" Style="{StaticResource DiskoLabelTitle}"
                        Margin="20, 50, 20, 30"/>
                     <WrapPanel VerticalAlignment="Center">
-                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0">
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,0"
+                                Name="PremintLinkBorder">
                             <StackPanel  Margin="5, 5, 0, 0">
                                 <Label Content="Premint link" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White" Name="MessageBox"/>
@@ -41,18 +42,12 @@
                                  Name="ProjectLink"/>
                             </StackPanel>
                         </Border>
-                        <Border Background="#181824" CornerRadius="10" Margin="20 ,30"
-                                Name="MessageIDBorder" Visibility="Collapsed">
-                            <StackPanel  Margin="5, 5, 0, 0">
-                                <Label Content="Message ID" FontFamily="/Fonts/#Montserrat" 
-                       FontSize="12" Foreground="White"/>
-                                <TextBox Style="{StaticResource ModernTextBox}" Width="200" Height="50"
-                                 Name="ReplyTo" PreviewTextInput="textBox_PreviewTextInput"/>
-                            </StackPanel>
-                        </Border>
+                        <Label Content="Group to bind:" FontFamily="/Fonts/#Montserrat" Name="BindGroupLabel"
+                       FontSize="12" Foreground="White" Margin="20, 0" Visibility="Collapsed"/>
+                        <ComboBox Name="BindGroup" Visibility="Collapsed"/>
                     </WrapPanel>
                 </StackPanel>
-                <StackPanel Margin="40, 0, 0, 0" Grid.Row="2">
+                <StackPanel Margin="40, 0, 0, 0" Grid.Row="2" Visibility="Collapsed">
                     <TextBlock Text="SETTINGS:" Style="{StaticResource DiskoLabelTitle}"
                        Margin="20, 20, 20, 30"/>
                     <WrapPanel>
@@ -72,7 +67,7 @@
                                  Name="MinimumDelay" PreviewTextInput="textBox_PreviewTextInput"/>
                             </StackPanel>
                         </Border>
-                        <Border Background="#181824" CornerRadius="10" Margin="20 ,10">
+                        <Border Background="#181824" CornerRadius="10" Margin="20 ,10" Visibility="Collapsed">
                             <WrapPanel VerticalAlignment="Center">
                                 <Label Content="Use proxies" FontFamily="/Fonts/#Montserrat"
                                    Foreground="White" FontSize="12"

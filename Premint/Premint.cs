@@ -52,20 +52,22 @@ namespace DiskoAIO.Premint
         {
             InitializeHttpClient();
         }
-        public static Premint Load(List<string> input)
+        public static Premint Load(List<string> input, bool login = true)
         {
             while(input.Count < 7)
             {
                 input.Add("");
             }
             var premint = new Premint();
+            premint.Address = input[0];
             premint.private_key = input[1];
-            premint._isDiscordConnected = input[2] == "true";
-            premint._isTwitterConnected = input[3] == "true";
+            premint._isDiscordConnected = input[2].ToLower() == "true";
+            premint._isTwitterConnected = input[3].ToLower() == "true";
             premint.discordUserId = input[4];
             premint.twitterUsername = input[5];
             premint.Note = input.Last();
-            premint.Login(new Account(Encoding.ASCII.GetBytes(input[1])));
+            if(login)
+                premint.Login(new Account(Encoding.ASCII.GetBytes(input[1])));
             return premint;
         }
         public Account Register()
@@ -188,6 +190,34 @@ namespace DiskoAIO.Premint
             {
                 throw new Exception("Could not bind twitter account to premint");
             }
+            IsTwitterConnected = true;
+        }
+        public void ConnectDiscord(DiscordToken token)
+        {
+            var res = client.SendAsync(new HttpRequestMessage()
+            {
+                RequestUri = new Uri("https://www.premint.xyz/accounts/discord/login/?process=connect&next=%2Fdisko-aio-test%2F&scope=guilds.members.read"),
+                Method = new HttpMethod("GET")
+            }).GetAwaiter().GetResult();
+            var state = res.Headers.Location.ToString().Split('=').Last();
+            client.DefaultRequestHeaders.Add("Authorization", token._token);
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("POST"),
+                RequestUri = new Uri("https://discord.com/api/v9/oauth2/authorize?client_id=897003204598980619&response_type=code&redirect_uri=https%3A%2F%2Fwww.premint.xyz%2Faccounts%2Fdiscord%2Flogin%2Fcallback%2F&scope=identify%20email%20guilds%20guilds.members.read&state=" + state),
+                Content = new StringContent("{\"permissions\":\"0\",\"authorize\":true}", Encoding.UTF8, "application/json")
+            }).GetAwaiter().GetResult();
+            client.DefaultRequestHeaders.Remove("Authorization");
+
+            var jt = JToken.Parse(res.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(jt.ToString());
+            var loc = json.Value<string>("location");
+            res = client.SendAsync(new HttpRequestMessage()
+            {
+                RequestUri = new Uri(loc),
+                Method = new HttpMethod("GET")
+            }).GetAwaiter().GetResult();
+            IsDiscordConnected = true;
         }
         public void SubscribeToProject(string project_name)
         {
