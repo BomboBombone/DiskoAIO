@@ -18,7 +18,7 @@ namespace DiskoAIO.DiskoTasks
         }
         public string Type
         {
-            get { return "Account checker"; }
+            get { return "Premint join"; }
         }
         private Progress _progress;
         public Progress progress
