@@ -116,7 +116,7 @@ namespace DiskoAIO.MVVM.View
                     return;
                 }
 
-                var task = new PremintTask(accounts, ProjectLink.Text.StartsWith("https://www.premint.xyz") ? ProjectLink.Text.Split('/').Last() : ProjectLink.Text);
+                var task = new PremintTask(accounts, ProjectLink.Text.StartsWith("https://www.premint.xyz") ? ProjectLink.Text.Trim('/').Split('/').Last() : ProjectLink.Text);
                 App.taskManager.AddTask(task);
                 task.Start();
                 App.mainWindow.ShowNotification("Task started successfully");

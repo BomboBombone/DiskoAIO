@@ -2,8 +2,10 @@
 using DiskoAIO.Properties;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -123,6 +125,29 @@ namespace DiskoAIO.DiskoTasks
                     App.premintAccountsView.ListTokens.Items.Refresh();
                     App.premintAccountsView.UpdateAccountCount();
                     App.mainWindow.ShowNotification("Discord binder task completed successfully");
+                });
+                var index = App.premintGroups.IndexOf(accountGroup);
+
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            using (var writer = new StreamWriter(App.strWorkPath + "\\premint\\" + App.premintGroups[index]._name + ".txt"))
+                            {
+                                foreach (var proxy in App.premintGroups[index]._accounts)
+                                {
+                                    writer.WriteLine(proxy.ToString());
+                                }
+                            }
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Thread.Sleep(1000);
+                        }
+                    }
                 });
             });
         }
