@@ -1,4 +1,5 @@
 ﻿using Discord;
+using DiskoAIO.CaptchaSolvers;
 using Nethereum.Web3.Accounts;
 using Newtonsoft.Json.Linq;
 using System;
@@ -288,7 +289,7 @@ namespace DiskoAIO.Premint
                 }
             }
         }
-        public void SubscribeToProject(string project_name)
+        public void SubscribeToProject(string project_name, bool solve_captcha = false)
         {
             string url = "https://www.premint.xyz/" + project_name + '/';
             var res = client.SendAsync(new HttpRequestMessage()
@@ -304,6 +305,10 @@ namespace DiskoAIO.Premint
             dict.Add("csrfmiddlewaretoken", csrf_token);
             dict.Add("params_field", "{}");
             dict.Add("email_field", "");
+            if (solve_captcha)
+            {
+                dict.Add("g-recaptcha-response", PremintSolver.Solve(project_name));
+            }
             dict.Add("registration-form-submit", "");
             var payload = new FormUrlEncodedContent(dict);
             res = client.SendAsync(new HttpRequestMessage()

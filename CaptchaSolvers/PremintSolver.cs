@@ -1,21 +1,20 @@
-﻿using Anticaptcha_example.Api;
-using Anticaptcha_example.Helper;
+﻿using DeathByCaptcha;
 using DiskoAIO.Properties;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using DeathByCaptcha;
-using System.Collections;
 
 namespace DiskoAIO.CaptchaSolvers
 {
-    class DiscordSolver
+    class PremintSolver
     {
-        public static string Solve(string site_key = "4c672d35-0701-42b2-88c3-78380b0db560")
+        public const string site_key = "6Lf9yOodAAAAADyXy9cQncsLqD9Gl4NCBx3JCR_x";
+        public const string pageurl = "https://www.premint.xyz/";
+        public static string Solve(string project_name)
         {
             if (Settings.Default.DeathByCaptcha == "")
             {
@@ -26,11 +25,11 @@ namespace DiskoAIO.CaptchaSolvers
                 return null;
             }
             Client client = new SocketClient("authtoken", Settings.Default.DeathByCaptcha);
-            string tokenParams = "{\"sitekey\": \"" + site_key + "\"," +
-                "\"pageurl\": \"" + "https://discord.com/" + "\"}";
+            string tokenParams = "{\"googlekey\": \"" + site_key + "\"," +
+                "\"pageurl\": \"" + pageurl + project_name + "/\"}";
             Captcha captcha = client.Decode(Client.DefaultTimeout,
                 new Hashtable(){
-                        { "type", 7 },
+                        { "type", 4 },
                         {"token_params", tokenParams}
                 });
             if (captcha.Correct && captcha.Solved)

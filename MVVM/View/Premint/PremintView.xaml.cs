@@ -1,5 +1,6 @@
 ﻿using DiskoAIO.DiskoTasks;
 using DiskoAIO.Premint;
+using DiskoAIO.Properties;
 using DiskoAIO.Twitter;
 using System;
 using System.Collections.Generic;
@@ -29,12 +30,6 @@ namespace DiskoAIO.MVVM.View
             InitializeComponent();
             Type.ItemsSource = types;
             Type.SelectedItem = types.First();
-        }
-
-        private void UseProxies_Click(object sender, RoutedEventArgs e)
-        {
-            ProxiesGroup.Visibility = (bool)UseProxies.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-            ProxiesLabel.Visibility = (bool)UseProxies.IsChecked ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void Start_Task(object sender, RoutedEventArgs e)
@@ -115,8 +110,15 @@ namespace DiskoAIO.MVVM.View
                     });
                     return;
                 }
-
-                var task = new PremintTask(accounts, ProjectLink.Text.StartsWith("https://www.premint.xyz") ? ProjectLink.Text.Trim('/').Split('/').Last() : ProjectLink.Text);
+                if(SolveCaptcha.IsChecked == true && Settings.Default.DeathByCaptcha == "")
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        App.mainWindow.ShowNotification("Please insert a deathbycaptcha key in the settings to use this feature");
+                    });
+                    return;
+                }
+                var task = new PremintTask(accounts, ProjectLink.Text.StartsWith("https://www.premint.xyz") ? ProjectLink.Text.Trim('/').Split('/').Last() : ProjectLink.Text, SolveCaptcha.IsChecked == true);
                 App.taskManager.AddTask(task);
                 task.Start();
                 App.mainWindow.ShowNotification("Task started successfully");

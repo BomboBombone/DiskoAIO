@@ -88,10 +88,12 @@ namespace DiskoAIO.DiskoTasks
         public bool running = true;
         public bool paused = false;
         public string project_name { get; set; }
-        public PremintTask(PremintAccountGroup premintAccountGroup, string name)
+        public bool solve_captcha { get; set; }
+        public PremintTask(PremintAccountGroup premintAccountGroup, string name, bool captcha = false)
         {
             accountGroup = premintAccountGroup;
             project_name = name;
+            solve_captcha = captcha;
             _progress = new Progress(accountGroup._accounts.Count);
         }
         public void Start()
@@ -104,7 +106,7 @@ namespace DiskoAIO.DiskoTasks
                     try
                     {
                         account.Login();
-                        account.SubscribeToProject(project_name);
+                        account.SubscribeToProject(project_name, solve_captcha);
                         _progress.Add(1);
                     }
                     catch(Exception ex)

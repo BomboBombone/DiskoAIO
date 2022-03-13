@@ -250,5 +250,17 @@ namespace DiskoAIO.Properties {
                 this["TwitterGroup"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DeathByCaptcha {
+            get {
+                return ((string)(this["DeathByCaptcha"]));
+            }
+            set {
+                this["DeathByCaptcha"] = value;
+            }
+        }
     }
 }

@@ -178,6 +178,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CaptchaSolvers\DiscordSolver.cs" />
+    <Compile Include="CaptchaSolvers\PremintSolver.cs" />
+    <Compile Include="DeathByCaptcha\AccessDeniedException.cs" />
+    <Compile Include="DeathByCaptcha\Captcha.cs" />
+    <Compile Include="DeathByCaptcha\Client.cs" />
+    <Compile Include="DeathByCaptcha\Exception.cs" />
+    <Compile Include="DeathByCaptcha\HttpClient.cs" />
+    <Compile Include="DeathByCaptcha\InvalidCaptchaException.cs" />
+    <Compile Include="DeathByCaptcha\PollPayload.cs" />
+    <Compile Include="DeathByCaptcha\ServiceOverloadException.cs" />
+    <Compile Include="DeathByCaptcha\SocketClient.cs" />
+    <Compile Include="DeathByCaptcha\User.cs" />
     <Compile Include="DiskoTasks\AccountCheckerTask.cs" />
     <Compile Include="Anarchy\Commands\Command\CommandAttribute.cs" />
     <Compile Include="Anarchy\Commands\Command\CommandBase.cs" />
@@ -701,6 +712,8 @@
     <Compile Include="ProxyGroup.cs" />
     <Compile Include="DiskoTasks\DiskoTask.cs" />
     <Compile Include="Science.cs" />
+    <Compile Include="SimpleJson\Reader.cs" />
+    <Compile Include="SimpleJson\Writer.cs" />
     <Compile Include="TaskStateToColorConverter.cs" />
     <Compile Include="Twitter\Tweet.cs" />
     <Compile Include="Twitter\Twitter.cs" />

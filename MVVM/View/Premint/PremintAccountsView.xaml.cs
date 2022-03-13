@@ -76,7 +76,7 @@ namespace DiskoAIO.MVVM.View
                 currentTokens += 1;
             }
             TokenCounter.Content = "Accounts: " + currentTokens.ToString();
-            App.twitterAccountsView.ListTokens.Items.Refresh();
+            App.premintAccountsView.ListTokens.Items.Refresh();
         }
         private void Add_Group_Click(object sender, RoutedEventArgs e)
         {
@@ -123,7 +123,7 @@ namespace DiskoAIO.MVVM.View
             var result = _currentGroup.Delete();
             if (result > 0)
                 return;
-            if (App.twitterGroups.Count > 0)
+            if (App.premintGroups.Count > 0)
                 _currentGroup = App.premintGroups.First();
             else
                 _currentGroup = null;

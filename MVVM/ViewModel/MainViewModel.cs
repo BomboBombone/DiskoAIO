@@ -243,14 +243,13 @@ namespace DiskoAIO.MVVM.ViewModel
             {
                 CurrentView = PremintAccountsView;
                 var source = new string[] { };
-                foreach (var group in App.twitterGroups)
+                foreach (var group in App.premintGroups)
                 {
                     source = source.Append(group._name).ToArray();
                 }
                 PremintAccountsView.GroupComboBox.ItemsSource = source;
                 if (App.premintGroups.Count > 0)
-                    PremintAccountsView.ListTokens.SelectedItem = App.twitterGroups.First()._name;
-                PremintAccountsView.ListTokens.SelectedItem = Settings.Default.TwitterGroup;
+                    PremintAccountsView.ListTokens.SelectedItem = App.premintGroups.First()._name;
             });
         }
     }

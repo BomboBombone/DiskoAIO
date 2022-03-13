@@ -107,8 +107,12 @@ namespace DiskoAIO.DiskoTasks
                 {
                     try
                     {
-                        var twitter = twitterAccountGroup._accounts[i];
-                        accountGroup._accounts[i].ConnectTwitter(twitter.Username, twitter._password, twitter._phone);
+                        if (!accountGroup._accounts[i].IsTwitterConnected)
+                        {
+                            var twitter = twitterAccountGroup._accounts[i];
+                            accountGroup._accounts[i].ConnectTwitter(twitter.Username, twitter._password, twitter._phone);
+                        }
+
                         _progress.Add(1);
                     }
                     catch (Exception ex)

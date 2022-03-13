@@ -107,7 +107,11 @@ namespace DiskoAIO.DiskoTasks
                 {
                     try
                     {
-                        accountGroup._accounts[i].ConnectDiscord(discordAccountGroup._accounts[i]);
+                        if (!accountGroup._accounts[i].IsDiscordConnected)
+                        {
+                            accountGroup._accounts[i].ConnectDiscord(discordAccountGroup._accounts[i]);
+
+                        }
                         _progress.Add(1);
                     }
                     catch(Exception ex)
