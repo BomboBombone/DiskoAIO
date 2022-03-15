@@ -249,7 +249,7 @@ namespace DiskoAIO.Premint
                 }).GetAwaiter().GetResult();
             }
 
-            if(res.StatusCode != HttpStatusCode.Found || (res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("messages")).Count() == 0))
+            if(res.StatusCode != HttpStatusCode.Found || (res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("messages=\"[[\\\"__json_message\\\"\\0540\\05420\\054\\\"The social account has been connected to this wallet.")).Count() == 0))
             {
                 throw new Exception("Could not bind twitter account to premint");
             }
@@ -283,7 +283,7 @@ namespace DiskoAIO.Premint
             }).GetAwaiter().GetResult();
             foreach(var cookie in res.Headers.GetValues("set-cookie"))
             {
-                if (cookie.StartsWith("message"))
+                if (cookie.StartsWith("messages=\"[[\\\"__json_message\\\"\\0540\\05420\\054\\\"The social account has been connected to this wallet."))
                 {
                     IsDiscordConnected = true;
                 }
