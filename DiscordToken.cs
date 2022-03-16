@@ -145,6 +145,8 @@ namespace DiskoAIO
             request.AddHeader("Content-Length", payload.Length.ToString());
             var response = request.Post("https://discord.com/api/v9/auth/login", payload, "application/json");
             var res_array = response.ToString().Split('"');
+            request.AddHeader("Authorization", res_array[2]);
+            request.Patch("https://discord.com/api/v9/users/@me/agreements", new StringContent("{\"acknowledgment\":true}"));
             return res_array[2];
         }
         public override string ToString()
