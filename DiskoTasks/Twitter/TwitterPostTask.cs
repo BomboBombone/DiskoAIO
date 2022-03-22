@@ -133,7 +133,7 @@ namespace DiskoAIO.DiskoTasks
                     token_list.Add(tk.ToString());
                 }
                 var messages = new List<string>();
-                if(path_to_file != null)
+                if(path_to_file != "")
                 {
                     using (var reader = new StreamReader(path_to_file))
                     {

@@ -139,7 +139,7 @@
                     <WrapPanel>
                         <Border Background="#181824" CornerRadius="10, 0, 10, 0" Margin="20 ,0">
                             <StackPanel  Margin="5, 5, 0, 0">
-                                <Label Content="Anti-Captcha api key" FontFamily="/Fonts/#Montserrat" 
+                                <Label Content="DeathByCaptcha auth token" FontFamily="/Fonts/#Montserrat" 
                        FontSize="12" Foreground="White"/>
                                 <WrapPanel>
                                     <TextBox Style="{StaticResource ModernTextBox}" Width="790" Height="50"

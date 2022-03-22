@@ -84,8 +84,8 @@ namespace DiskoAIO.Premint
                 RequestUri = new Uri("https://www.premint.xyz/v1/signup_api/"),
                 Content = new FormUrlEncodedContent(payload)
             }).GetAwaiter().GetResult();
-            client.DefaultRequestHeaders.Remove("X-CSRFToken");
-            client.DefaultRequestHeaders.Add("X-CSRFToken", res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("csrftoken")).First().Split(';').First().Split('=').Last());
+            //client.DefaultRequestHeaders.Remove("X-CSRFToken");
+            //client.DefaultRequestHeaders.Add("X-CSRFToken", res.Headers.GetValues("set-cookie").Where(o => o.StartsWith("csrftoken")).First().Split(';').First().Split('=').Last());
             res = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new HttpMethod("GET"),
