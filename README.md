@@ -10,3 +10,5 @@ tweet, retweet, account checker, name/propic changer, follower;
 account generator, project joiner;
 ### License:
 [API](https://github.com/BomboBombone/DiskoAPI) used to gather small statistics and check licenses.
+### Automatic updates:
+Check out [DiskoAIO updater](https://github.com/BomboBombone/DiskoUpdater)
