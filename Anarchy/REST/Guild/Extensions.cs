@@ -192,9 +192,14 @@ namespace Discord
             return client.GetGuildAsync(guildId).GetAwaiter().GetResult();
         }
 
-
-        public static async Task<GuildInvite> JoinGuildAsync(this DiscordClient client, string invCode, string hcaptcha = null, ulong? guildId = null, ulong? channelId = null)
+        public static async Task<AttemptedJoinData> AttemptJoinAsync(this DiscordClient client, string invCode)
         {
+            return (await client.HttpClient.PostAsync($"/invites/{invCode}"))
+                    .Deserialize<AttemptedJoinData>();
+        }
+        public static async Task<GuildInvite> JoinGuildAsync(this DiscordClient client, string invCode, string hcaptcha = null, string rq_token = null, ulong? guildId = null, ulong? channelId = null)
+        {
+            var payload = "{\"captcha_key\":\"" + hcaptcha + "\", \"captcha_rqtoken\":\"" + rq_token + "\"}";
             return (await client.HttpClient.PostAsync($"/invites/{invCode}", hcaptcha, guildId, channelId))
                                 .Deserialize<GuildInvite>().SetClient(client);
         }
@@ -208,9 +213,9 @@ namespace Discord
         /// Joins a guild
         /// </summary>
         /// <returns>The invite used to join the guild</returns>
-        public static GuildInvite JoinGuild(this DiscordClient client, string invCode, string hcaptcha = null, ulong? guildId = null, ulong? channelId = null)
+        public static GuildInvite JoinGuild(this DiscordClient client, string invCode, string hcaptcha = null, string rq_token = null, ulong? guildId = null, ulong? channelId = null)
         {
-            return client.JoinGuildAsync(invCode, hcaptcha, guildId, channelId).GetAwaiter().GetResult();
+            return client.JoinGuildAsync(invCode, hcaptcha, rq_token, guildId, channelId).GetAwaiter().GetResult();
         }
 
 

@@ -77,7 +77,8 @@ namespace Discord
                         {
                             KeepTemporaryHeadersOnRedirect = false,
                             EnableMiddleHeaders = false,
-                            AllowEmptyHeaderValues = false
+                            AllowEmptyHeaderValues = false,
+                            IgnoreProtocolErrors = json == "{}" ? true : false
                             //SslProtocols = SslProtocols.Tls12
                         };
                         request.Proxy = _discordClient.Proxy;
@@ -106,7 +107,7 @@ namespace Discord
                             Fingerprint.GetFingerprint().GetAwaiter().GetResult();
                         request.AddHeader("X-Fingerprint", Fingerprint.fingerprint);
 
-                        HttpResponse response;
+                        HttpResponse response = null;
                         if(endpoint == "https://discord.com/api/v9/users/@me/channels")
                         {
                             request.AddHeader("x-context-properties", "e30=");
@@ -117,11 +118,18 @@ namespace Discord
                             var encoded_pr = Base64Encode(context_pr);
                             request.AddHeader("X-Context-Properties", encoded_pr);
                         }
-                        if(json != "{}")
-                            json = "{\"captcha_key\":\"" + json + "\"}";
+                        //if(json != "{}")
+                        //    json = "{\"captcha_key\":\"" + json + "\"}";
                         request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
-                        response = request.Post(endpoint, json, "application/json");
-                        resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+                        try
+                        {
+                            response = request.Post(endpoint, json, "application/json");
+                            resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+                        }
+                        catch(Exception ex)
+                        {
+                            return new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+                        }
                     }
                     else if(method == Leaf.xNet.HttpMethod.PATCH && endpoint == "https://discord.com/api/v9/users/@me")
                     {
@@ -364,7 +372,7 @@ namespace Discord
                         //var resp1 = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }
 
-                    DiscordHttpUtil.ValidateResponse(resp.StatusCode, resp.Body);
+                    //DiscordHttpUtil.ValidateResponse(resp.StatusCode, resp.Body);
                     return resp;
                 }
                 catch (Exception ex) when (ex is HttpException || ex is HttpRequestException || ex is TaskCanceledException)

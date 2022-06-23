@@ -102,9 +102,9 @@ namespace DiskoAIO.MVVM.View
                 App.mainWindow.ShowNotification("Please select a proxy group group");
                 return;
             }
-            if(BypassCaptcha.IsChecked == true && Settings.Default.Anti_Captcha == "")
+            if(BypassCaptcha.IsChecked == true && Settings.Default.DeathByCaptcha == "")
             {
-                App.mainWindow.ShowNotification("Please insert an anti-captcha.com key to use captcha verification");
+                App.mainWindow.ShowNotification("Please insert a deeathbycaptcha key to use captcha verification");
                 return;
             }
             AccountGroup accounts = null;

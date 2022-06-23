@@ -47,7 +47,7 @@ namespace DiskoAIO.MVVM.View
                             UseProxies.IsChecked = Settings.Default.UseProxies;
                             //SendInfoWebhook.IsChecked = Settings.Default.SendWebhook;
                             BypassCaptcha.IsChecked = Settings.Default.BypassCaptcha;
-                            Anti_Captcha_Key.Text = Settings.Default.Anti_Captcha;
+                            Anti_Captcha_Key.Text = Settings.Default.DeathByCaptcha;
                             ResponseRate.Text = Settings.Default.AIResponseRate.ToString();
                             ReplyRate.Text = Settings.Default.AIReplyRate.ToString();
                             ChatTypeGroup.SelectedItem = Settings.Default.ChatType;
@@ -114,7 +114,7 @@ namespace DiskoAIO.MVVM.View
             Settings.Default.UseProxies = (bool)UseProxies.IsChecked;
             Settings.Default.SendWebhook = (bool)SendInfoWebhook.IsChecked;
             Settings.Default.BypassCaptcha = (bool)BypassCaptcha.IsChecked;
-            Settings.Default.Anti_Captcha = Anti_Captcha_Key.Text;
+            Settings.Default.DeathByCaptcha = Anti_Captcha_Key.Text;
             Settings.Default.AIReplyRate = int.Parse(ReplyRate.Text);
             Settings.Default.AIResponseRate = int.Parse(ResponseRate.Text);
             Settings.Default.ChatType = ChatTypeGroup.SelectedItem.ToString();

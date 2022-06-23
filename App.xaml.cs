@@ -310,7 +310,7 @@ namespace DiskoAIO
                         App.api_key = key;
                         Settings.Default.APIkey = key;
 
-                        LoginWindow.BindMachine();
+                        //LoginWindow.BindMachine();
                         Settings.Default.Save();
                         Settings.Default.Reload();
                         App.SaveSettings();

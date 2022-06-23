@@ -15,7 +15,7 @@ namespace DiskoAIO.CaptchaSolvers
 {
     class DiscordSolver
     {
-        public static string Solve(string site_key = "4c672d35-0701-42b2-88c3-78380b0db560")
+        public static string Solve(string site_key)
         {
             if (Settings.Default.DeathByCaptcha == "")
             {
@@ -25,7 +25,7 @@ namespace DiskoAIO.CaptchaSolvers
                 });
                 return null;
             }
-            Client client = new SocketClient("authtoken", Settings.Default.DeathByCaptcha);
+            Client client = new HttpClient("authtoken", Settings.Default.DeathByCaptcha);
             string tokenParams = "{\"sitekey\": \"" + site_key + "\"," +
                 "\"pageurl\": \"" + "https://discord.com/" + "\"}";
             Captcha captcha = client.Decode(Client.DefaultTimeout,

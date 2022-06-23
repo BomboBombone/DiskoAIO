@@ -206,7 +206,10 @@ namespace DiskoAIO
 
                                                 if(bypassCaptcha && captchaBotType == "Discord")
                                                 {
-                                                    var hcaptcha_key = DiscordSolver.Solve();
+                                                    var captcha_data = client.AttemptJoinAsync(invite).GetAwaiter().GetResult();
+                                                    if (captcha_data.captcha_sitekey == null)
+                                                        break;
+                                                    var hcaptcha_key = DiscordSolver.Solve(captcha_data.captcha_sitekey);
                                                     client.JoinGuild(invite, hcaptcha_key);
                                                 }
                                                 else
