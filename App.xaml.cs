@@ -230,7 +230,7 @@ namespace DiskoAIO
                 AppDomain currentDomain = AppDomain.CurrentDomain;
                 currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
                 this.Dispatcher.UnhandledException += App_DispatcherUnhandledException;
-                var loadingScreen = new LoadingWindow();
+                //var loadingScreen = new LoadingWindow();
 
                 //if (!IsServiceInstalled("DiskoUpdater"))
                 //{
