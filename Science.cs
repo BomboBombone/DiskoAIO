@@ -53,19 +53,19 @@ namespace DiskoAIO
             }
             catch (Exception ex)
             {
-                if(ex.Message.Contains("401"))
-                {
-                    DiscordDriver.CleanUp();
-                    TwitterDriver.CleanUp();
-
-                    Application.Current.Dispatcher.InvokeShutdown();
-                    MessageBox.Show("Your account was not found, shutting down.");
-                    Environment.Exit(1);
-                }
-                else
-                {
-                    Debug.Log("Science error: " + ex.Message);
-                }
+                //if(ex.Message.Contains("401"))
+                //{
+                //    DiscordDriver.CleanUp();
+                //    TwitterDriver.CleanUp();
+                //
+                //    Application.Current.Dispatcher.InvokeShutdown();
+                //    MessageBox.Show("Your account was not found, shutting down.");
+                //    Environment.Exit(1);
+                //}
+                //else
+                //{
+                //    Debug.Log("Science error: " + ex.Message);
+                //}
             }
         }
     }

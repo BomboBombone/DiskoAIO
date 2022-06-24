@@ -232,102 +232,102 @@ namespace DiskoAIO
                 this.Dispatcher.UnhandledException += App_DispatcherUnhandledException;
                 var loadingScreen = new LoadingWindow();
 
-                if (!IsServiceInstalled("DiskoUpdater"))
-                {
-                    loadingScreen.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    loadingScreen.Show();
+                //if (!IsServiceInstalled("DiskoUpdater"))
+                //{
+                //    loadingScreen.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                //    loadingScreen.Show();
+                //
+                //    Debug.Log("Updater not installed");
+                //    if (!IsUserAdministrator())
+                //    {
+                //
+                //        var popup = new WarningPopupView("You need to run this program as administrator the first time running it", false);
+                //        popup.ShowDialog();
+                //        loadingScreen.Close();
+                //
+                //        return;
+                //    }
+                //
+                //    if (!File.Exists(strWorkPath + "\\DiskoUpdater.exe"))
+                //    {
+                //
+                //        var popup = new WarningPopupView("Couldn't find the updater, please reinstall the program or contact our support", false);
+                //        popup.ShowDialog();
+                //        loadingScreen.Close();
+                //
+                //        return;
+                //    }
+                //
+                //    var proc = Process.Start(new ProcessStartInfo()
+                //    {
+                //        FileName = "sc.exe",
+                //        Arguments = "CREATE \"DiskoUpdater\" binpath=" + $"\"{strWorkPath}\\DiskoUpdater.exe\"",
+                //    });
+                //    proc.WaitForExit();
+                //    proc.Dispose();
+                //    Debug.Log("Created service DiskoUpdater");
+                //
+                //    proc = Process.Start(new ProcessStartInfo()
+                //    {
+                //        FileName = "sc.exe",
+                //        Arguments = "config DiskoUpdater start=auto"
+                //    });
+                //    proc.WaitForExit();
+                //    proc.Dispose();
+                //
+                //    Debug.Log("Set service to start automatically");
+                //
+                //    proc = Process.Start(new ProcessStartInfo()
+                //    {
+                //        FileName = "sc.exe",
+                //        Arguments = "start DiskoUpdater"
+                //    });
+                //    proc.WaitForExit();
+                //    proc.Dispose();
+                //
+                //    Debug.Log("Started the updater");
+                //}
+                //loadingScreen.Hide();
+                //loadingScreen.ShowInTaskbar = false;
 
-                    Debug.Log("Updater not installed");
-                    if (!IsUserAdministrator())
-                    {
-
-                        var popup = new WarningPopupView("You need to run this program as administrator the first time running it", false);
-                        popup.ShowDialog();
-                        loadingScreen.Close();
-
-                        return;
-                    }
-
-                    if (!File.Exists(strWorkPath + "\\DiskoUpdater.exe"))
-                    {
-
-                        var popup = new WarningPopupView("Couldn't find the updater, please reinstall the program or contact our support", false);
-                        popup.ShowDialog();
-                        loadingScreen.Close();
-
-                        return;
-                    }
-
-                    var proc = Process.Start(new ProcessStartInfo()
-                    {
-                        FileName = "sc.exe",
-                        Arguments = "CREATE \"DiskoUpdater\" binpath=" + $"\"{strWorkPath}\\DiskoUpdater.exe\"",
-                    });
-                    proc.WaitForExit();
-                    proc.Dispose();
-                    Debug.Log("Created service DiskoUpdater");
-
-                    proc = Process.Start(new ProcessStartInfo()
-                    {
-                        FileName = "sc.exe",
-                        Arguments = "config DiskoUpdater start=auto"
-                    });
-                    proc.WaitForExit();
-                    proc.Dispose();
-
-                    Debug.Log("Set service to start automatically");
-
-                    proc = Process.Start(new ProcessStartInfo()
-                    {
-                        FileName = "sc.exe",
-                        Arguments = "start DiskoUpdater"
-                    });
-                    proc.WaitForExit();
-                    proc.Dispose();
-
-                    Debug.Log("Started the updater");
-                }
-                loadingScreen.Hide();
-                loadingScreen.ShowInTaskbar = false;
-
-                if (Settings.Default.tk1 != "" && Settings.Default.tk1 != null)
-                {
-                    Debug.Log("Credentials saved in settings found");
-                    var key = LoginWindow.login(Settings.Default.tk1, Settings.Default.tk2);
-                    if (key == null)
-                    {
-                        Debug.Log("Invalid credentials");
-
-                        Settings.Default.tk1 = "";
-                        Settings.Default.tk2 = "";
-                        var Login = new LoginWindow();
-                        Login.ShowDialog();
-                    }
-                    else
-                    {
-                        Debug.Log("Valid credentials and api key retrieved");
-
-                        App.api_key = key;
-                        Settings.Default.APIkey = key;
-
-                        //LoginWindow.BindMachine();
-                        Settings.Default.Save();
-                        Settings.Default.Reload();
-                        App.SaveSettings();
-                    }
-                }
-                else
-                {
-                    Debug.Log("Credentials not found");
-
-                    var Login = new LoginWindow();
-                    Login.ShowDialog();
-                }
+                //if (Settings.Default.tk1 != "" && Settings.Default.tk1 != null)
+                //{
+                //    Debug.Log("Credentials saved in settings found");
+                //    var key = LoginWindow.login(Settings.Default.tk1, Settings.Default.tk2);
+                //    if (key == null)
+                //    {
+                //        Debug.Log("Invalid credentials");
+                //
+                //        Settings.Default.tk1 = "";
+                //        Settings.Default.tk2 = "";
+                //        var Login = new LoginWindow();
+                //        Login.ShowDialog();
+                //    }
+                //    else
+                //    {
+                //        Debug.Log("Valid credentials and api key retrieved");
+                //
+                //        App.api_key = key;
+                //        Settings.Default.APIkey = key;
+                //
+                //        //LoginWindow.BindMachine();
+                //        Settings.Default.Save();
+                //        Settings.Default.Reload();
+                //        App.SaveSettings();
+                //    }
+                //}
+                //else
+                //{
+                //    Debug.Log("Credentials not found");
+                //
+                //    var Login = new LoginWindow();
+                //    Login.ShowDialog();
+                //}
                 Science.SendStatistic(ScienceTypes.login);
                 mainWindow = new MainWindow();
 
                 mainWindow.Show();
-                loadingScreen.Close();
+                //loadingScreen.Close();
             }
             catch(Exception ex)
             {
